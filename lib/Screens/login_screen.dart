@@ -3,7 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:my_login/Component/button.dart';
-import 'package:my_login/Screens/timeline_screen.dart';
+import 'package:my_login/Screens/home_screen.dart';
 import '../constants.dart';
 import 'signup_screen.dart';
 import 'package:fluttertoast/fluttertoast.dart';
@@ -109,7 +109,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
                               await Navigator.of(context).push(
                                 MaterialPageRoute(
-                                  builder: (context) => const TimelineScreen(),
+                                  builder: (context) => const HomeScreen(),
                                 ),
                               );
 
@@ -140,7 +140,7 @@ class _LoginScreenState extends State<LoginScreen> {
                           }
                           else
                             {
-                              Navigator.pushNamed(context, TimelineScreen.routeName);
+                              Navigator.pushNamed(context, HomeScreen.routeName);
                               Fluttertoast.showToast(msg: "Skipped login because developer");
                             }
                         },
