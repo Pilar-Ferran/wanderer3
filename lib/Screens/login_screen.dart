@@ -1,34 +1,31 @@
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 import 'package:my_login/Component/button.dart';
-
+import 'package:my_login/Screens/timeline_screen.dart';
 import '../constants.dart';
-import 'Login_Screen.dart';
+import 'signup_screen.dart';
 
-class SignupScreen extends StatefulWidget {
+class LoginScreen extends StatefulWidget {
+  const LoginScreen({Key? key}) : super(key: key);
+
   @override
-  _SignupScreenState createState() => _SignupScreenState();
+  _LoginScreenState createState() => _LoginScreenState();
 }
 
-class _SignupScreenState extends State<SignupScreen> {
+class _LoginScreenState extends State<LoginScreen> {
   final formkey = GlobalKey<FormState>();
   final _auth = FirebaseAuth.instance;
+  final _googleSignIn = GoogleSignIn();
   String email = '';
   String password = '';
   bool isloading = false;
 
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        backgroundColor: Colors.grey[200],
-        elevation: 0,
-        leading: IconButton(
-          icon: Icon(Icons.arrow_back_ios, color: Colors.black,size: 30,),
-          onPressed: () => Navigator.of(context).pop(),
-        ),
-      ),
       body: isloading
           ? Center(
         child: CircularProgressIndicator(),
@@ -49,28 +46,27 @@ class _SignupScreenState extends State<SignupScreen> {
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      Hero(
-                        tag: '1',
-                        child: Text(
-                          "Sign up",
-                          style: TextStyle(
-                              fontSize: 30,
-                              color: Colors.black,
-                              fontWeight: FontWeight.bold),
-                        ),
+                      Text(
+                        "Sign In",
+                        style: TextStyle(
+                            fontSize: 50,
+                            color: Colors.black,
+                            fontWeight: FontWeight.bold),
                       ),
                       SizedBox(height: 30),
                       TextFormField(
                         keyboardType: TextInputType.emailAddress,
                         onChanged: (value) {
-                          email = value.toString().trim();
+                          email = value;
                         },
-                        validator: (value) => (value!.isEmpty)
-                            ? ' Please enter email'
-                            : null,
+                        validator: (value) {
+                          if (value!.isEmpty) {
+                            return "Please enter Email";
+                          }
+                        },
                         textAlign: TextAlign.center,
                         decoration: kTextFieldDecoration.copyWith(
-                          hintText: 'Enter Your Email',
+                          hintText: 'Email',
                           prefixIcon: Icon(
                             Icons.email,
                             color: Colors.black,
@@ -90,36 +86,32 @@ class _SignupScreenState extends State<SignupScreen> {
                         },
                         textAlign: TextAlign.center,
                         decoration: kTextFieldDecoration.copyWith(
-                            hintText: 'Choose a Password',
+                            hintText: 'Password',
                             prefixIcon: Icon(
                               Icons.lock,
                               color: Colors.black,
                             )),
                       ),
+
+
+
                       SizedBox(height: 80),
                       LoginSignupButton(
-                        title: 'Register',
+                        title: 'Login',
                         ontapp: () async {
                           if (formkey.currentState!.validate()) {
                             setState(() {
                               isloading = true;
                             });
                             try {
-                              await _auth.createUserWithEmailAndPassword(
+                              await _auth.signInWithEmailAndPassword(
                                   email: email, password: password);
 
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                SnackBar(
-                                  backgroundColor: Colors.blueGrey,
-                                  content: Padding(
-                                    padding: const EdgeInsets.all(8.0),
-                                    child: Text(
-                                        'Sucessfully Register.You Can Login Now'),
-                                  ),
-                                  duration: Duration(seconds: 5),
+                              await Navigator.of(context).push(
+                                MaterialPageRoute(
+                                  builder: (context) => const TimelineScreen(),
                                 ),
                               );
-                              Navigator.of(context).pop();
 
                               setState(() {
                                 isloading = false;
@@ -128,8 +120,7 @@ class _SignupScreenState extends State<SignupScreen> {
                               showDialog(
                                 context: context,
                                 builder: (ctx) => AlertDialog(
-                                  title:
-                                  Text(' Ops! Registration Failed'),
+                                  title: Text("Oops! Login Failed"),
                                   content: Text('${e.message}'),
                                   actions: [
                                     TextButton(
@@ -141,6 +132,7 @@ class _SignupScreenState extends State<SignupScreen> {
                                   ],
                                 ),
                               );
+                              print(e);
                             }
                             setState(() {
                               isloading = false;
@@ -148,6 +140,36 @@ class _SignupScreenState extends State<SignupScreen> {
                           }
                         },
                       ),
+                      SizedBox(height: 30),
+                      GestureDetector(
+                        onTap: () {
+                          Navigator.of(context).push(
+                            MaterialPageRoute(
+                              builder: (context) => SignupScreen(),
+                            ),
+                          );
+                        },
+                        child: Row(
+                          children: [
+                            Text(
+                              "Don't have an Account ?",
+                              style: TextStyle(
+                                  fontSize: 20, color: Colors.black87),
+                            ),
+                            SizedBox(width: 10),
+                            Hero(
+                              tag: '1',
+                              child: Text(
+                                'Sign up',
+                                style: TextStyle(
+                                    fontSize: 21,
+                                    fontWeight: FontWeight.bold,
+                                    color: Colors.black),
+                              ),
+                            )
+                          ],
+                        ),
+                      )
                     ],
                   ),
                 ),
@@ -157,5 +179,11 @@ class _SignupScreenState extends State<SignupScreen> {
         ),
       ),
     );
-  }
+  } //jaja
+
+
+
+
 }
+
+
