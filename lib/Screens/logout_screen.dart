@@ -1,10 +1,13 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:my_login/Screens/Login_Screen.dart';
+import 'package:my_login/Screens/login_screen.dart';
 
-class HomeScreen extends StatefulWidget {
+class LogoutScreen extends StatefulWidget {
+  static const routeName = '/logout';
+
+  const LogoutScreen({Key? key}) : super(key: key);
   @override
-  _HomeScreenState createState() => _HomeScreenState();
+  _LogoutScreenState createState() => _LogoutScreenState();
 }
 
 final FirebaseAuth _firebaseAuth = FirebaseAuth.instance;
@@ -13,7 +16,7 @@ _signOut() async {
   await _firebaseAuth.signOut();
 }
 
-class _HomeScreenState extends State<HomeScreen> {
+class _LogoutScreenState extends State<LogoutScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -22,7 +25,7 @@ class _HomeScreenState extends State<HomeScreen> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Text('You have logged in Successfuly'),
+            Text('You have logged in Successfully'),
             SizedBox(height: 50),
             Container(
               height: 60,

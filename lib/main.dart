@@ -1,26 +1,41 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:my_login/Screens/logout_screen.dart';
+import 'package:my_login/Screens/signup_screen.dart';
+import 'package:my_login/Screens/timeline_screen.dart';
 
-import 'Screens/Login_Screen.dart';
+import 'Screens/login_screen.dart';
+import 'Screens/trip_detail.dart';
 
 void main()async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
   runApp(
-    MyApp(),
+    const MyApp(),
   );
 }
 
 class MyApp extends StatelessWidget {
+  const MyApp({Key? key}) : super(key: key);
+
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Flutter Demo',
+      title: 'Wanderer',
       theme: ThemeData(
-        primarySwatch: Colors.blue,
+          primarySwatch: Colors.cyan,
       ),
-      home:LoginScreen(),
+      home:const LoginScreen(),
+      initialRoute: '/',
+      routes: {
+        SignupScreen.routeName: (context) => const SignupScreen(),
+        TimelineScreen.routeName: (context) => const TimelineScreen(),
+        TripDetail.routeName: (context) => const TripDetail(), //esto registra la ruta de la pantalla TripDetail
+        LogoutScreen.routeName: (context) => const LogoutScreen(),
+      },
     );
   }
 }
