@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 //por ahora tiene valores hardcoded
 class TripData {
   final String authorUser = "Ferran";  //var??
-  String title = "Milano skyscraper tour";
+  String title = "Milano historical tour";
   String place = "Milano, Italy";
   String description = "this is a description of my trip this is a description of my trip this is a description of my trip this is a description of my trip this is a description of my trip this is a description of my trip this is a description of my trip this is a description of my trip this is a description of my trip";
   late Image previewPic = Image.asset("images/Duomo.jpg"); ///Image.network("un_url");

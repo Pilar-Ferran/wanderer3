@@ -1,9 +1,10 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:my_login/Screens/logout_screen.dart';
+import 'package:my_login/Screens/explore_screen.dart';
 import 'package:my_login/Screens/timeline_screen.dart';
 
-import 'trip_preview.dart';
+import '../Component/trip_preview.dart';
 
 class HomeScreen extends StatefulWidget {
   static const routeName = '/homescreen';
@@ -21,9 +22,7 @@ class _HomeScreenState extends State<HomeScreen> {
   int selectedIndex = 0;
   static const List<Widget> fourNavigationScreens = <Widget>[
     TimelineScreen(),
-    Text(
-      'Index 1: Business',
-    ),
+    ExploreScreen(),
     Text(
       'Index 2: School',
     ),
