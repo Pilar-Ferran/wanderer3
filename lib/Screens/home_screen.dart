@@ -39,11 +39,11 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget build(BuildContext context) {
     // This method is rerun every time setState is called
     return Scaffold(
-      appBar: AppBar(
+      /*appBar: AppBar(
         // Here we take the value from the MyHomePage object that was created by
         // the App.build method, and use it to set our appbar title.
         title: Text(widget.title),
-      ),
+      ),*/
       body: Center(
         child: fourNavigationScreens.elementAt(selectedIndex),
       ),

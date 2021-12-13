@@ -18,7 +18,9 @@ class _TimelineScreenState extends State<TimelineScreen> {
     //TODO maybe do outside of build()
     List<TripPreview> trips = [TripPreview(), TripPreview(), TripPreview(), TripPreview(), TripPreview()];  //posts to show in the timeline
     //he quitado el center
-    return Column(
+    return Scaffold(
+      appBar:AppBar( title: const Text("Wanderer timeline")),
+      body: Column(
         //comments borrados
         mainAxisAlignment: MainAxisAlignment.center,
         children: <Widget>[
@@ -31,6 +33,7 @@ class _TimelineScreenState extends State<TimelineScreen> {
               )
           )
         ],
-      );
+      ),
+    );
   }
 }
