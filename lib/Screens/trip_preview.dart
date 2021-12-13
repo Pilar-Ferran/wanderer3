@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:my_login/dataclasses/trip_data.dart';
 import 'package:my_login/Screens/trip_detail.dart';
 
-import 'Screens/trip_detail.dart';
+import 'trip_detail.dart';
 
 
 class TripPreview extends StatelessWidget{
