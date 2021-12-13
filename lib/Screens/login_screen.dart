@@ -6,6 +6,7 @@ import 'package:my_login/Component/button.dart';
 import 'package:my_login/Screens/timeline_screen.dart';
 import '../constants.dart';
 import 'signup_screen.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({Key? key}) : super(key: key);
@@ -27,7 +28,7 @@ class _LoginScreenState extends State<LoginScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: isloading
-          ? Center(
+          ? const Center(
         child: CircularProgressIndicator(),
       )
           : Form(
@@ -46,14 +47,14 @@ class _LoginScreenState extends State<LoginScreen> {
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      Text(
+                      const Text(
                         "Sign In",
                         style: TextStyle(
                             fontSize: 50,
                             color: Colors.black,
                             fontWeight: FontWeight.bold),
                       ),
-                      SizedBox(height: 30),
+                      const SizedBox(height: 30),
                       TextFormField(
                         keyboardType: TextInputType.emailAddress,
                         onChanged: (value) {
@@ -67,13 +68,13 @@ class _LoginScreenState extends State<LoginScreen> {
                         textAlign: TextAlign.center,
                         decoration: kTextFieldDecoration.copyWith(
                           hintText: 'Email',
-                          prefixIcon: Icon(
+                          prefixIcon: const Icon(
                             Icons.email,
                             color: Colors.black,
                           ),
                         ),
                       ),
-                      SizedBox(height: 30),
+                      const SizedBox(height: 30),
                       TextFormField(
                         obscureText: true,
                         validator: (value) {
@@ -87,15 +88,14 @@ class _LoginScreenState extends State<LoginScreen> {
                         textAlign: TextAlign.center,
                         decoration: kTextFieldDecoration.copyWith(
                             hintText: 'Password',
-                            prefixIcon: Icon(
+                            prefixIcon: const Icon(
                               Icons.lock,
                               color: Colors.black,
                             )),
                       ),
 
 
-
-                      SizedBox(height: 80),
+                      const SizedBox(height: 80),
                       LoginSignupButton(
                         title: 'Login',
                         ontapp: () async {
@@ -138,9 +138,14 @@ class _LoginScreenState extends State<LoginScreen> {
                               isloading = false;
                             });
                           }
+                          else
+                            {
+                              Navigator.pushNamed(context, TimelineScreen.routeName);
+                              Fluttertoast.showToast(msg: "Skipped login because developer");
+                            }
                         },
                       ),
-                      SizedBox(height: 30),
+                      const SizedBox(height: 30),
                       GestureDetector(
                         onTap: () {
                           Navigator.of(context).push(
@@ -150,7 +155,7 @@ class _LoginScreenState extends State<LoginScreen> {
                           );
                         },
                         child: Row(
-                          children: [
+                          children: const [
                             Text(
                               "Don't have an Account ?",
                               style: TextStyle(
