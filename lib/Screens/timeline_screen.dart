@@ -1,8 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:my_login/Screens/logout_screen.dart';
-
-import 'trip_preview.dart';
+import '../Component/trip_preview.dart';
 
 class TimelineScreen extends StatefulWidget {
   const TimelineScreen({Key? key}) : super(key: key);
@@ -12,7 +10,6 @@ class TimelineScreen extends StatefulWidget {
   @override
   State<StatefulWidget> createState() => _TimelineScreenState();
 }
-
 
 class _TimelineScreenState extends State<TimelineScreen> {
   @override
