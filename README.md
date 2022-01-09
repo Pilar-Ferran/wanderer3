@@ -1,6 +1,7 @@
-# my_login
+# wanderer
 
-A new Flutter project.
+An app that will allow users to share trips and spots, as well as soundtracks. 
+Made with Flutter.
 
 ## Getting Started
 

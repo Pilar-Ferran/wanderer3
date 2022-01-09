@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:my_login/Screens/create_trip_screen.dart';
 import 'package:my_login/Screens/logout_screen.dart';
 import 'package:my_login/Screens/explore_screen.dart';
 import 'package:my_login/Screens/timeline_screen.dart';
@@ -23,9 +24,7 @@ class _HomeScreenState extends State<HomeScreen> {
   static const List<Widget> fourNavigationScreens = <Widget>[
     TimelineScreen(),
     ExploreScreen(),
-    Text(
-      'Index 2: School',
-    ),
+    CreateTripScreen(),
     LogoutScreen(),
   ];
 
