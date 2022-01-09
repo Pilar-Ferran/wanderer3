@@ -24,13 +24,22 @@ class _CreateTripScreenState extends State<CreateTripScreen> {
 
     return trips.add({
       'title': "Visiting El Raval",
-      'preview_pic:':"lol",
+      'preview_pic':"lol",
       'location': "El Raval, Barcelona, Spain",
-      'description':"this is a description about a trip to El Raval",
+      'description':"this is a description about a trip to El Raval this is a description about a trip to El Raval this is a description about a trip to El Raval this is a description about a trip to El Raval this is a description about a trip to El Raval this is a description about a trip to El Raval this is a description about a trip to El Raval this is a description about a trip to El Raval this is a description about a trip to El Raval this is a description about a trip to El Raval this is a description about a trip to El Raval this is a description about a trip to El Raval ",
       'author_username': "FerranChiese"
-    })  .then((value) => print("trip added to firestore"))
-        .catchError((onError) => print("error adding to firestore. error = "+onError.toString()));
+    })
+        .then((value) => confirmTripAdded())
+        .catchError((onError) => informAddTripError(onError));
   }
 
+  void confirmTripAdded() {
+    print("trip added to firestore");
+    Fluttertoast.showToast(msg: "Trip posted successfully!");
+  }
 
+  void informAddTripError(onError) {
+    print("error adding to firestore. error = "+onError.toString());
+    Fluttertoast.showToast(msg: "There was an error creating the trip.");
+  }
 }

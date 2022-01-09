@@ -13,9 +13,10 @@ class TripPreview extends StatelessWidget{
   String place = "Milano, Italy";
   String description = "this is a description of my trip this is a description of my trip this is a description of my trip this is a description of my trip this is a description of my trip this is a description of my trip this is a description of my trip this is a description of my trip this is a description of my trip";
   late Image previewPic;*/
-  TripData tripData = TripData();
+  late TripData tripData;// = TripData();
 
-  TripPreview({Key? key}) : super(key: key);
+  TripPreview(this.tripData, {Key? key}) : super(key: key);
+
 
   @override
   Widget build(BuildContext context) {
@@ -25,14 +26,13 @@ class TripPreview extends StatelessWidget{
       //const Padding(padding: EdgeInsets.fromLTRB(0, 10, 0, 0),),
       InkWell( //so its clickable and it shows the ripple effect
         onTap: () {
-          //print("trip clicked");
           Navigator.pushNamed(context, TripDetail.routeName, arguments: tripData);
         },
         child:
         Ink(  //like Container but the ripple effect shows
           //width: 50,
           //height: 50,
-          decoration: BoxDecoration(color: const Color.fromRGBO(255, 170, 0, 0.5),/*border: Border.all()*/),
+          decoration: const BoxDecoration(color: Color.fromRGBO(255, 170, 0, 0.5),/*border: Border.all()*/),
           child: Column(  //main
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
