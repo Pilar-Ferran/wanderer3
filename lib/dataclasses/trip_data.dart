@@ -8,7 +8,8 @@ class TripData {
   String title = "Milano historical tour";
   String place = "Milano, Italy";
   String description = "this is a description of my trip this is a description of my trip this is a description of my trip this is a description of my trip this is a description of my trip this is a description of my trip this is a description of my trip this is a description of my trip this is a description of my trip";
-  late Image previewPic = Image.asset("images/Duomo.jpg"); ///Image.network("un_url");
+  late Image previewPic = Image.asset("images/Duomo.jpg"); //TODO is useless now?
+  late Future<String> previewPicFuture;
 
   //metodo constructor
   TripData(this.authorUser, this.title, this.place, this.description);

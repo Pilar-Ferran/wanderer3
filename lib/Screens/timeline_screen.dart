@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:my_login/dataclasses/trip_data.dart';
 import '../Component/trip_preview.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_storage/firebase_storage.dart' as firebase_storage;
 
 class TimelineScreen extends StatefulWidget {
   const TimelineScreen({Key? key}) : super(key: key);
@@ -15,9 +16,10 @@ class TimelineScreen extends StatefulWidget {
 
 class _TimelineScreenState extends State<TimelineScreen> {
   late Future<List<TripData>> futureTrips;
-  List<TripData> tripsReal = [];  //TODO useless?
+  //List<TripData> tripsReal = [];
 
   FirebaseFirestore firestore = FirebaseFirestore.instance;
+  firebase_storage.FirebaseStorage storage = firebase_storage.FirebaseStorage.instance;
 
   @override
   void initState() {
@@ -35,11 +37,20 @@ class _TimelineScreenState extends State<TimelineScreen> {
     //mete en tripsRealLocal todos los trips de la BD
     for (var doc in querySnapshot.docs) {
       var docData = doc.data() as Map<String, dynamic>;
-      //print("doc.data be like: ");
-      //print(doc.data());
-      tripsRealLocal.add(TripData.fromJson(docData));
+      //print("doc.data be like: " + doc.data().toString());
+      TripData trip = TripData.fromJson(docData);
+
+      //we add the preview image, which is stored in a different Firebase service.
+      trip.previewPicFuture = getTripPreviewImage();
+      tripsRealLocal.add(trip);
+
     }
     return tripsRealLocal;
+  }
+
+  Future<String> getTripPreviewImage() async {
+    final ref = storage.ref().child('macbasmol.png'); //TODO this is a stub
+    return ref.getDownloadURL();
   }
 
   @override

@@ -8,15 +8,9 @@ import '../Screens/trip_detail.dart';
 
 
 class TripPreview extends StatelessWidget{
-  /*final String authorUser = "Ferran";  //var??
-  String title = "Milano skyscraper tour";
-  String place = "Milano, Italy";
-  String description = "this is a description of my trip this is a description of my trip this is a description of my trip this is a description of my trip this is a description of my trip this is a description of my trip this is a description of my trip this is a description of my trip this is a description of my trip";
-  late Image previewPic;*/
   late TripData tripData;// = TripData();
 
   TripPreview(this.tripData, {Key? key}) : super(key: key);
-
 
   @override
   Widget build(BuildContext context) {
@@ -48,7 +42,27 @@ class TripPreview extends StatelessWidget{
                       Text(tripData.place, style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),)])
                     ,
                 ]),
-                Center(child: tripData.previewPic, /*alignment: Alignment.center,*/)  //Container?
+                Center(child:
+                FutureBuilder(
+                    future: tripData.previewPicFuture,
+                    builder: (context, snapshot) {
+                      if (snapshot.connectionState == ConnectionState.done) {
+                        if (snapshot.hasError) {
+                          //TODO
+                          print("error in snapshot: "+snapshot.error.toString());
+                          return const Text("error");
+                        }
+                        else {
+                          return Image.network(snapshot.data as String);
+                        }
+                      }
+                      else { //show loading
+                        return Column( children: const [
+                          Padding(padding: EdgeInsets.fromLTRB(0, 10, 0, 0),),
+                          CircularProgressIndicator()],
+                        );
+                      }
+                    }) /*alignment: Alignment.center,*/ )  //Container?
                 ],
                 crossAxisAlignment: CrossAxisAlignment.center,
                 mainAxisAlignment: MainAxisAlignment.spaceAround,

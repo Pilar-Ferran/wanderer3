@@ -4,7 +4,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:my_login/dataclasses/trip_data.dart';
 import 'package:firebase_storage/firebase_storage.dart' as firebase_storage; //THIS
-import 'package:path_provider/path_provider.dart'; //THIS
 
 
 class TripDetail extends StatefulWidget {
@@ -19,46 +18,30 @@ class TripDetail extends StatefulWidget {
 class _TripDetailState extends State<TripDetail> {
 
   firebase_storage.FirebaseStorage storage = firebase_storage.FirebaseStorage.instance; //THIS
-  late firebase_storage.Reference macbaRef; //THIS
   late Future<String> futureUrl; //THIS
   late String imgUrl; //THIS
 
   @override
   void initState() { //THIS
     super.initState();
-    macbaRef = storage.ref('/macba.png');
-
-    getFileExample2();
+    //getFileExample2();
   }
 
-  Future<void> downloadFileExample() async { //THIS
-    try {Directory appDocDir = await getApplicationDocumentsDirectory();
-    File downloadToFile = File('${appDocDir.path}/download-logo.png');
-
-    //try {
-      await storage.ref('uploads/macba.png')
-          .writeToFile(downloadToFile);} on MissingPluginException {};
-    //} /*on firebase_core.FirebaseException catch (e) {
-      // e.g, e.code == 'canceled'
-    //}
-  }
-
-  /*Future<*/void/*>*/ getFileExample2() async {  //THIS
+  /*void getFileExample2() async {  //THIS
     final ref = storage.ref().child('macbasmol.png');
-    // no need of the file extension, the name will do fine.
     futureUrl = ref.getDownloadURL();
     /*var url = await ref.getDownloadURL();
     print(url);
     imgUrl = url;*/
-  }
+  }*/
 
   @override
-  Widget build(BuildContext context) {
-    final args = ModalRoute.of(context)!.settings.arguments as TripData;  //TODO may need to be in the dad class?
+  Widget build(BuildContext context) {  //TODO mucho codigo repetido de trip_preview.dart
+    final args = ModalRoute.of(context)!.settings.arguments as TripData;  // may need to be in the dad class?
     final tripData = args;
 
     return Scaffold(
-      appBar: AppBar(title: Text(/*widget.title*/args.title),),
+      appBar: AppBar(title: Text(args.title),),
       body: Container(  //TODO: center?
         padding: const EdgeInsets.fromLTRB(10, 10, 10, 10),
         child: Column(  //main
@@ -77,9 +60,9 @@ class _TripDetailState extends State<TripDetail> {
                         Text(tripData.place, style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),)])
                       ,
                     ]),
-                Center(child: /*tripData.previewPic*//*Image.network(imgUrl)*//*Image(image: macbaRef.storage.,)*/ /*alignment: Alignment.center,*/  //Container? //THIS
+                Center(child:  //Container?
                   FutureBuilder( //THIS
-                      future: futureUrl,
+                      future: tripData.previewPicFuture,
                       builder: (context, snapshot) {
                         if (snapshot.connectionState == ConnectionState.done) { //gets checked many times until its actually received I guess
                           if (snapshot.hasError) {
@@ -97,7 +80,8 @@ class _TripDetailState extends State<TripDetail> {
                             CircularProgressIndicator()],
                           );
                         }
-                        })//THIS
+                      },
+                  ) /*alignment: Alignment.center,*/
     )],
               crossAxisAlignment: CrossAxisAlignment.center,
               mainAxisAlignment: MainAxisAlignment.spaceAround,
