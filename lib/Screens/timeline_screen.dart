@@ -1,3 +1,4 @@
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:my_login/dataclasses/trip_data.dart';
@@ -41,16 +42,16 @@ class _TimelineScreenState extends State<TimelineScreen> {
       TripData trip = TripData.fromJson(docData);
 
       //we add the preview image, which is stored in a different Firebase service.
-      trip.previewPicFuture = getTripPreviewImage();
+      if (trip.previewPic == null)
+        trip.previewPic = 'Duomo.jpg';
+      trip.previewPicFuture = getTripPreviewImage(trip.previewPic);
       tripsRealLocal.add(trip);
-
     }
     return tripsRealLocal;
   }
 
-  Future<String> getTripPreviewImage() async {
-    final ref = storage.ref().child('macbasmol.png'); //TODO this is a stub
-    return ref.getDownloadURL();
+  Future<String> getTripPreviewImage(String previewPicPath) async {
+    return storage.ref().child(previewPicPath).getDownloadURL();
   }
 
   @override
