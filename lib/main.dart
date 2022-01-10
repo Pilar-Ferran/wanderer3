@@ -28,6 +28,7 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
           primarySwatch: Colors.cyan,
       ),
+      //TODO: cuando hagamos datos persistentes en el dispositivo, uno será el estado de login. Aquí habria que comprobar si logged in y poner home en HomeScreen
       home:const LoginScreen(),
       initialRoute: '/',
       routes: {

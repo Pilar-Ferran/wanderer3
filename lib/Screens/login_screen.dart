@@ -109,7 +109,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
                               await Navigator.of(context).push(
                                 MaterialPageRoute(
-                                  builder: (context) => const HomeScreen(),
+                                  builder: (context) => const HomeScreen(), //TODO hacer pushNamedAndRemoveUntil para que se vacie el stack y el user no pueda volver hacia la pantalla de login
                                 ),
                               );
 
@@ -140,7 +140,7 @@ class _LoginScreenState extends State<LoginScreen> {
                           }
                           else
                             {
-                              Navigator.pushNamed(context, HomeScreen.routeName);
+                              Navigator.pushNamedAndRemoveUntil(context, HomeScreen.routeName, (_) => false); //esto hace que se vacie el stack y asi el user no puede volver hacia la pantalla de login
                               Fluttertoast.showToast(msg: "Skipped login because developer");
                             }
                         },
