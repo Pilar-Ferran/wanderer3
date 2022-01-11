@@ -1,6 +1,7 @@
 //import 'dart:html';
 
 import 'package:flutter/material.dart';
+import 'package:my_login/Component/picture_loading_indicator.dart';
 import 'package:my_login/dataclasses/trip_data.dart';
 import 'package:my_login/Screens/trip_detail.dart';
 
@@ -57,10 +58,7 @@ class TripPreview extends StatelessWidget{
                         }
                       }
                       else { //show loading
-                        return Column( children: const [
-                          Padding(padding: EdgeInsets.fromLTRB(0, 10, 0, 0),),
-                          CircularProgressIndicator()],
-                        );
+                        return const PictureLoadingIndicator();
                       }
                     }) /*alignment: Alignment.center,*/ )  //Container?
                 ],

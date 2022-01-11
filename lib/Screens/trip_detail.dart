@@ -1,7 +1,10 @@
 import 'dart:io';
 
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:my_login/Component/picture_loading_indicator.dart';
+import 'package:my_login/dataclasses/spot_data.dart';
 import 'package:my_login/dataclasses/trip_data.dart';
 import 'package:firebase_storage/firebase_storage.dart' as firebase_storage; //THIS
 
@@ -17,28 +20,68 @@ class TripDetail extends StatefulWidget {
 
 class _TripDetailState extends State<TripDetail> {
 
+  FirebaseFirestore firestore = FirebaseFirestore.instance;
   firebase_storage.FirebaseStorage storage = firebase_storage.FirebaseStorage.instance; //THIS
   late Future<String> futureUrl; //THIS
   late String imgUrl; //THIS
 
+  late Future<List<SpotData>> futureSpots;
+
   @override
-  void initState() { //THIS
+  void initState() {
     super.initState();
-    //getFileExample2();
+    futureSpots = getSpots();
   }
 
-  /*void getFileExample2() async {  //THIS
-    final ref = storage.ref().child('macbasmol.png');
-    futureUrl = ref.getDownloadURL();
-    /*var url = await ref.getDownloadURL();
-    print(url);
-    imgUrl = url;*/
-  }*/
+  //not tested
+  Future<List<SpotData>> getSpots() async {
+    //TODO es feo q tambien sehaga en build. pero si lo saco de allí, peta. screenshot mobil 10-01-22
+    //final args = ModalRoute.of(context)!.settings.arguments as TripData;
+    //TODO stub. no le gusta q toque los args en initState
+    final args = TripData("stubFerran", "stub vilanova", "vilanova, catalunya", "eyoooooooooooooo\n\n\neyao", "macbasmol.png");
+    args.firestorePath = "trips/popMHuCcedrBmhqZPtEd";
+    args.firestoreId = "popMHuCcedrBmhqZPtEd";
+
+    CollectionReference spotsReference = firestore/*.collection('trips')*/.doc(args.firestorePath).collection('spots');
+    //print("firestorePath = "+args.firestorePath+"\n firestoreId = "+args.firestoreId);
+
+    //DocumentSnapshot<Object?> documentSnapshot = await tripReference.get();
+    QuerySnapshot<Object?> querySnapshot = await spotsReference.get();
+
+    //firestore.collection('trips').doc(args.firestorePath).get().
+
+    List<SpotData> spotsRealLocal = [];
+    //mete en spotsRealLocal los spots de la BD
+    for (var doc in querySnapshot.docs) {
+      var docData = doc.data() as Map<String, dynamic>;
+      //print("doc in querySnapshot.docs. doc.id = "+ doc.id +". doc.data() = "+docData.toString());
+
+      SpotData spot = SpotData.fromJson(docData);
+
+      //print("spot.pictures = "+spot.pictures.toString());
+
+      //we add the image URLs, which are stored in a different Firebase service.
+      for (var pic in spot.pictures) {
+        spot.picturesFutures.add(getImageUrl(pic));
+      }
+      //confirmo q el future s'obté i fica.
+
+      spotsRealLocal.add(spot);
+    }
+
+    return spotsRealLocal;
+  }
+
+  Future<String> getImageUrl(String picPath) async {
+    print("picPath = "+picPath+". downloadURL = "+ storage.ref().child(picPath).getDownloadURL().toString());
+    return storage.ref().child(picPath).getDownloadURL();
+  }
 
   @override
   Widget build(BuildContext context) {  //TODO mucho codigo repetido de trip_preview.dart
     final args = ModalRoute.of(context)!.settings.arguments as TripData;  // may need to be in the dad class?
     final tripData = args;
+    print("in build(): firestorePath = "+args.firestorePath+"\n firestoreId = "+args.firestoreId);
 
     return Scaffold(
       appBar: AppBar(title: Text(args.title),),
@@ -75,10 +118,7 @@ class _TripDetailState extends State<TripDetail> {
                           }
                         }
                         else { //show loading
-                          return Column( children: const [
-                            Padding(padding: EdgeInsets.fromLTRB(0, 10, 0, 0),),
-                            CircularProgressIndicator()],
-                          );
+                          return const PictureLoadingIndicator();
                         }
                       },
                   ) /*alignment: Alignment.center,*/
@@ -88,6 +128,38 @@ class _TripDetailState extends State<TripDetail> {
             ),
             const Padding(padding: EdgeInsets.fromLTRB(0, 20, 0, 0),),
             Text(tripData.description, style: const TextStyle(fontSize: 15),),
+
+            //map
+            FutureBuilder(
+                future: futureSpots,
+                builder: (context, snapshot) {  //TODO:  probably will need spot_preview.dart class
+                  if (snapshot.connectionState == ConnectionState.done) {
+                    if (snapshot.hasError) {
+                      //TODO
+                      return Text("error in snapshot: "+snapshot.error.toString());
+                    }
+                    else {
+                      if (snapshot.data != null) {
+                        return Container(
+                            child: InkWell(
+                              onTap: () {
+                                //Navigator
+                              },
+                              child: Ink(
+                                child: Text((snapshot.data as List<SpotData>)[0].name),
+                              ),
+                            )
+                        );
+                      }
+                      else {
+                        return const Text("oopsie, null");
+                      }
+                    }
+                  }
+                  else { //show loading
+                    return const PictureLoadingIndicator();
+                  }
+                })
           ],
       ),)
     );

@@ -1,6 +1,7 @@
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:my_login/Component/picture_loading_indicator.dart';
 import 'package:my_login/dataclasses/trip_data.dart';
 import '../Component/trip_preview.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -41,10 +42,14 @@ class _TimelineScreenState extends State<TimelineScreen> {
       //print("doc.data be like: " + doc.data().toString());
       TripData trip = TripData.fromJson(docData);
 
+      //we add the firebase path, to find more info about it later
+      trip.firestorePath = doc.reference.path;  //todo one of these is unnecessary
+      trip.firestoreId = doc.reference.id;
+
       //we add the preview image, which is stored in a different Firebase service.
-      if (trip.previewPic == null)
-        trip.previewPic = 'Duomo.jpg';
+      trip.previewPic ??= 'Duomo.jpg';
       trip.previewPicFuture = getTripPreviewImage(trip.previewPic);
+
       tripsRealLocal.add(trip);
     }
     return tripsRealLocal;
@@ -85,10 +90,7 @@ class _TimelineScreenState extends State<TimelineScreen> {
                   }
                 }
                 else { //show loading
-                  return Column( children: const [
-                    Padding(padding: EdgeInsets.fromLTRB(0, 10, 0, 0),),
-                    CircularProgressIndicator()],
-                  );
+                  return const PictureLoadingIndicator();
                 }
               },
             ),

@@ -23,7 +23,7 @@ class _CreateTripScreenState extends State<CreateTripScreen> {
   }
 
   Future<void> createTestTripAndPic() async{
-    String filePathInDevice ="";  //TODO lo obtendremos por algun widget
+    String filePathInDevice ="";  //TODO lo obtendremos por image_picker (ya tenemos la dependencia)
     String filePathInFirebase = "users/ferranib00@gmail.com/trip1/macbasmol.png";
 
                                                   //Directory appDocDir = await getApplicationDocumentsDirectory();
