@@ -9,9 +9,9 @@ import '../Screens/trip_detail.dart';
 
 
 class TripPreview extends StatelessWidget{
-  late TripData tripData;// = TripData();
+  final TripData tripData;// = TripData();
 
-  TripPreview(this.tripData, {Key? key}) : super(key: key);
+  const TripPreview(this.tripData, {Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {

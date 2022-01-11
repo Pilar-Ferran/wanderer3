@@ -4,6 +4,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:my_login/Component/picture_loading_indicator.dart';
+import 'package:my_login/Component/spot_preview.dart';
 import 'package:my_login/dataclasses/spot_data.dart';
 import 'package:my_login/dataclasses/trip_data.dart';
 import 'package:firebase_storage/firebase_storage.dart' as firebase_storage; //THIS
@@ -28,27 +29,20 @@ class _TripDetailState extends State<TripDetail> {
   late Future<List<SpotData>> futureSpots;
 
   @override
-  void initState() {
-    super.initState();
+  void didChangeDependencies() {
+    super.didChangeDependencies();
     futureSpots = getSpots();
   }
 
-  //not tested
   Future<List<SpotData>> getSpots() async {
-    //TODO es feo q tambien sehaga en build. pero si lo saco de allí, peta. screenshot mobil 10-01-22
-    //final args = ModalRoute.of(context)!.settings.arguments as TripData;
-    //TODO stub. no le gusta q toque los args en initState
-    final args = TripData("stubFerran", "stub vilanova", "vilanova, catalunya", "eyoooooooooooooo\n\n\neyao", "macbasmol.png");
-    args.firestorePath = "trips/popMHuCcedrBmhqZPtEd";
-    args.firestoreId = "popMHuCcedrBmhqZPtEd";
+    final args = ModalRoute.of(context)!.settings.arguments as TripData;
 
-    CollectionReference spotsReference = firestore/*.collection('trips')*/.doc(args.firestorePath).collection('spots');
     //print("firestorePath = "+args.firestorePath+"\n firestoreId = "+args.firestoreId);
 
-    //DocumentSnapshot<Object?> documentSnapshot = await tripReference.get();
+    CollectionReference spotsReference = firestore/*.collection('trips')*/.doc(args.firestorePath).collection('spots');
+
     QuerySnapshot<Object?> querySnapshot = await spotsReference.get();
 
-    //firestore.collection('trips').doc(args.firestorePath).get().
 
     List<SpotData> spotsRealLocal = [];
     //mete en spotsRealLocal los spots de la BD
@@ -56,7 +50,7 @@ class _TripDetailState extends State<TripDetail> {
       var docData = doc.data() as Map<String, dynamic>;
       //print("doc in querySnapshot.docs. doc.id = "+ doc.id +". doc.data() = "+docData.toString());
 
-      SpotData spot = SpotData.fromJson(docData);
+      SpotData spot = SpotData.fromJson(docData); //peta
 
       //print("spot.pictures = "+spot.pictures.toString());
 
@@ -73,7 +67,7 @@ class _TripDetailState extends State<TripDetail> {
   }
 
   Future<String> getImageUrl(String picPath) async {
-    print("picPath = "+picPath+". downloadURL = "+ storage.ref().child(picPath).getDownloadURL().toString());
+    //print("picPath = "+picPath+". downloadURL = "+ storage.ref().child(picPath).getDownloadURL().toString());
     return storage.ref().child(picPath).getDownloadURL();
   }
 
@@ -81,7 +75,7 @@ class _TripDetailState extends State<TripDetail> {
   Widget build(BuildContext context) {  //TODO mucho codigo repetido de trip_preview.dart
     final args = ModalRoute.of(context)!.settings.arguments as TripData;  // may need to be in the dad class?
     final tripData = args;
-    print("in build(): firestorePath = "+args.firestorePath+"\n firestoreId = "+args.firestoreId);
+    //print("in build(): firestorePath = "+args.firestorePath+"\n firestoreId = "+args.firestoreId);
 
     return Scaffold(
       appBar: AppBar(title: Text(args.title),),
@@ -132,24 +126,22 @@ class _TripDetailState extends State<TripDetail> {
             //map
             FutureBuilder(
                 future: futureSpots,
-                builder: (context, snapshot) {  //TODO:  probably will need spot_preview.dart class
+                builder: (context, snapshot) {
                   if (snapshot.connectionState == ConnectionState.done) {
                     if (snapshot.hasError) {
                       //TODO
                       return Text("error in snapshot: "+snapshot.error.toString());
                     }
                     else {
+                      List<SpotPreview> spotWidgets = [];
                       if (snapshot.data != null) {
-                        return Container(
-                            child: InkWell(
-                              onTap: () {
-                                //Navigator
-                              },
-                              child: Ink(
-                                child: Text((snapshot.data as List<SpotData>)[0].name),
-                              ),
-                            )
-                        );
+                        for (var spotData in snapshot.data! as List<SpotData>) {
+                          spotWidgets.add(SpotPreview(spotData));
+                        }
+                        /*return ListView(
+                            children: spotWidgets
+                        );*/
+                        return spotWidgets[0];  //todo por ahora solo se muestra el primero
                       }
                       else {
                         return const Text("oopsie, null");
