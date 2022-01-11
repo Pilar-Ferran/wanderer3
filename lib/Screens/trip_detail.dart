@@ -28,14 +28,16 @@ class _TripDetailState extends State<TripDetail> {
 
   late Future<List<SpotData>> futureSpots;
 
+  late final TripData args;
+
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
+    args = ModalRoute.of(context)!.settings.arguments as TripData;
     futureSpots = getSpots();
   }
 
   Future<List<SpotData>> getSpots() async {
-    final args = ModalRoute.of(context)!.settings.arguments as TripData;
 
     //print("firestorePath = "+args.firestorePath+"\n firestoreId = "+args.firestoreId);
 
@@ -73,7 +75,7 @@ class _TripDetailState extends State<TripDetail> {
 
   @override
   Widget build(BuildContext context) {  //TODO mucho codigo repetido de trip_preview.dart
-    final args = ModalRoute.of(context)!.settings.arguments as TripData;  // may need to be in the dad class?
+    //final args = ModalRoute.of(context)!.settings.arguments as TripData;  // may need to be in the dad class?
     final tripData = args;
     //print("in build(): firestorePath = "+args.firestorePath+"\n firestoreId = "+args.firestoreId);
 
@@ -136,7 +138,7 @@ class _TripDetailState extends State<TripDetail> {
                       List<SpotPreview> spotWidgets = [];
                       if (snapshot.data != null) {
                         for (var spotData in snapshot.data! as List<SpotData>) {
-                          spotWidgets.add(SpotPreview(spotData));
+                          spotWidgets.add(SpotPreview(spotData, tripData));
                         }
                         /*return ListView(
                             children: spotWidgets
