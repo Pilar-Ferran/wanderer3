@@ -37,7 +37,13 @@ class _SpotDetailState extends State<SpotDetail> {
 
     htmlData = '<iframe src="https://open.spotify.com/embed/track/7BF627yIxHuxETi7HaEdnT?utm_source=generator" width="100%" height="80" frameBorder="0" allowfullscreen="" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"></iframe>';
     //document = htmlparser.parse(htmlData);
+    //iniSpotify();
   }
+
+  /*Future<void> iniSpotify() /*async*/ async {
+    await SpotifySdk.connectToSpotifyRemote(clientId: "ad0826945176451cab98b38cbd2011ad", redirectUrl: "");
+    var authenticationToken = await SpotifySdk.getAuthenticationToken(clientId: "ad0826945176451cab98b38cbd2011ad", redirectUrl: "", scope: "app-remote-control,user-modify-playback-state,playlist-read-private");
+  }*/
 
   @override
   void didChangeDependencies() {
