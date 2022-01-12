@@ -43,6 +43,7 @@ dependencies:
   firebase_storage: ^10.2.5
   path_provider: ^2.0.8
   image_picker: ^0.8.4+4
+  #spotify_sdk:
 
 dev_dependencies:
   flutter_test:

@@ -7,6 +7,7 @@ class SpotData {
   late String soundtrack; //TODO type?
   late List<dynamic> pictures;
   List<Future<String>> picturesFutures = [];
+  late Future<List<String>> picturesFuture2;
 
   //metodo constructor
   SpotData(this.name, this.description, this.soundtrack, this.pictures);

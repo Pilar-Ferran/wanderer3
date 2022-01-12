@@ -1,6 +1,6 @@
 # wanderer
 
-An app that will allow users to share trips and spots, as well as soundtracks. 
+An app that will allow users to share trips and spots, as well as soundtracks for these spots. 
 Made with Flutter.
 
 ## Getting Started
