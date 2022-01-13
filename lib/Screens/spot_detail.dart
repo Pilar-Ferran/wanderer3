@@ -26,7 +26,7 @@ class _SpotDetailState extends State<SpotDetail> {
   late final SpotData spotData;
   late final TripData tripData;
 
-  late String htmlData;
+  late String soundtrackHtmlData;
   //late dom.Document document;
 
   @override
@@ -34,8 +34,8 @@ class _SpotDetailState extends State<SpotDetail> {
     super.initState();
     //await SpotifySdk.connectToSpotifyRemote(clientId: "ad0826945176451cab98b38cbd2011ad", redirectUrl: "");
     //var authenticationToken = await SpotifySdk.getAuthenticationToken(clientId: "ad0826945176451cab98b38cbd2011ad", redirectUrl: "", scope: "app-remote-control,user-modify-playback-state,playlist-read-private");
-
-    htmlData = '<iframe src="https://open.spotify.com/embed/track/7BF627yIxHuxETi7HaEdnT?utm_source=generator" width="100%" height="80" frameBorder="0" allowfullscreen="" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"></iframe>';
+    //String fullMoon = "56kaK6tAfATdNjavJwthsN";
+    //String bigCityNights ="7BF627yIxHuxETi7HaEdnT";
     //document = htmlparser.parse(htmlData);
     //iniSpotify();
   }
@@ -51,6 +51,7 @@ class _SpotDetailState extends State<SpotDetail> {
     args = ModalRoute.of(context)!.settings.arguments as SpotTripPair;
     spotData = args.spot;
     tripData = args.trip;
+    soundtrackHtmlData = '<iframe src="https://open.spotify.com/embed/track/'+spotData.soundtrack+'?utm_source=generator" width="100%" height="80" frameBorder="0" allowfullscreen="" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"></iframe>';
   }
 
   @override
@@ -79,7 +80,7 @@ class _SpotDetailState extends State<SpotDetail> {
                     const Padding(padding: EdgeInsets.fromLTRB(0, 10, 0, 0),),
                     const Text("Soundtrack", style: TextStyle(fontSize: 15, fontWeight: FontWeight.normal)),
                     //spotify:
-                    Html(data: htmlData,
+                    Html(data: soundtrackHtmlData,
                         customRender: {
                           "iframe": (RenderContext context, Widget child) {
                             final attrs = context.tree.element?.attributes;
