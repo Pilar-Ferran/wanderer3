@@ -45,11 +45,25 @@ class _CreateTripScreenState extends State<CreateTripScreen> {
     CollectionReference trips = firestore.collection('trips');
 
     /*return*/Future<void> tripAddFuture = trips.add({
+      'author_username': "FerranChiese",
       'title': "Visiting El Raval",
-      'preview_pic': previewPicFirebasePath,
       'location': "El Raval, Barcelona, Spain",
       'description':"this is a description about a trip to El Raval this is a description about a trip to El Raval this is a description about a trip to El Raval this is a description about a trip to El Raval this is a description about a trip to El Raval this is a description about a trip to El Raval this is a description about a trip to El Raval this is a description about a trip to El Raval this is a description about a trip to El Raval this is a description about a trip to El Raval this is a description about a trip to El Raval this is a description about a trip to El Raval ",
-      'author_username': "FerranChiese"
+      'preview_pic': previewPicFirebasePath,
+      /*'spots': [  //TODO así no funciona. asi lo crea como objeto json (aka map en Firebase) dentro del documento. hay q crear otro doc
+        {
+          'spot_name': "MACBA Plaza",
+          'spot_description': "aaaaaaaaaaaaaaaaaaa aaaaaaaaaaaaaaaaaaa aaaaaaaaaaaaaaaaaaa aaaaaaaaaaaaaaaaaaa aaaaaaaaaaaaaaaaaaa aaaaaaaaaaaaaaaaaaa ",
+          'spot_soundtrack': "469rBLYJUZHMJLtq2Wch3h",
+          'pictures': [
+            "land1.jpg",
+            "land2.jpg",
+            "land1.jpg",
+            "land2.jpg"
+          ]
+        }
+        ]*/
+
     })
         .then((value) => confirmTripAdded())
         .catchError((onError) => informAddTripError(onError));

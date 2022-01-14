@@ -43,8 +43,8 @@ class _TimelineScreenState extends State<TimelineScreen> {
       TripData trip = TripData.fromJson(docData);
 
       //we add the firebase path, to find more info about it later
-      trip.firestorePath = doc.reference.path;  //todo one of these is unnecessary
-      trip.firestoreId = doc.reference.id;
+      trip.firestorePath = doc.reference.path;
+      //trip.firestoreId = doc.reference.id;
 
       //we add the preview image, which is stored in a different Firebase service.
       trip.previewPic ??= 'Duomo.jpg';

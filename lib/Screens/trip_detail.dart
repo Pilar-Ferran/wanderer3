@@ -117,8 +117,8 @@ class _TripDetailState extends State<TripDetail> {
                           return const PictureLoadingIndicator();
                         }
                       },
-                  ) /*alignment: Alignment.center,*/
-    )],
+                  ), /*alignment: Alignment.center,*/
+                )],
               crossAxisAlignment: CrossAxisAlignment.center,
               mainAxisAlignment: MainAxisAlignment.spaceAround,
             ),
@@ -143,7 +143,7 @@ class _TripDetailState extends State<TripDetail> {
                         /*return ListView(
                             children: spotWidgets
                         );*/
-                        return spotWidgets[0];  //todo por ahora solo se muestra el primero
+                        return Column(children: spotWidgets,);
                       }
                       else {
                         return const Text("oopsie, null");

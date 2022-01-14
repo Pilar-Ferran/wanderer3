@@ -7,7 +7,7 @@ import 'package:my_login/dataclasses/spot_data.dart';
 // tiene valores hardcoded por si a caso
 class TripData {
   late String firestorePath;
-  late String firestoreId;
+  //late String firestoreId;
   String authorUser = "Ferran";  //var??
   String title = "Milano historical tour";
   String place = "Milano, Italy";
