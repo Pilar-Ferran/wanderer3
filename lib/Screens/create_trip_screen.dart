@@ -1,6 +1,5 @@
 import 'dart:io';
 
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -29,7 +28,7 @@ class _CreateTripScreenState extends State<CreateTripScreen> {
                                                   //Directory appDocDir = await getApplicationDocumentsDirectory();
                                                   //filePathInDevice = '${appDocDir.absolute}/file-to-upload.png'; //  r'D:\Ferran\Documents\1.Documents\1.Universitat\Q7 coses a BCN\Apps'
 
-    //TODO do not remove
+    //TODO: do not remove
     //we find the picture in the device
     //File file = File(filePathInDevice);
     //and upload it
@@ -39,8 +38,45 @@ class _CreateTripScreenState extends State<CreateTripScreen> {
     createTestTrip(filePathInFirebase);
   }
 
+  void createTestTrip(String previewPicFirebasePath) {
+    var batch = firestore.batch();
+
+    // Create the group
+    //var newTrip = firestore.collection('groups').document();
+    var newTrip = firestore.collection('trips').doc();
+    batch.set(newTrip, {
+      'author_username': "FerranChiese",
+      'title': "Visit with cool spots",
+      'location': "El Raval, Barcelona, Spain",
+      'description':"this is a description about a trip to El Raval this is a description about a trip to El Raval this is a description about a trip to El Raval this is a description about a trip to El Raval this is a description about a trip to El Raval this is a description about a trip to El Raval this is a description about a trip to El Raval this is a description about a trip to El Raval this is a description about a trip to El Raval this is a description about a trip to El Raval this is a description about a trip to El Raval this is a description about a trip to El Raval ",
+      'preview_pic': previewPicFirebasePath,
+    });
+
+    // Create the new members subcollection
+    var newSpot = newTrip.collection('spots').doc();
+    batch.set(newSpot, {
+      'spot_name': "MACBA Plaza",
+      'spot_description': "aaaaaaaaaaaaaaaaaaa aaaaaaaaaaaaaaaaaaa aaaaaaaaaaaaaaaaaaa aaaaaaaaaaaaaaaaaaa aaaaaaaaaaaaaaaaaaa aaaaaaaaaaaaaaaaaaa ",
+      'spot_soundtrack': "469rBLYJUZHMJLtq2Wch3h",
+      'spot_pictures': [
+        "land1.jpg",
+        "land2.jpg",
+        "land1.jpg",
+        "land2.jpg"
+      ]
+    });
+
+    // Commit the batch edits
+    batch.commit()
+        .then((value) => confirmTripAdded())
+        .catchError((err) {
+          print(err);
+          informAddTripError(err);
+        });
+  }
+
   //TODO does this go in this class? i think so
-  Future<void> createTestTrip(String previewPicFirebasePath) {
+  Future<void> createTestTripOld(String previewPicFirebasePath) {
     //and we create the trip
     CollectionReference trips = firestore.collection('trips');
 
@@ -50,20 +86,6 @@ class _CreateTripScreenState extends State<CreateTripScreen> {
       'location': "El Raval, Barcelona, Spain",
       'description':"this is a description about a trip to El Raval this is a description about a trip to El Raval this is a description about a trip to El Raval this is a description about a trip to El Raval this is a description about a trip to El Raval this is a description about a trip to El Raval this is a description about a trip to El Raval this is a description about a trip to El Raval this is a description about a trip to El Raval this is a description about a trip to El Raval this is a description about a trip to El Raval this is a description about a trip to El Raval ",
       'preview_pic': previewPicFirebasePath,
-      /*'spots': [  //TODO así no funciona. asi lo crea como objeto json (aka map en Firebase) dentro del documento. hay q crear otro doc
-        {
-          'spot_name': "MACBA Plaza",
-          'spot_description': "aaaaaaaaaaaaaaaaaaa aaaaaaaaaaaaaaaaaaa aaaaaaaaaaaaaaaaaaa aaaaaaaaaaaaaaaaaaa aaaaaaaaaaaaaaaaaaa aaaaaaaaaaaaaaaaaaa ",
-          'spot_soundtrack': "469rBLYJUZHMJLtq2Wch3h",
-          'pictures': [
-            "land1.jpg",
-            "land2.jpg",
-            "land1.jpg",
-            "land2.jpg"
-          ]
-        }
-        ]*/
-
     })
         .then((value) => confirmTripAdded())
         .catchError((onError) => informAddTripError(onError));
