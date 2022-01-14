@@ -20,6 +20,8 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> {
   //podemos checkear el codigo original para ver como se editava el estado
 
+  String _barTitle = "Wanderer";
+
   int selectedIndex = 0;
   static const List<Widget> fourNavigationScreens = <Widget>[
     TimelineScreen(),
@@ -31,6 +33,26 @@ class _HomeScreenState extends State<HomeScreen> {
   void _onItemTapped(int index) {
     setState(() {
       selectedIndex = index;
+
+      switch (index) {
+        case 0: {
+            _barTitle = "Wanderer";
+          }
+          break;
+        case 1: {
+          _barTitle = "Explore";
+        }
+        break;
+        case 2: {
+          _barTitle = "Create a trip";
+        }
+        break;
+        case 3: {
+          _barTitle = "My profile"; //TODO: change to logged user profile
+        }
+        break;
+      }
+
     });
   }
 
@@ -41,7 +63,7 @@ class _HomeScreenState extends State<HomeScreen> {
       appBar: AppBar(
         // Here we take the value from the MyHomePage object that was created by
         // the App.build method, and use it to set our appbar title.
-        title: Text(widget.title),
+        title: Text(/*widget.title*/_barTitle),
       ),
       body: Center(
         child: fourNavigationScreens.elementAt(selectedIndex),
@@ -72,7 +94,7 @@ class _HomeScreenState extends State<HomeScreen> {
               )
           )
         ],
-      ),*/// This trailing comma makes auto-formatting nicer for build methods.
+      ),*/
     );
   }
 }

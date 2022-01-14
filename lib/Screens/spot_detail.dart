@@ -76,9 +76,14 @@ class _SpotDetailState extends State<SpotDetail> {
                       Text(tripData.place, style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),)]
                     ),
                     const Padding(padding: EdgeInsets.fromLTRB(0, 10, 0, 0),),
-                    Text(spotData.name, style: const TextStyle(fontSize: 35, fontWeight: FontWeight.bold)),
+                    Center(child: //kinda ugly. maybe the trip texts should be smaller, maybe remove the center. idk.
+                      Text(spotData.name, style: const TextStyle(fontSize: 35, fontWeight: FontWeight.bold)),
+                    ),
                     const Padding(padding: EdgeInsets.fromLTRB(0, 10, 0, 0),),
-                    const Text("Soundtrack", style: TextStyle(fontSize: 15, fontWeight: FontWeight.normal)),
+                    Row(children: const [
+                      Padding(padding: EdgeInsets.fromLTRB(7, 0, 0, 0),),
+                      Text("Soundtrack", style: TextStyle(fontSize: 15, fontWeight: FontWeight.normal)),
+                    ],),
                     //spotify:
                     Html(data: soundtrackHtmlData,
                         customRender: {
