@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:my_login/Component/create_spot_preview.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:firebase_storage/firebase_storage.dart' as firebase_storage;
 
@@ -18,20 +19,96 @@ class CreateTripScreen extends StatefulWidget { //TODO stateless?
 
 class _CreateTripScreenState extends State<CreateTripScreen> {
   FirebaseFirestore firestore = FirebaseFirestore.instance;
-  //final formkey = GlobalKey<FormState>();//useless?
+  final formKey = GlobalKey<FormState>();
+
+  late String tripTitle;
+  late String tripLocation;
+  String tripDescription ="";
 
   @override
   Widget build(BuildContext context) {
-    /*return Form(child:
-    AnnotatedRegion<SystemUiOverlayStyle>(
-        value: SystemUiOverlayStyle.light,
-        child: Stack(
-        children: [],
-        )
-    ),
-    );*/
+    return Form(
+      key: formKey,
+      child:
+        /*AnnotatedRegion<SystemUiOverlayStyle>(
+            value: SystemUiOverlayStyle.light,
+            child: Stack(
+              children: [],
+            )
+        ),*/
 
-    return ElevatedButton(onPressed: () {createTestTripAndPic();},child: const Text("create test trip"),);
+      SingleChildScrollView(
+        padding: const EdgeInsets.symmetric(horizontal: 25, vertical: 120),
+        child: Column(
+            mainAxisAlignment: MainAxisAlignment.start,
+            children: [
+              TextFormField(
+                decoration:
+                const InputDecoration(
+                  hintText: 'Trip title',
+                  labelText: 'Title',
+                ),
+                onChanged: (value) {
+                  tripTitle = value;
+                },
+                validator: (value) {
+                  if (value!.isEmpty) {
+                    return "Please enter a title";
+                  } //else return null?
+                },
+              ),
+              TextFormField(
+                decoration:
+                const InputDecoration(
+                  hintText: 'Trip location',
+                  labelText: 'Location',
+                ),
+                onChanged: (value) {
+                  tripLocation = value;
+                },
+                validator: (value) {
+                  if (value!.isEmpty) {
+                    return "Please enter a location";
+                  } //else return null?
+                },
+
+              ),
+              TextFormField(
+                decoration:
+                const InputDecoration(
+                  hintText: 'Trip description',
+                  labelText: 'Description',
+                ),
+                minLines: 4,
+                maxLines: 20,
+                onChanged: (value) {
+                  tripDescription = value;
+                },
+              ),
+
+              const Text("Spots:"),
+              Column(
+                children: [
+                  CreateSpotPreview(),
+                  CreateSpotPreview(),
+                  CreateSpotPreview(),
+                ],
+              ),
+
+              ElevatedButton(
+                child: const Text("+ Add spot"),
+                onPressed: (
+
+                  ) {  },
+              )
+
+            ],
+        ),
+      ),
+
+    );
+
+    //return ElevatedButton(onPressed: () {createTestTripAndPic();},child: const Text("create test trip"),);
   }
 
   Future<void> createTestTripAndPic() async{
@@ -60,7 +137,7 @@ class _CreateTripScreenState extends State<CreateTripScreen> {
     // Create the trip
     var newTrip = firestore.collection('trips').doc();
     batch.set(newTrip, {
-      'author_username': "FerranChiese",
+      'author_username': "FerranChiese2",
       'title': "Visit with cool spots",
       'location': "El Raval, Barcelona, Spain",
       'description':"this is a description about a trip to El Raval this is a description about a trip to El Raval this is a description about a trip to El Raval this is a description about a trip to El Raval this is a description about a trip to El Raval this is a description about a trip to El Raval this is a description about a trip to El Raval this is a description about a trip to El Raval this is a description about a trip to El Raval this is a description about a trip to El Raval this is a description about a trip to El Raval this is a description about a trip to El Raval ",
