@@ -25,6 +25,12 @@ class _CreateTripScreenState extends State<CreateTripScreen> {
   late String tripLocation;
   String tripDescription ="";
 
+  List<CreateSpotPreview> spotPreviews = [  //TODO stub
+    CreateSpotPreview(),
+    CreateSpotPreview(),
+    CreateSpotPreview(),
+  ];
+
   @override
   Widget build(BuildContext context) {
     return Form(
@@ -38,9 +44,10 @@ class _CreateTripScreenState extends State<CreateTripScreen> {
         ),*/
 
       SingleChildScrollView(
-        padding: const EdgeInsets.symmetric(horizontal: 25, vertical: 120),
+        padding: const EdgeInsets.fromLTRB(25, 0, 25, 0),
+        //padding: const EdgeInsets.symmetric(horizontal: 25, vertical: 120),
         child: Column(
-            mainAxisAlignment: MainAxisAlignment.start,
+            mainAxisAlignment: MainAxisAlignment.start, //doesnt work? its still centered, idk why
             children: [
               TextFormField(
                 decoration:
@@ -88,11 +95,7 @@ class _CreateTripScreenState extends State<CreateTripScreen> {
 
               const Text("Spots:"),
               Column(
-                children: [
-                  CreateSpotPreview(),
-                  CreateSpotPreview(),
-                  CreateSpotPreview(),
-                ],
+                children: spotPreviews,
               ),
 
               ElevatedButton(
@@ -100,8 +103,19 @@ class _CreateTripScreenState extends State<CreateTripScreen> {
                 onPressed: (
 
                   ) {  },
-              )
+              ),
+              ElevatedButton(
+                  onPressed: () async {
+                    if (formKey.currentState!.validate()) {
+                      //TODO could do the isLoading thing that Pilar did
+                      createTrip();
+                    }
+                    else {  //if something's missing
 
+                    }
+
+                  },
+                  child: const Text("Create trip"))
             ],
         ),
       ),
@@ -109,6 +123,30 @@ class _CreateTripScreenState extends State<CreateTripScreen> {
     );
 
     //return ElevatedButton(onPressed: () {createTestTripAndPic();},child: const Text("create test trip"),);
+  }
+
+  Future <void> createTrip() async {  //should catch exceptions?
+    var batch = firestore.batch();
+
+    // Create the trip
+    var newTrip = firestore.collection('trips').doc();
+    batch.set(newTrip, {
+      'author_username': "FerranCreating", //TODO insert logged user username
+      'title': tripTitle,
+      'location': tripLocation,
+      'description':tripDescription,
+      'preview_pic': "tripPreviewPicFirebasePath", //TODO
+    });
+
+    // Create the new "spots" subcollection. //TODO: copy here
+
+    // Commit the batch edits
+    batch.commit()
+        .then((value) => confirmTripAdded())
+        .catchError((err) {
+          print(err);
+          informAddTripError(err);
+    });
   }
 
   Future<void> createTestTripAndPic() async{

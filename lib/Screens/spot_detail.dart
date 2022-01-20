@@ -26,7 +26,7 @@ class _SpotDetailState extends State<SpotDetail> {
   late final SpotData spotData;
   late final TripData tripData;
 
-  late String soundtrackHtmlData;
+  String? soundtrackHtmlData;
   //late dom.Document document;
 
   @override
@@ -51,7 +51,12 @@ class _SpotDetailState extends State<SpotDetail> {
     args = ModalRoute.of(context)!.settings.arguments as SpotTripPair;
     spotData = args.spot;
     tripData = args.trip;
-    soundtrackHtmlData = '<iframe src="https://open.spotify.com/embed/track/'+spotData.soundtrack+'?utm_source=generator" width="100%" height="80" frameBorder="0" allowfullscreen="" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"></iframe>';
+    if (spotData.soundtrack != null) {
+      soundtrackHtmlData =
+          '<iframe src="https://open.spotify.com/embed/track/' +
+              spotData.soundtrack! +
+              '?utm_source=generator" width="100%" height="80" frameBorder="0" allowfullscreen="" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"></iframe>';
+    }
   }
 
   @override
@@ -79,44 +84,11 @@ class _SpotDetailState extends State<SpotDetail> {
                     Center(child: //kinda ugly. maybe the trip texts should be smaller, maybe remove the center. idk.
                       Text(spotData.name, style: const TextStyle(fontSize: 35, fontWeight: FontWeight.bold)),
                     ),
+
                     const Padding(padding: EdgeInsets.fromLTRB(0, 10, 0, 0),),
-                    Row(children: const [
-                      Padding(padding: EdgeInsets.fromLTRB(7, 0, 0, 0),),
-                      Text("Soundtrack", style: TextStyle(fontSize: 15, fontWeight: FontWeight.normal)),
-                    ],),
-                    //spotify:
-                    Html(data: soundtrackHtmlData,
-                        customRender: {
-                          "iframe": (RenderContext context, Widget child) {
-                            final attrs = context.tree.element?.attributes;
-                            if (attrs != null) {
-                              double? width = double.tryParse(attrs['width'] ?? "");
-                              double? height = double.tryParse(attrs['height'] ?? "");
-                              return Container(
-                                width: width/* ?? (height ?? 150) * 2*/,
-                                height: height/* ?? (width ?? 300) / 2*/,
-                                child: WebView(
-                                  initialUrl: attrs['src'] ?? "about:blank",
-                                  javascriptMode: JavascriptMode.unrestricted,
+                    //soundtrack:
+                    buildSoundtrackSection(),
 
-                                  //evitamos q navegue. osea los links q contienen ya no hacen nada. pq no funcionaban
-                                  navigationDelegate: (thing.NavigationRequest request) async {
-                                    return thing.NavigationDecision.prevent;
-                                  },
-                                ),
-                              );
-                            } else {
-                              return Container(height: 0);
-                            }
-                          }
-                        }
-
-                        /*style:{
-                        "html": Style(height: 100),
-                        }*/
-
-                      ),
-                    //Html(data: '<div> <h1>Demo Page</h1> <p>This is a fantastic product that you should buy!</p> <h3>Features</h3> <ul> <li>It actually works</li>                 <li>It exists</li><li>It doesn\'t cost much!</li></ul><!--You can pretty much put any html in here!--></div>'),
                     Text(spotData.description, style: const TextStyle(fontSize: 15),),
                     const Padding(padding: EdgeInsets.fromLTRB(0, 10, 0, 0),),
 
@@ -147,6 +119,53 @@ class _SpotDetailState extends State<SpotDetail> {
           ),
         ),
     );
+  }
+
+  //builds the sountrack section of the screen only if the spot has a sountrack
+  Widget buildSoundtrackSection() {
+    if (soundtrackHtmlData != null) {
+      return Column(children: [
+        Row(children: const [
+          Padding(padding: EdgeInsets.fromLTRB(7, 0, 0, 0),),
+          Text("Soundtrack", style: TextStyle(fontSize: 15, fontWeight: FontWeight.normal)),
+        ],),
+
+        //spotify:
+        Html(data: soundtrackHtmlData,
+            customRender: {
+              "iframe": (RenderContext context, Widget child) {
+                final attrs = context.tree.element?.attributes;
+                if (attrs != null) {
+                  double? width = double.tryParse(attrs['width'] ?? "");
+                  double? height = double.tryParse(attrs['height'] ?? "");
+                  return Container(
+                    width: width/* ?? (height ?? 150) * 2*/,
+                    height: height/* ?? (width ?? 300) / 2*/,
+                    child: WebView(
+                      initialUrl: attrs['src'] ?? "about:blank",
+                      javascriptMode: JavascriptMode.unrestricted,
+
+                      //evitamos q navegue. osea los links q contienen ya no hacen nada. pq no funcionaban
+                      navigationDelegate: (thing.NavigationRequest request) async {
+                        return thing.NavigationDecision.prevent;
+                      },
+                    ),
+                  );
+                } else {
+                  return Container(height: 0);
+                }
+              }
+            }
+          /*style:{
+                        "html": Style(height: 100),
+                        }*/
+        )
+      ],
+      );
+    }
+    else {
+      return const Padding(padding: EdgeInsets.fromLTRB(0, 0, 0, 0));
+    }
   }
 
   Future<List<Image>> awaitSpotPictures(List<Future<String>> picturesFutures) async {

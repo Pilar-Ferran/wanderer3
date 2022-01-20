@@ -7,15 +7,23 @@ import 'package:my_login/dataclasses/spot_data.dart';
 import 'package:my_login/dataclasses/spot_trip_pair.dart';
 import 'package:my_login/dataclasses/trip_data.dart';
 
-class CreateSpotPreview extends StatelessWidget {
+class CreateSpotPreview extends StatefulWidget {
+  const CreateSpotPreview({Key? key}) : super(key: key);
+
+  @override
+  State<StatefulWidget> createState() => _CreateSpotPreviewState();
+}
+
+class _CreateSpotPreviewState extends State<CreateSpotPreview> {
+  final formKey = GlobalKey<FormState>();
+
   late List<Future<String>> list = [];
-  late SpotData spotData = SpotData("spot 1", "this is a description", "soundtrack", list);
-  late TripData tripData = TripData("authorUser", "title", "place", "description", "previewPic");
-  late String spotTitle;
-  String? spotDescription;
+  //late SpotData spotData = SpotData("spot 1", "this is a description", "soundtrack", list);
+  //late TripData tripData = TripData("authorUser", "title", "place", "description", "previewPic");
+  late String spotTitle = "this be a name"; //TODO stub
+  String spotDescription ="";
   String? spotSoundtrack;
 
-  CreateSpotPreview(/*this.spotData, this.tripData,*/ {Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -23,7 +31,7 @@ class CreateSpotPreview extends StatelessWidget {
       padding: const EdgeInsets.fromLTRB(10, 10, 10, 10),
       child: Row(
         children: [
-          const Text("this is a name"/*spotData.name*/),
+          Text(spotTitle),
           ElevatedButton(
               onPressed: () {
                 showDialog(context: context, builder: (context) => Dialog(
@@ -31,6 +39,7 @@ class CreateSpotPreview extends StatelessWidget {
                     children: [
                       const Text("Edit spot"),
                       Form(
+                        key: formKey,
                         child: Column(children: [
                           TextFormField(
                             decoration:
@@ -67,6 +76,18 @@ class CreateSpotPreview extends StatelessWidget {
                               spotSoundtrack = value;
                             },
                           ),
+                          ElevatedButton(
+                              onPressed: () async {
+                                if (formKey.currentState!.validate()) {
+                                  //Navigator.pop(context);
+                                  Navigator.of(context, rootNavigator: true).pop('dialog');
+                                  //TODO rebuild the other screen
+                                }
+                                else {
+
+                                }
+                              },
+                              child: const Text("OK"))
                         ],),
                       ),
 
