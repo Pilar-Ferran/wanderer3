@@ -4,7 +4,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:my_login/Component/create_spot_dialog.dart';
 import 'package:my_login/Component/create_spot_preview.dart';
+import 'package:my_login/dataclasses/create_spot_data.dart';
+import 'package:my_login/dataclasses/spot_data.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:firebase_storage/firebase_storage.dart' as firebase_storage;
 
@@ -24,12 +27,10 @@ class _CreateTripScreenState extends State<CreateTripScreen> {
   late String tripTitle;
   late String tripLocation;
   String tripDescription ="";
+  List<CreateSpotData> spotDatas = [];
+  List<CreateSpotPreview> spotPreviews = [];
 
-  List<CreateSpotPreview> spotPreviews = [  //TODO stub
-    CreateSpotPreview(),
-    CreateSpotPreview(),
-    CreateSpotPreview(),
-  ];
+  //we use spotData but pictures is device paths instead of online stuff //not anymore!!
 
   @override
   Widget build(BuildContext context) {
@@ -95,27 +96,33 @@ class _CreateTripScreenState extends State<CreateTripScreen> {
 
               const Text("Spots:"),
               Column(
-                children: spotPreviews,
+                children: spotPreviews, //TODO: needs to refresh. maybe create the spot data in this class and pass it down. then it will resfresh auto bc setState.
               ),
 
               ElevatedButton(
                 child: const Text("+ Add spot"),
-                onPressed: (
-
-                  ) {  },
+                onPressed: () {
+                  showDialog(context: context, builder: (context)=>CreateSpotDialog(
+                    parentSpotDatas: spotDatas,
+                    parentSpotPreviews: spotPreviews,
+                    refreshParent:() {refresh();},
+                  ));
+                },
               ),
               ElevatedButton(
+                  child: const Text("Create trip"),
                   onPressed: () async {
                     if (formKey.currentState!.validate()) {
                       //TODO could do the isLoading thing that Pilar did
                       createTrip();
+                      //TODO: exit screen, so you cant add the same trip multiple times. also remove it from stack
                     }
                     else {  //if something's missing
 
                     }
 
                   },
-                  child: const Text("Create trip"))
+              )
             ],
         ),
       ),
@@ -123,6 +130,10 @@ class _CreateTripScreenState extends State<CreateTripScreen> {
     );
 
     //return ElevatedButton(onPressed: () {createTestTripAndPic();},child: const Text("create test trip"),);
+  }
+
+  void refresh() {
+    setState(() {});
   }
 
   Future <void> createTrip() async {  //should catch exceptions?
@@ -138,7 +149,30 @@ class _CreateTripScreenState extends State<CreateTripScreen> {
       'preview_pic': "tripPreviewPicFirebasePath", //TODO
     });
 
-    // Create the new "spots" subcollection. //TODO: copy here
+    // Create the new "spots" subcollection. //anava a ferho com a l'altre metode (createTestTrip) pero aqui ho he fet millor.
+
+    //create the spots.
+    for (var spotData in spotDatas) { //for each spot
+
+      //first we upload the spot's pics, and keep their path strings
+      List<String> allPicPathsInFirebase = [];
+      for (int i = 0; i < spotData.pictureFiles.length; ++i) {
+        File picFile = spotData.pictureFiles[i];
+        String picPathInFirebase ="users/ferranib00@gmail.com/"+ tripTitle +"/"+ spotData.name +"/"+ i.toString();  //TODO hope I dont need a file extension lol //TODO insert user's email adress'
+        allPicPathsInFirebase.add(picPathInFirebase);
+        await firebase_storage.FirebaseStorage.instance.ref(picPathInFirebase).putFile(picFile);
+      }
+
+      //then we create the spot, referencing the pics
+      var newSpot = newTrip.collection('spots').doc();  //TODO funciona?
+      batch.set(newSpot, {
+        'spot_name': spotData.name,
+        'spot_description': spotData.description,
+        'spot_soundtrack': spotData.soundtrack,
+        'spot_pictures': allPicPathsInFirebase//[]
+      });
+    }
+
 
     // Commit the batch edits
     batch.commit()

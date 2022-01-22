@@ -51,7 +51,7 @@ class _SpotDetailState extends State<SpotDetail> {
     args = ModalRoute.of(context)!.settings.arguments as SpotTripPair;
     spotData = args.spot;
     tripData = args.trip;
-    if (spotData.soundtrack != null) {
+    if (spotData.soundtrack != null && spotData.soundtrack != "") {
       soundtrackHtmlData =
           '<iframe src="https://open.spotify.com/embed/track/' +
               spotData.soundtrack! +

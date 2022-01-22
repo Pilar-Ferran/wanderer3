@@ -1,29 +1,27 @@
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:my_login/Component/spot_preview.dart';
-import 'package:my_login/Screens/spot_detail.dart';
+import 'package:my_login/Component/create_spot_dialog.dart';
+import 'package:my_login/dataclasses/create_spot_data.dart';
 import 'package:my_login/dataclasses/spot_data.dart';
-import 'package:my_login/dataclasses/spot_trip_pair.dart';
-import 'package:my_login/dataclasses/trip_data.dart';
 
 class CreateSpotPreview extends StatefulWidget {
-  const CreateSpotPreview({Key? key}) : super(key: key);
+  const CreateSpotPreview({Key? key, required this.spotName, required this.parentSpotPreviews, required this.parentSpotDatas, required this.refreshParent}) : super(key: key);
+
+  final String spotName;
+  final List<CreateSpotPreview> parentSpotPreviews;
+  final List<CreateSpotData> parentSpotDatas;
+  final Function() refreshParent;
 
   @override
   State<StatefulWidget> createState() => _CreateSpotPreviewState();
 }
 
 class _CreateSpotPreviewState extends State<CreateSpotPreview> {
-  final formKey = GlobalKey<FormState>();
 
-  late List<Future<String>> list = [];
+  //late List<Future<String>> list = [];
   //late SpotData spotData = SpotData("spot 1", "this is a description", "soundtrack", list);
   //late TripData tripData = TripData("authorUser", "title", "place", "description", "previewPic");
-  late String spotTitle = "this be a name"; //TODO stub
-  String spotDescription ="";
-  String? spotSoundtrack;
-
 
   @override
   Widget build(BuildContext context) {
@@ -31,70 +29,14 @@ class _CreateSpotPreviewState extends State<CreateSpotPreview> {
       padding: const EdgeInsets.fromLTRB(10, 10, 10, 10),
       child: Row(
         children: [
-          Text(spotTitle),
+          Text(widget.spotName),
           ElevatedButton(
               onPressed: () {
-                showDialog(context: context, builder: (context) => Dialog(
-                  child: Column(  //this could be in a different class
-                    children: [
-                      const Text("Edit spot"),
-                      Form(
-                        key: formKey,
-                        child: Column(children: [
-                          TextFormField(
-                            decoration:
-                            const InputDecoration(
-                              hintText: 'Spot title',
-                              labelText: 'Title',
-                            ),
-                            onChanged: (value) {
-                              spotTitle = value;
-                            },
-                            validator: (value) {
-                              if (value!.isEmpty) {
-                                return "Please enter a title";
-                              } //else return null?
-                            },
-                          ),
-                          TextFormField(
-                            decoration:
-                            const InputDecoration(
-                              hintText: 'Spot description',
-                              labelText: 'Description',
-                            ),
-                            onChanged: (value) {
-                              spotDescription = value;
-                            },
-                          ),
-                          TextFormField(
-                            decoration:
-                            const InputDecoration(
-                              hintText: 'Spot soundtrack - Spotify song URL',
-                              labelText: 'Soundtrack',
-                            ),
-                            onChanged: (value) {
-                              spotSoundtrack = value;
-                            },
-                          ),
-                          ElevatedButton(
-                              onPressed: () async {
-                                if (formKey.currentState!.validate()) {
-                                  //Navigator.pop(context);
-                                  Navigator.of(context, rootNavigator: true).pop('dialog');
-                                  //TODO rebuild the other screen
-                                }
-                                else {
-
-                                }
-                              },
-                              child: const Text("OK"))
-                        ],),
-                      ),
-
-                    ],
-                  ),
-                )
-                );
+                showDialog(context: context, builder: (context) => CreateSpotDialog(
+                  parentSpotPreviews: widget.parentSpotPreviews,
+                  parentSpotDatas: widget.parentSpotDatas,
+                  refreshParent: () {  },
+                ));
               },
               child: const Icon(Icons.edit)),
           const ElevatedButton(
