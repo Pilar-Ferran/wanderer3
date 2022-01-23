@@ -6,9 +6,10 @@ import 'package:my_login/dataclasses/create_spot_data.dart';
 import 'package:my_login/dataclasses/spot_data.dart';
 
 class CreateSpotPreview extends StatefulWidget {
-  const CreateSpotPreview({Key? key, required this.spotName, required this.parentSpotPreviews, required this.parentSpotDatas, required this.refreshParent}) : super(key: key);
+  CreateSpotPreview({Key? key, required this.spotName, required this.parentSpotPreviews, required this.parentSpotDatas, required this.refreshParent, required this.spotIndex}) : super(key: key);
 
-  final String spotName;
+  final int spotIndex;
+  late String spotName;
   final List<CreateSpotPreview> parentSpotPreviews;
   final List<CreateSpotData> parentSpotDatas;
   final Function() refreshParent;
@@ -29,18 +30,20 @@ class _CreateSpotPreviewState extends State<CreateSpotPreview> {
       padding: const EdgeInsets.fromLTRB(10, 10, 10, 10),
       child: Row(
         children: [
-          Text(widget.spotName),
+          Text(/*widget.spotName*/widget.parentSpotDatas[widget.spotIndex].name),
           ElevatedButton(
               onPressed: () {
                 showDialog(context: context, builder: (context) => CreateSpotDialog(
                   parentSpotPreviews: widget.parentSpotPreviews,
                   parentSpotDatas: widget.parentSpotDatas,
-                  refreshParent: () {  },
+                  refreshParent: widget.refreshParent, //TODO funciona?
+                  isEdit: true,
+                  spotIndex: widget.spotIndex,
                 ));
               },
               child: const Icon(Icons.edit)),
           const ElevatedButton(
-              onPressed: null,
+              onPressed: null, //TODO
               child: Icon(Icons.delete)),
         ],
       )

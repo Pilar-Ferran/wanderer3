@@ -95,23 +95,25 @@ class _CreateTripScreenState extends State<CreateTripScreen> {
               ),
 
               const Text("Spots:"),
-              Column(
-                children: spotPreviews, //TODO: needs to refresh. maybe create the spot data in this class and pass it down. then it will resfresh auto bc setState.
-              ),
+              spotPreviews.isEmpty?  //if there are no spots, show text
+              const Text("Add at least one spot"):
+              Column(children: spotPreviews,),
 
               ElevatedButton(
                 child: const Text("+ Add spot"),
                 onPressed: () {
                   showDialog(context: context, builder: (context)=>CreateSpotDialog(
-                    parentSpotDatas: spotDatas,
                     parentSpotPreviews: spotPreviews,
+                    parentSpotDatas: spotDatas,
                     refreshParent:() {refresh();},
+                    isEdit: false,
+                    spotIndex: spotPreviews.length,
                   ));
                 },
               ),
               ElevatedButton(
                   child: const Text("Create trip"),
-                  onPressed: () async {
+                  onPressed: spotDatas.isNotEmpty? ()  async {  //if there's at least one spot, button enabled
                     if (formKey.currentState!.validate()) {
                       //TODO could do the isLoading thing that Pilar did
                       createTrip();
@@ -121,7 +123,8 @@ class _CreateTripScreenState extends State<CreateTripScreen> {
 
                     }
 
-                  },
+                  }:
+                  null, //else, button disabled
               )
             ],
         ),
@@ -140,13 +143,25 @@ class _CreateTripScreenState extends State<CreateTripScreen> {
     var batch = firestore.batch();
 
     // Create the trip
+    //first, the preview pic
+    String? previewPicPathInFirebase;
+    if (spotDatas[0].pictureFiles.isNotEmpty) {
+      File picFile = spotDatas[0].pictureFiles[0]; //TODO chosen by user
+      Image previewImage = Image.file(picFile, width:50, height:50, fit: BoxFit.none); //TODO better fit?
+      //picFile = File(previewImage); //TODO: hay q pasar el previewImage a File. quizas será creando un File local?
+      previewPicPathInFirebase = "users/ferranib00@gmail.com/" + tripTitle + "/preview"; //TODO hope I dont need a file extension lol //TODO insert user's email adress
+      await firebase_storage.FirebaseStorage.instance.ref(previewPicPathInFirebase)
+          .putFile(picFile);
+    }
+
+    //then create the trip, referencing the preview pic
     var newTrip = firestore.collection('trips').doc();
     batch.set(newTrip, {
       'author_username': "FerranCreating", //TODO insert logged user username
       'title': tripTitle,
       'location': tripLocation,
       'description':tripDescription,
-      'preview_pic': "tripPreviewPicFirebasePath", //TODO
+      'preview_pic': previewPicPathInFirebase,
     });
 
     // Create the new "spots" subcollection. //anava a ferho com a l'altre metode (createTestTrip) pero aqui ho he fet millor.
@@ -158,18 +173,18 @@ class _CreateTripScreenState extends State<CreateTripScreen> {
       List<String> allPicPathsInFirebase = [];
       for (int i = 0; i < spotData.pictureFiles.length; ++i) {
         File picFile = spotData.pictureFiles[i];
-        String picPathInFirebase ="users/ferranib00@gmail.com/"+ tripTitle +"/"+ spotData.name +"/"+ i.toString();  //TODO hope I dont need a file extension lol //TODO insert user's email adress'
+        String picPathInFirebase ="users/ferranib00@gmail.com/"+ tripTitle +"/"+ spotData.name +"/"+ i.toString();  //TODO hope I dont need a file extension lol //TODO insert user's email adress
         allPicPathsInFirebase.add(picPathInFirebase);
         await firebase_storage.FirebaseStorage.instance.ref(picPathInFirebase).putFile(picFile);
       }
 
       //then we create the spot, referencing the pics
-      var newSpot = newTrip.collection('spots').doc();  //TODO funciona?
+      var newSpot = newTrip.collection('spots').doc();
       batch.set(newSpot, {
         'spot_name': spotData.name,
         'spot_description': spotData.description,
         'spot_soundtrack': spotData.soundtrack,
-        'spot_pictures': allPicPathsInFirebase//[]
+        'spot_pictures': allPicPathsInFirebase
       });
     }
 

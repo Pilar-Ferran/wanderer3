@@ -14,12 +14,14 @@ import 'dart:async';
 import 'dart:io' as dart_io;
 
 class CreateSpotDialog extends StatefulWidget {
-  const CreateSpotDialog({Key? key, required this.parentSpotPreviews, required this.parentSpotDatas, required this.refreshParent}) : super(key: key);
+  const CreateSpotDialog({Key? key, required this.parentSpotPreviews, required this.parentSpotDatas, required this.refreshParent, required this.isEdit, this.spotIndex}) : super(key: key);
 
+  final int? spotIndex;
   final List<CreateSpotPreview> parentSpotPreviews;
   final  List<CreateSpotData> parentSpotDatas;
   //final Widget myParent;
   final Function() refreshParent;
+  final bool isEdit;
 
   @override
   State<StatefulWidget> createState() => _CreateSpotDialogState(/*parentSpotDatas, parentSpotPreviews*/);
@@ -44,11 +46,26 @@ class _CreateSpotDialogState extends State<CreateSpotDialog> {
   //late List<dynamic> spotPictures = []; //ya no
   final ImagePicker imagePicker = ImagePicker();
 
-
+  late final Text dialogTitle;
 
   @override
   void initState() {
     super.initState();
+    if (!widget.isEdit) {
+      dialogTitle = const Text("Create spot");
+    }
+    else {
+      spotName = widget.parentSpotDatas[widget.spotIndex!].name;
+      spotDescription = widget.parentSpotDatas[widget.spotIndex!].description;
+      spotSoundtrack = widget.parentSpotDatas[widget.spotIndex!].soundtrack;
+      imageFiles = widget.parentSpotDatas[widget.spotIndex!].pictureFiles;
+
+      for (var imageFile in imageFiles) {
+        imageImages.add(Image.file(imageFile));
+      }
+
+      dialogTitle = Text("Edit spot " + spotName);
+    }
   }
 
   @override
@@ -58,7 +75,7 @@ class _CreateSpotDialogState extends State<CreateSpotDialog> {
       ListView(children: [
       Column(  //this could be in a different class
         children: [
-          const Text("Create spot"),
+          dialogTitle,
           Form(
             key: formKey,
             child: Column(children: [
@@ -114,28 +131,51 @@ class _CreateSpotDialogState extends State<CreateSpotDialog> {
               Column(
                 children: addPaddingBetweenImages(imageImages),
               ),
+
+              !widget.isEdit? //if is create
               ElevatedButton(
                 child: const Text("Create"),
                   onPressed: () async {
                     if (formKey.currentState!.validate()) {
                       //Navigator.pop(context);
-                      widget.parentSpotDatas.add(CreateSpotData(spotName, spotDescription, spotSoundtrack, imageFiles));  //TODO ahora: pasar los files.
+                      widget.parentSpotDatas.add(CreateSpotData(spotName, spotDescription, spotSoundtrack, imageFiles));
                       widget.parentSpotPreviews.add(CreateSpotPreview(spotName: spotName,
                         parentSpotDatas: widget.parentSpotDatas,
                         parentSpotPreviews: widget.parentSpotPreviews,
                         refreshParent: () { widget.refreshParent(); },
+                        spotIndex: widget.parentSpotPreviews.length, //ojo, length
                       ));
 
                       widget.refreshParent();
 
                       Navigator.of(context, rootNavigator: true).pop('dialog');
-                      //TODO rebuild the other screen?
                     }
                     else {
-
                     }
                   },
-              )
+              ):
+                  //if is edit
+              ElevatedButton(
+                child: const Text("Save"),
+                onPressed: () async {
+                  if (formKey.currentState!.validate()) {
+                    //we update the data and widget
+                    widget.parentSpotDatas[widget.spotIndex!] = CreateSpotData(spotName, spotDescription, spotSoundtrack, imageFiles);
+                    widget.parentSpotPreviews[widget.spotIndex!].spotName = spotName ;/*= CreateSpotPreview(spotName: spotName,  //remaking the entire object instead of just changing the name, bc aparently its immutable. and also bc I'd have to
+                      parentSpotDatas: widget.parentSpotDatas,
+                      parentSpotPreviews: widget.parentSpotPreviews,
+                      refreshParent: () { widget.refreshParent(); },
+                      spotIndex: widget.spotIndex!,
+                    );*/
+
+                    widget.refreshParent();
+
+                    Navigator.of(context, rootNavigator: true).pop('dialog');
+                  }
+                  else {
+                  }
+                },
+              ),
             ],),
           ),
 
