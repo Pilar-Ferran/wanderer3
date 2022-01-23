@@ -6,13 +6,13 @@ import 'package:my_login/dataclasses/create_spot_data.dart';
 import 'package:my_login/dataclasses/spot_data.dart';
 
 class CreateSpotPreview extends StatefulWidget {
-  const CreateSpotPreview({Key? key, required this.spotName, required this.parentSpotPreviews, required this.parentSpotDatas, required this.refreshParent, required this.spotIndex}) : super(key: key);
+  CreateSpotPreview({Key? key, required this.spotName, required this.parentSpotPreviews, required this.parentSpotDatas, required this.refreshParent, required this.spotIndex}) : super(key: key);
 
   final int spotIndex;
   final String spotName;
   final List<CreateSpotPreview> parentSpotPreviews;
   final List<CreateSpotData> parentSpotDatas;
-  final Function() refreshParent;
+  Function() refreshParent;
 
   @override
   State<StatefulWidget> createState() => _CreateSpotPreviewState();

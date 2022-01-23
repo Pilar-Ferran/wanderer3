@@ -137,6 +137,14 @@ class _CreateTripScreenState extends State<CreateTripScreen> {
 
   void refresh() {
     setState(() {});
+
+    reAssignRefreshFunctions();
+  }
+
+  void reAssignRefreshFunctions () {
+    for (CreateSpotPreview preview in spotPreviews) {
+      preview.refreshParent = refresh;
+    }
   }
 
   Future <void> createTrip() async {  //should catch exceptions?
