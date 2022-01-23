@@ -42,11 +42,49 @@ class _CreateSpotPreviewState extends State<CreateSpotPreview> {
                 ));
               },
               child: const Icon(Icons.edit)),
-          const ElevatedButton(
-              onPressed: null, //TODO
-              child: Icon(Icons.delete)),
+          ElevatedButton(
+              onPressed: () {
+                showDeleteConfirmationDialog(context);
+              },
+              child: const Icon(Icons.delete)),
         ],
       )
+    );
+  }
+
+  showDeleteConfirmationDialog(BuildContext context) {
+    // set up the buttons
+    Widget cancelButton = ElevatedButton(
+      child: const Text("Cancel"),
+      onPressed:  () {
+        Navigator.of(context).pop();
+      },
+    );
+    Widget continueButton = ElevatedButton(
+      child: const Text("Delete"),
+      onPressed:  () {
+        widget.parentSpotDatas.removeAt(widget.spotIndex);
+        widget.parentSpotPreviews.removeAt(widget.spotIndex);
+        widget.refreshParent();
+        Navigator.of(context).pop();
+      },
+    );
+
+    // set up the AlertDialog
+    AlertDialog alert = AlertDialog(
+      title: const Text("Delete spot"),
+      content: Text("Delete spot "+/*widget.spotName*/widget.parentSpotDatas[widget.spotIndex].name+"?"),
+      actions: [
+        cancelButton,
+        continueButton,
+      ],
+    );
+    // show the dialog
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return alert;
+      },
     );
   }
 }
