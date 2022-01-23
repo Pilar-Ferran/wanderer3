@@ -36,7 +36,7 @@ class _CreateSpotPreviewState extends State<CreateSpotPreview> {
                 showDialog(context: context, builder: (context) => CreateSpotDialog(
                   parentSpotPreviews: widget.parentSpotPreviews,
                   parentSpotDatas: widget.parentSpotDatas,
-                  refreshParent: widget.refreshParent, //TODO funciona?
+                  refreshParent: () { widget.refreshParent(); }, //potser funciona passantlo talcuan com a widget.refreshParent
                   isEdit: true,
                   spotIndex: widget.spotIndex,
                 ));

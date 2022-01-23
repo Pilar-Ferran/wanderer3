@@ -161,12 +161,13 @@ class _CreateSpotDialogState extends State<CreateSpotDialog> {
                   if (formKey.currentState!.validate()) {
                     //we update the data and widget
                     widget.parentSpotDatas[widget.spotIndex!] = CreateSpotData(spotName, spotDescription, spotSoundtrack, imageFiles);
-                    widget.parentSpotPreviews[widget.spotIndex!].spotName = spotName ;/*= CreateSpotPreview(spotName: spotName,  //remaking the entire object instead of just changing the name, bc aparently its immutable. and also bc I'd have to
+                    //widget.parentSpotPreviews[widget.spotIndex!].spotName = spotName ;  //aixi no es notifica als spotPreviews q facin refresh.
+                    widget.parentSpotPreviews[widget.spotIndex!] = CreateSpotPreview(spotName: spotName,  // per tant, remaking the entire object instead of just changing the name. also flutter likes it bc aparently its immutable.
                       parentSpotDatas: widget.parentSpotDatas,
                       parentSpotPreviews: widget.parentSpotPreviews,
                       refreshParent: () { widget.refreshParent(); },
                       spotIndex: widget.spotIndex!,
-                    );*/
+                    );
 
                     widget.refreshParent();
 
