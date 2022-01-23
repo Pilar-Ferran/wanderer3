@@ -4,6 +4,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:my_login/Component/create_spot_dialog.dart';
+import 'package:my_login/Component/create_spot_preview.dart';
+import 'package:my_login/dataclasses/create_spot_data.dart';
+import 'package:my_login/dataclasses/spot_data.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:firebase_storage/firebase_storage.dart' as firebase_storage;
 
@@ -18,20 +22,200 @@ class CreateTripScreen extends StatefulWidget { //TODO stateless?
 
 class _CreateTripScreenState extends State<CreateTripScreen> {
   FirebaseFirestore firestore = FirebaseFirestore.instance;
-  //final formkey = GlobalKey<FormState>();//useless?
+  final formKey = GlobalKey<FormState>();
+
+  late String tripTitle;
+  late String tripLocation;
+  String tripDescription ="";
+  List<CreateSpotData> spotDatas = [];
+  List<CreateSpotPreview> spotPreviews = [];
+
+  //we use spotData but pictures is device paths instead of online stuff //not anymore!!
 
   @override
   Widget build(BuildContext context) {
-    /*return Form(child:
-    AnnotatedRegion<SystemUiOverlayStyle>(
-        value: SystemUiOverlayStyle.light,
-        child: Stack(
-        children: [],
-        )
-    ),
-    );*/
+    return Form(
+      key: formKey,
+      child:
+        /*AnnotatedRegion<SystemUiOverlayStyle>(
+            value: SystemUiOverlayStyle.light,
+            child: Stack(
+              children: [],
+            )
+        ),*/
 
-    return ElevatedButton(onPressed: () {createTestTripAndPic();},child: const Text("create test trip"),);
+      SingleChildScrollView(
+        padding: const EdgeInsets.fromLTRB(25, 0, 25, 0),
+        //padding: const EdgeInsets.symmetric(horizontal: 25, vertical: 120),
+        child: Column(
+            mainAxisAlignment: MainAxisAlignment.start, //doesnt work? its still centered, idk why
+            children: [
+              TextFormField(
+                decoration:
+                const InputDecoration(
+                  hintText: 'Trip title',
+                  labelText: 'Title',
+                ),
+                onChanged: (value) {
+                  tripTitle = value;
+                },
+                validator: (value) {
+                  if (value!.isEmpty) {
+                    return "Please enter a title";
+                  } //else return null?
+                },
+              ),
+              TextFormField(
+                decoration:
+                const InputDecoration(
+                  hintText: 'Trip location',
+                  labelText: 'Location',
+                ),
+                onChanged: (value) {
+                  tripLocation = value;
+                },
+                validator: (value) {
+                  if (value!.isEmpty) {
+                    return "Please enter a location";
+                  } //else return null?
+                },
+
+              ),
+              TextFormField(
+                decoration:
+                const InputDecoration(
+                  hintText: 'Trip description',
+                  labelText: 'Description',
+                ),
+                minLines: 4,
+                maxLines: 20,
+                onChanged: (value) {
+                  tripDescription = value;
+                },
+              ),
+
+              const Text("Spots:"),
+              spotPreviews.isEmpty?  //if there are no spots, show text
+              const Text("Add at least one spot"):
+              Column(children: spotPreviews,),
+
+              ElevatedButton(
+                child: const Text("+ Add spot"),
+                onPressed: () {
+                  showDialog(context: context, builder: (context)=>CreateSpotDialog(
+                    parentSpotPreviews: spotPreviews,
+                    parentSpotDatas: spotDatas,
+                    refreshParent:() {refresh();},
+                    isEdit: false,
+                    spotIndex: spotPreviews.length,
+                  ));
+                },
+              ),
+              ElevatedButton(
+                  child: const Text("Create trip"),
+                  onPressed: spotDatas.isNotEmpty? ()  async {  //if there's at least one spot, button enabled
+                    if (formKey.currentState!.validate()) {
+                      //TODO could do the isLoading thing that Pilar did
+                      createTrip();
+                      //TODO: exit screen, so you cant add the same trip multiple times. also remove it from stack
+                    }
+                    else {  //if something's missing
+
+                    }
+
+                  }:
+                  null, //else, button disabled
+              )
+            ],
+        ),
+      ),
+
+    );
+
+    //return ElevatedButton(onPressed: () {createTestTripAndPic();},child: const Text("create test trip"),);
+  }
+
+  void refresh() {
+    setState(() {});
+
+    //if (isSaving != null) {
+      reAssignRefreshFunctions(); //TODO should only do when saving an edit
+    //}
+
+    //if (isDeleting != null) {
+      reAssignSpotIndexes(); //TODO should do when deleting
+    //}
+  }
+
+  void reAssignRefreshFunctions () {
+    for (CreateSpotPreview preview in spotPreviews) {
+      preview.refreshParent = refresh;
+    }
+  }
+
+  void reAssignSpotIndexes() {
+    for (int i = 0; i < spotPreviews.length; ++i) {
+      spotPreviews[i].spotIndex = i;
+    }
+  }
+
+  Future <void> createTrip() async {  //should catch exceptions?
+    var batch = firestore.batch();
+
+    // Create the trip
+    //first, the preview pic
+    String? previewPicPathInFirebase;
+    if (spotDatas[0].pictureFiles.isNotEmpty) {
+      File picFile = spotDatas[0].pictureFiles[0]; //TODO chosen by user
+      Image previewImage = Image.file(picFile, width:50, height:50, fit: BoxFit.none); //TODO better fit?
+      //picFile = File(previewImage); //TODO: hay q pasar el previewImage a File. quizas será creando un File local?
+      previewPicPathInFirebase = "users/ferranib00@gmail.com/" + tripTitle + "/preview"; //TODO hope I dont need a file extension lol //TODO insert user's email adress
+      await firebase_storage.FirebaseStorage.instance.ref(previewPicPathInFirebase)
+          .putFile(picFile);
+    }
+
+    //then create the trip, referencing the preview pic
+    var newTrip = firestore.collection('trips').doc();
+    batch.set(newTrip, {
+      'author_username': "FerranCreating", //TODO insert logged user username
+      'title': tripTitle,
+      'location': tripLocation,
+      'description':tripDescription,
+      'preview_pic': previewPicPathInFirebase,
+    });
+
+    // Create the new "spots" subcollection. //anava a ferho com a l'altre metode (createTestTrip) pero aqui ho he fet millor.
+
+    //create the spots.
+    for (var spotData in spotDatas) { //for each spot
+
+      //first we upload the spot's pics, and keep their path strings
+      List<String> allPicPathsInFirebase = [];
+      for (int i = 0; i < spotData.pictureFiles.length; ++i) {
+        File picFile = spotData.pictureFiles[i];
+        String picPathInFirebase ="users/ferranib00@gmail.com/"+ tripTitle +"/"+ spotData.name +"/"+ i.toString();  //TODO hope I dont need a file extension lol //TODO insert user's email adress
+        allPicPathsInFirebase.add(picPathInFirebase);
+        await firebase_storage.FirebaseStorage.instance.ref(picPathInFirebase).putFile(picFile);
+      }
+
+      //then we create the spot, referencing the pics
+      var newSpot = newTrip.collection('spots').doc();
+      batch.set(newSpot, {
+        'spot_name': spotData.name,
+        'spot_description': spotData.description,
+        'spot_soundtrack': spotData.soundtrack,
+        'spot_pictures': allPicPathsInFirebase
+      });
+    }
+
+
+    // Commit the batch edits
+    batch.commit()
+        .then((value) => confirmTripAdded())
+        .catchError((err) {
+          print(err);
+          informAddTripError(err);
+    });
   }
 
   Future<void> createTestTripAndPic() async{
@@ -60,7 +244,7 @@ class _CreateTripScreenState extends State<CreateTripScreen> {
     // Create the trip
     var newTrip = firestore.collection('trips').doc();
     batch.set(newTrip, {
-      'author_username': "FerranChiese",
+      'author_username': "FerranChiese2",
       'title': "Visit with cool spots",
       'location': "El Raval, Barcelona, Spain",
       'description':"this is a description about a trip to El Raval this is a description about a trip to El Raval this is a description about a trip to El Raval this is a description about a trip to El Raval this is a description about a trip to El Raval this is a description about a trip to El Raval this is a description about a trip to El Raval this is a description about a trip to El Raval this is a description about a trip to El Raval this is a description about a trip to El Raval this is a description about a trip to El Raval this is a description about a trip to El Raval ",
