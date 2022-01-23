@@ -8,7 +8,7 @@ import 'package:my_login/dataclasses/spot_data.dart';
 class CreateSpotPreview extends StatefulWidget {
   CreateSpotPreview({Key? key, required this.spotName, required this.parentSpotPreviews, required this.parentSpotDatas, required this.refreshParent, required this.spotIndex}) : super(key: key);
 
-  final int spotIndex;
+  int spotIndex;
   final String spotName;
   final List<CreateSpotPreview> parentSpotPreviews;
   final List<CreateSpotData> parentSpotDatas;

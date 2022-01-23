@@ -138,12 +138,24 @@ class _CreateTripScreenState extends State<CreateTripScreen> {
   void refresh() {
     setState(() {});
 
-    reAssignRefreshFunctions();
+    //if (isSaving != null) {
+      reAssignRefreshFunctions(); //TODO should only do when saving an edit
+    //}
+
+    //if (isDeleting != null) {
+      reAssignSpotIndexes(); //TODO should do when deleting
+    //}
   }
 
   void reAssignRefreshFunctions () {
     for (CreateSpotPreview preview in spotPreviews) {
       preview.refreshParent = refresh;
+    }
+  }
+
+  void reAssignSpotIndexes() {
+    for (int i = 0; i < spotPreviews.length; ++i) {
+      spotPreviews[i].spotIndex = i;
     }
   }
 
