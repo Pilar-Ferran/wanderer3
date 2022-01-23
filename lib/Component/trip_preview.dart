@@ -27,7 +27,7 @@ class TripPreview extends StatelessWidget{
         Ink(  //like Container but the ripple effect shows
           //width: 50,
           //height: 50,
-          decoration: const BoxDecoration(color: Color.fromRGBO(255, 170, 0, 0.5),/*border: Border.all()*/),
+          decoration: BoxDecoration(color: Theme.of(context).cardColor,/*border: Border.all()*/),
           child: Column(  //main
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [

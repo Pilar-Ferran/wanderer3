@@ -13,6 +13,7 @@ import 'create_spot_preview.dart';
 import 'dart:async';
 import 'dart:io' as dart_io;
 
+//is used to create and to edit a spot. indicated by the boolean isEdit
 class CreateSpotDialog extends StatefulWidget {
   const CreateSpotDialog({Key? key, required this.parentSpotPreviews, required this.parentSpotDatas, required this.refreshParent, required this.isEdit, this.spotIndex}) : super(key: key);
 
@@ -46,13 +47,13 @@ class _CreateSpotDialogState extends State<CreateSpotDialog> {
   //late List<dynamic> spotPictures = []; //ya no
   final ImagePicker imagePicker = ImagePicker();
 
-  late final Text dialogTitle;
+  late final String dialogTitle;
 
   @override
   void initState() {
     super.initState();
     if (!widget.isEdit) {
-      dialogTitle = const Text("Create spot");
+      dialogTitle = "Create spot";
     }
     else {
       spotName = widget.parentSpotDatas[widget.spotIndex!].name;
@@ -64,126 +65,137 @@ class _CreateSpotDialogState extends State<CreateSpotDialog> {
         imageImages.add(Image.file(imageFile));
       }
 
-      dialogTitle = Text("Edit spot " + spotName);
+      dialogTitle = "Edit spot " + spotName;
     }
   }
 
   @override
   Widget build(BuildContext context) {
     return Dialog(
-      child:
-      ListView(children: [
-      Column(  //this could be in a different class
-        children: [
-          dialogTitle,
-          Form(
-            key: formKey,
-            child: Column(children: [
-              TextFormField(
-                initialValue: spotName,
-                decoration:
-                const InputDecoration(
-                  hintText: 'Spot name',
-                  labelText: 'Name',
-                ),
-                onChanged: (value) {
-                  spotName = value;
-                },
-                validator: (value) {
-                  if (value!.isEmpty) {
-                    return "Please enter a title";
-                  } //else return null?
-                },
-              ),
-              TextFormField(
-                initialValue: spotDescription,
-                decoration:
-                const InputDecoration(
-                  hintText: 'Spot description',
-                  labelText: 'Description',
-                ),
-                onChanged: (value) {
-                  spotDescription = value;
-                },
-              ),
-              TextFormField(
-                initialValue: spotSoundtrack,
-                decoration:
-                const InputDecoration(
-                  hintText: 'Spot soundtrack - Spotify song URL',
-                  labelText: 'Soundtrack',
-                ),
-                onChanged: (value) {
-                  spotSoundtrack = value;
-                },
-              ),
-              ElevatedButton(
-                  child: const Text("Add picture"),
-                  onPressed: () {
-                    pickImage();
+      child: ListView(children: [
+        Container(
+          padding: const EdgeInsets.fromLTRB(10, 0, 10, 0),
+          child: Column(  //this could be in a different class
+            children: [
+              const Padding(padding: EdgeInsets.fromLTRB(0, 10, 0, 0),),
+              Text(dialogTitle, style: const TextStyle(fontSize: 18)),
+              Form(
+                key: formKey,
+                child: Column(children: [
+                  TextFormField(
+                    initialValue: spotName,
+                    decoration:
+                    const InputDecoration(
+                      hintText: 'Spot name',
+                      labelText: 'Name',
+                    ),
+                    onChanged: (value) {
+                      spotName = value;
+                    },
+                    validator: (value) {
+                      if (value!.isEmpty) {
+                        return "Please enter a title";
+                      } //else return null?
+                    },
+                  ),
+                  TextFormField(
+                    initialValue: spotDescription,
+                    decoration:
+                    const InputDecoration(
+                      hintText: 'Spot description',
+                      labelText: 'Description',
+                    ),
+                    minLines: 4,
+                    maxLines: 20,
+                    onChanged: (value) {
+                      spotDescription = value;
+                    },
+                  ),
+                  Row(
+                      children: [
+                        Expanded( //limits the InputDecoration's width, so it doesnt explode
+                            child: TextFormField(
+                              initialValue: spotSoundtrack,
+                              decoration:
+                              const InputDecoration(
+                                hintText: 'Spotify song URL',
+                                labelText: 'Spot Soundtrack',
+                              ),
+                              onChanged: (value) {
+                                spotSoundtrack = value;
+                              },
+                            ),
+                        ),
+                        IconButton(
+                          icon: const Icon(Icons.info),
+                          onPressed: () {
+                            showSoundtrackInfoDialog();
+                          },
+                        ),
+                      ],
+                  ),
+                  const Padding(padding: EdgeInsets.fromLTRB(0, 10, 0, 0),),
+                  Container(
+                    alignment: Alignment.centerLeft,
+                    child: const Text("Pictures: "),
+                  ),
+                  const Padding(padding: EdgeInsets.fromLTRB(0, 10, 0, 0),),
+                  Column(
+                    children: addPaddingBetweenImages(imageImages),
+                  ),
 
-                    //we find the picture in the device
-                    //File file = File(tripPreviewPicFilePathInDevice);
-                    //and upload it
-                    //await firebase_storage.FirebaseStorage.instance.ref(tripPreviewPicFilePathInFirebase).putFile(file);
-                  },
+                  Container(  //add pic button
+                    alignment: Alignment.centerLeft,
+                    child: ElevatedButton.icon(
+                      label: const Text("Add picture"),
+                      icon: const Icon(Icons.add),
+                      onPressed: () {
+                        pickImage();
+                      },
+                    ),
+                  ),
+
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.end,
+                    children: [
+                      ElevatedButton(
+                        child: const Text("Cancel"),
+                        onPressed: () async {
+                          widget.refreshParent(); //unnecesary?
+                          Navigator.of(context, rootNavigator: true).pop('dialog');
+                        },
+                      ),
+                      const Padding(padding: EdgeInsets.fromLTRB(10, 0, 0, 0),),
+
+                      ElevatedButton( //create/save button
+                        child: !widget.isEdit? const Text("Create"):const Text("Save"),
+                        style: ElevatedButton.styleFrom(primary: Colors.green),
+                        onPressed: () async {
+                          if (formKey.currentState!.validate()) {
+
+                            if (!widget.isEdit) { //if is create
+                              createSpotButtonFunc();
+                            }
+                            else { //if is edit
+                              editSpotButtonFunc();
+                            }
+
+                            //common code
+                            widget.refreshParent();
+                            Navigator.of(context, rootNavigator: true).pop('dialog');
+                          }
+                          else {
+                          }
+                        },
+                      ),
+                    ],
+                  ),
+                ],),
               ),
-              Column(
-                children: addPaddingBetweenImages(imageImages),
-              ),
-
-              !widget.isEdit? //if is create
-              ElevatedButton(
-                child: const Text("Create"),
-                  onPressed: () async {
-                    if (formKey.currentState!.validate()) {
-                      //Navigator.pop(context);
-                      widget.parentSpotDatas.add(CreateSpotData(spotName, spotDescription, spotSoundtrack, imageFiles));
-                      widget.parentSpotPreviews.add(CreateSpotPreview(spotName: spotName,
-                        parentSpotDatas: widget.parentSpotDatas,
-                        parentSpotPreviews: widget.parentSpotPreviews,
-                        refreshParent: () { widget.refreshParent(); },
-                        spotIndex: widget.parentSpotPreviews.length, //ojo, length
-                      ));
-
-                      widget.refreshParent();
-
-                      Navigator.of(context, rootNavigator: true).pop('dialog');
-                    }
-                    else {
-                    }
-                  },
-              ):
-                  //if is edit
-              ElevatedButton(
-                child: const Text("Save"),
-                onPressed: () async {
-                  if (formKey.currentState!.validate()) {
-                    //we update the data and widget
-                    widget.parentSpotDatas[widget.spotIndex!] = CreateSpotData(spotName, spotDescription, spotSoundtrack, imageFiles);
-                    //widget.parentSpotPreviews[widget.spotIndex!].spotName = spotName ;  //aixi no es notifica als spotPreviews q facin refresh.
-                    widget.parentSpotPreviews[widget.spotIndex!] = CreateSpotPreview(spotName: spotName,  // per tant, remaking the entire object instead of just changing the name. also flutter likes it bc aparently its immutable.
-                      parentSpotDatas: widget.parentSpotDatas,
-                      parentSpotPreviews: widget.parentSpotPreviews,
-                      refreshParent: () { widget.refreshParent(); },
-                      spotIndex: widget.spotIndex!,
-                    );
-
-                    widget.refreshParent();
-
-                    Navigator.of(context, rootNavigator: true).pop('dialog');
-                  }
-                  else {
-                  }
-                },
-              ),
-            ],),
+            ],
           ),
-
-        ],
-      ),
-    ],
-      )
+        )
+      ],)
     );
   }
 
@@ -220,6 +232,55 @@ class _CreateSpotDialogState extends State<CreateSpotDialog> {
       widgets.add(const Padding(padding: EdgeInsets.fromLTRB(0, 10, 0, 0),));
     }
     return widgets;
+  }
+
+  void createSpotButtonFunc() {
+    widget.parentSpotDatas.add(CreateSpotData(spotName, spotDescription, spotSoundtrack, imageFiles));
+    widget.parentSpotPreviews.add(CreateSpotPreview(spotName: spotName,
+      parentSpotDatas: widget.parentSpotDatas,
+      parentSpotPreviews: widget.parentSpotPreviews,
+      refreshParent: () { widget.refreshParent(); },
+      spotIndex: widget.parentSpotPreviews.length, //ojo, length
+    ));
+  }
+
+  void editSpotButtonFunc() {
+      //we update the data and widget
+      widget.parentSpotDatas[widget.spotIndex!] = CreateSpotData(spotName, spotDescription, spotSoundtrack, imageFiles);
+      //widget.parentSpotPreviews[widget.spotIndex!].spotName = spotName ;  //aixi no es notifica als spotPreviews q facin refresh.
+      widget.parentSpotPreviews[widget.spotIndex!] = CreateSpotPreview(spotName: spotName,  // per tant, remaking the entire object instead of just changing the name. also flutter likes it bc aparently its immutable.
+        parentSpotDatas: widget.parentSpotDatas,
+        parentSpotPreviews: widget.parentSpotPreviews,
+        refreshParent: () { widget.refreshParent(); },
+        spotIndex: widget.spotIndex!,
+      );
+  }
+
+  void showSoundtrackInfoDialog() {
+    // set up the button
+    Widget okButton = ElevatedButton(
+      child: const Text("OK"),
+      onPressed: () {
+        Navigator.of(context, rootNavigator: true).pop('dialog');
+      },
+    );
+
+    // set up the AlertDialog
+    AlertDialog alert = AlertDialog(
+      title: const Text("How to add a Spot Soundtrack"),
+      content: const Text('To add a Spotify song as the soundtrack for this spot, open Spotify, tap "Share" on the song you want, and choose the "Copy link" option.\n'
+          'Then paste the link here.'),
+      actions: [
+        okButton,
+      ],
+    );
+    // show the dialog
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return alert;
+      },
+    );
   }
 
 }

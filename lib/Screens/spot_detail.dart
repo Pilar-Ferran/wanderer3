@@ -132,7 +132,7 @@ class _SpotDetailState extends State<SpotDetail> {
 
         //spotify:
         Html(data: soundtrackHtmlData,
-            customRender: {
+              customRender: {
               "iframe": (RenderContext context, Widget child) {
                 final attrs = context.tree.element?.attributes;
                 if (attrs != null) {
@@ -141,7 +141,10 @@ class _SpotDetailState extends State<SpotDetail> {
                   return Container(
                     width: width/* ?? (height ?? 150) * 2*/,
                     height: height/* ?? (width ?? 300) / 2*/,
-                    child: WebView(
+                    /*decoration: BoxDecoration(  //doesnt work
+                      borderRadius: BorderRadius.circular(20),
+                    ),*/
+                      child: WebView(
                       initialUrl: attrs['src'] ?? "about:blank",
                       javascriptMode: JavascriptMode.unrestricted,
 
@@ -159,7 +162,7 @@ class _SpotDetailState extends State<SpotDetail> {
           /*style:{
                         "html": Style(height: 100),
                         }*/
-        )
+        ),
       ],
       );
     }

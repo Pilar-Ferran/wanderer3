@@ -26,27 +26,43 @@ class _CreateSpotPreviewState extends State<CreateSpotPreview> {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.fromLTRB(10, 10, 10, 10),
+    return Card(
+      //margin: const EdgeInsets.fromLTRB(10, 10, 10, 10),
       child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Text(/*widget.spotName*/widget.parentSpotDatas[widget.spotIndex].name),
-          ElevatedButton(
-              onPressed: () {
-                showDialog(context: context, builder: (context) => CreateSpotDialog(
-                  parentSpotPreviews: widget.parentSpotPreviews,
-                  parentSpotDatas: widget.parentSpotDatas,
-                  refreshParent: () { widget.refreshParent(); }, //potser funciona passantlo talcuan com a widget.refreshParent
-                  isEdit: true,
-                  spotIndex: widget.spotIndex,
-                ));
-              },
-              child: const Icon(Icons.edit)),
-          ElevatedButton(
-              onPressed: () {
-                showDeleteConfirmationDialog(context);
-              },
-              child: const Icon(Icons.delete)),
+          Row(  //title
+            children: [
+              const Padding(padding: EdgeInsets.fromLTRB(5, 0, 0, 0),),
+              Text(/*widget.spotName*/widget.parentSpotDatas[widget.spotIndex].name),
+            ],
+          ),
+
+          Row(  //buttons
+            children: [
+              ElevatedButton(
+                  onPressed: () {
+                    showDialog(context: context, builder: (context) => CreateSpotDialog(
+                      parentSpotPreviews: widget.parentSpotPreviews,
+                      parentSpotDatas: widget.parentSpotDatas,
+                      refreshParent: () { widget.refreshParent(); }, //potser funciona passantlo talcuan com a widget.refreshParent
+                      isEdit: true,
+                      spotIndex: widget.spotIndex,
+                    ));
+                  },
+                  child: const Icon(Icons.edit)
+              ),
+              const Padding(padding: EdgeInsets.fromLTRB(0, 0, 5, 0),),
+              ElevatedButton(
+                  onPressed: () {
+                    showDeleteConfirmationDialog(context);
+                  },
+                  child: const Icon(Icons.delete)
+              ),
+              const Padding(padding: EdgeInsets.fromLTRB(0, 0, 5, 0),),
+            ],
+          )
+
         ],
       )
     );
