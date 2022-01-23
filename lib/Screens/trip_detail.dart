@@ -83,7 +83,7 @@ class _TripDetailState extends State<TripDetail> {
       appBar: AppBar(title: Text(args.title),),
       body: Container(  //TODO: center?
         padding: const EdgeInsets.fromLTRB(10, 10, 10, 10),
-        child: Column(  //main
+        child: Column(  //main  //TODO may need to be ListView in the future, bc Column isnt scrollable
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(tripData.authorUser, textAlign: TextAlign.left, style: const TextStyle(fontSize: 18),),

@@ -28,6 +28,7 @@ class MyApp extends StatelessWidget {
       title: 'Wanderer',
       theme: ThemeData(
           primarySwatch: Colors.cyan,
+        cardColor: Colors.deepOrangeAccent, /*Color.fromRGBO(255, 170, 0, 0.5)*/ //the light orange
       ),
       //TODO: cuando hagamos datos persistentes en el dispositivo, uno será el estado de login. Aquí habria que comprobar si logged in y poner home en HomeScreen
       home:const LoginScreen(),

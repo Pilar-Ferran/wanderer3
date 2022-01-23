@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_html/style.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:my_login/Component/create_spot_dialog.dart';
@@ -10,6 +11,7 @@ import 'package:my_login/dataclasses/create_spot_data.dart';
 import 'package:my_login/dataclasses/spot_data.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:firebase_storage/firebase_storage.dart' as firebase_storage;
+import 'package:image/image.dart' as img;
 
 class CreateTripScreen extends StatefulWidget { //TODO stateless?
   const CreateTripScreen({Key? key}) : super(key: key);
@@ -44,88 +46,109 @@ class _CreateTripScreenState extends State<CreateTripScreen> {
             )
         ),*/
 
-      SingleChildScrollView(
-        padding: const EdgeInsets.fromLTRB(25, 0, 25, 0),
+      //SingleChildScrollView(
+        //padding: const EdgeInsets.fromLTRB(25, 0, 25, 0),
         //padding: const EdgeInsets.symmetric(horizontal: 25, vertical: 120),
-        child: Column(
-            mainAxisAlignment: MainAxisAlignment.start, //doesnt work? its still centered, idk why
-            children: [
-              TextFormField(
-                decoration:
-                const InputDecoration(
-                  hintText: 'Trip title',
-                  labelText: 'Title',
-                ),
-                onChanged: (value) {
-                  tripTitle = value;
-                },
-                validator: (value) {
-                  if (value!.isEmpty) {
-                    return "Please enter a title";
-                  } //else return null?
-                },
+      Container(
+        padding: const EdgeInsets.fromLTRB(25, 0, 25, 0),
+        child: ListView(
+            //mainAxisAlignment: MainAxisAlignment.start, //doesnt work? its still centered, idk why
+          children: [
+            TextFormField(
+              decoration:
+              const InputDecoration(
+                hintText: 'Trip title',
+                labelText: 'Title',
               ),
-              TextFormField(
-                decoration:
-                const InputDecoration(
-                  hintText: 'Trip location',
-                  labelText: 'Location',
-                ),
-                onChanged: (value) {
-                  tripLocation = value;
+              onChanged: (value) {
+                tripTitle = value;
                 },
-                validator: (value) {
-                  if (value!.isEmpty) {
-                    return "Please enter a location";
-                  } //else return null?
-                },
-
+              validator: (value) {
+                if (value!.isEmpty) {
+                  return "Please enter a title";
+                } //else return null?
+              },
+            ),
+            TextFormField(
+              decoration:
+              const InputDecoration(
+                hintText: 'Trip location',
+                labelText: 'Location',
               ),
-              TextFormField(
-                decoration:
-                const InputDecoration(
-                  hintText: 'Trip description',
-                  labelText: 'Description',
-                ),
-                minLines: 4,
-                maxLines: 20,
-                onChanged: (value) {
-                  tripDescription = value;
-                },
+              onChanged: (value) {
+                tripLocation = value;
+              },
+              validator: (value) {
+                if (value!.isEmpty) {
+                  return "Please enter a location";
+                } //else return null?
+              },
+            ),
+
+            TextFormField(
+              decoration:
+              const InputDecoration(
+                hintText: 'Trip description',
+                labelText: 'Description',
               ),
+              minLines: 4,
+              maxLines: 20,
+              onChanged: (value) {
+                tripDescription = value;
+              },
+            ),
 
-              const Text("Spots:"),
-              spotPreviews.isEmpty?  //if there are no spots, show text
-              const Text("Add at least one spot"):
-              Column(children: spotPreviews,),
+            const Padding(padding: EdgeInsets.fromLTRB(0, 30, 0, 0),),
 
+            const Text("Spots:"),
+            spotPreviews.isEmpty?  //if there are no spots, show text
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+                children: const [
+                  Padding(padding: EdgeInsets.fromLTRB(0, 10, 0, 0),),
+                  Text("Add at least one spot."),
+                  Padding(padding: EdgeInsets.fromLTRB(0, 10, 0, 0),),
+                ])
+            :
+            Column(children: spotPreviews,),
+            Container(
+              alignment: Alignment.centerLeft,
+              child:
+                  ElevatedButton.icon(
+                    label: const Text("Add spot"),
+                    icon: const Icon(Icons.add),
+                    onPressed: () {
+                      showDialog(context: context, builder: (context)=>CreateSpotDialog(
+                        parentSpotPreviews: spotPreviews,
+                        parentSpotDatas: spotDatas,
+                        refreshParent:() {refresh();},
+                        isEdit: false,
+                        spotIndex: spotPreviews.length,
+                      ));
+                      },
+                  ),
+            ),
+
+            Container(
+              alignment: Alignment.centerRight,
+              child:
               ElevatedButton(
-                child: const Text("+ Add spot"),
-                onPressed: () {
-                  showDialog(context: context, builder: (context)=>CreateSpotDialog(
-                    parentSpotPreviews: spotPreviews,
-                    parentSpotDatas: spotDatas,
-                    refreshParent:() {refresh();},
-                    isEdit: false,
-                    spotIndex: spotPreviews.length,
-                  ));
-                },
+                child: const Text("Create trip", style: TextStyle(fontWeight: FontWeight.bold),),
+                onPressed: spotDatas.isNotEmpty? ()  async {  //if there's at least one spot, button enabled
+                  if (formKey.currentState!.validate()) {
+                    //TODO could do the isLoading thing that Pilar did
+                    createTrip();
+                    //TODO: exit screen, so you cant add the same trip multiple times. also remove it from stack
+                  }
+                  else {  //if something's missing
+
+                  }
+
+                }:
+                null, //else, button disabled
+                style: ElevatedButton.styleFrom(primary: Colors.green),
               ),
-              ElevatedButton(
-                  child: const Text("Create trip"),
-                  onPressed: spotDatas.isNotEmpty? ()  async {  //if there's at least one spot, button enabled
-                    if (formKey.currentState!.validate()) {
-                      //TODO could do the isLoading thing that Pilar did
-                      createTrip();
-                      //TODO: exit screen, so you cant add the same trip multiple times. also remove it from stack
-                    }
-                    else {  //if something's missing
-
-                    }
-
-                  }:
-                  null, //else, button disabled
-              )
+            ),
             ],
         ),
       ),
@@ -159,6 +182,13 @@ class _CreateTripScreenState extends State<CreateTripScreen> {
     }
   }
 
+  /*File resizePreviewImage(File original) { //doing
+    img.Image? imageTemp = img.decodeImage(original.readAsBytesSync());
+    img.Image resizedImg = img.copyResize(imageTemp!, width:50, height:50);
+
+    return img.encodeJpg(resizedImg);
+  }*/
+
   Future <void> createTrip() async {  //should catch exceptions?
     var batch = firestore.batch();
 
@@ -169,6 +199,9 @@ class _CreateTripScreenState extends State<CreateTripScreen> {
       File picFile = spotDatas[0].pictureFiles[0]; //TODO chosen by user
       Image previewImage = Image.file(picFile, width:50, height:50, fit: BoxFit.none); //TODO better fit?
       //picFile = File(previewImage); //TODO: hay q pasar el previewImage a File. quizas será creando un File local?
+
+      //picFile = resizePreviewImage(picFile);  //doing
+
       previewPicPathInFirebase = "users/ferranib00@gmail.com/" + tripTitle + "/preview"; //TODO hope I dont need a file extension lol //TODO insert user's email adress
       await firebase_storage.FirebaseStorage.instance.ref(previewPicPathInFirebase)
           .putFile(picFile);

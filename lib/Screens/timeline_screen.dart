@@ -47,7 +47,7 @@ class _TimelineScreenState extends State<TimelineScreen> {
       //trip.firestoreId = doc.reference.id;
 
       //we add the preview image, which is stored in a different Firebase service.
-      trip.previewPic ??= 'Duomo.jpg';
+      //trip.previewPic ??= 'Duomo.jpg'; //TODO no hace falta?
       trip.previewPicFuture = getTripPreviewImage(trip.previewPic);
 
       tripsRealLocal.add(trip);
