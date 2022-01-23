@@ -111,16 +111,28 @@ class _CreateSpotDialogState extends State<CreateSpotDialog> {
                       spotDescription = value;
                     },
                   ),
-                  TextFormField(
-                    initialValue: spotSoundtrack,
-                    decoration:
-                    const InputDecoration(
-                      hintText: 'Spot soundtrack - Spotify song URL',
-                      labelText: 'Soundtrack',
-                    ),
-                    onChanged: (value) {
-                      spotSoundtrack = value;
-                    },
+                  Row(
+                      children: [
+                        Expanded( //limits the InputDecoration's width, so it doesnt explode
+                            child: TextFormField(
+                              initialValue: spotSoundtrack,
+                              decoration:
+                              const InputDecoration(
+                                hintText: 'Spotify song URL',
+                                labelText: 'Spot Soundtrack',
+                              ),
+                              onChanged: (value) {
+                                spotSoundtrack = value;
+                              },
+                            ),
+                        ),
+                        IconButton(
+                          icon: const Icon(Icons.info),
+                          onPressed: () {
+                            showSoundtrackInfoDialog();
+                          },
+                        ),
+                      ],
                   ),
                   const Padding(padding: EdgeInsets.fromLTRB(0, 10, 0, 0),),
                   Container(
@@ -143,31 +155,41 @@ class _CreateSpotDialogState extends State<CreateSpotDialog> {
                     ),
                   ),
 
-                  Container(
-                    alignment: Alignment.centerRight,
-                    child:
-                    ElevatedButton( //create/save button
-                      child: !widget.isEdit? const Text("Create"):const Text("Save"),
-                      style: ElevatedButton.styleFrom(primary: Colors.green),
-                      onPressed: () async {
-                        if (formKey.currentState!.validate()) {
-
-                          if (!widget.isEdit) { //if is create
-                            createSpotButtonFunc();
-                          }
-                          else { //if is edit
-                            editSpotButtonFunc();
-                          }
-
-                          //common code
-                          widget.refreshParent();
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.end,
+                    children: [
+                      ElevatedButton(
+                        child: const Text("Cancel"),
+                        onPressed: () async {
+                          widget.refreshParent(); //unnecesary?
                           Navigator.of(context, rootNavigator: true).pop('dialog');
-                        }
-                        else {
-                        }
-                      },
-                    ),
-                  )
+                        },
+                      ),
+                      const Padding(padding: EdgeInsets.fromLTRB(10, 0, 0, 0),),
+
+                      ElevatedButton( //create/save button
+                        child: !widget.isEdit? const Text("Create"):const Text("Save"),
+                        style: ElevatedButton.styleFrom(primary: Colors.green),
+                        onPressed: () async {
+                          if (formKey.currentState!.validate()) {
+
+                            if (!widget.isEdit) { //if is create
+                              createSpotButtonFunc();
+                            }
+                            else { //if is edit
+                              editSpotButtonFunc();
+                            }
+
+                            //common code
+                            widget.refreshParent();
+                            Navigator.of(context, rootNavigator: true).pop('dialog');
+                          }
+                          else {
+                          }
+                        },
+                      ),
+                    ],
+                  ),
                 ],),
               ),
             ],
@@ -234,33 +256,31 @@ class _CreateSpotDialogState extends State<CreateSpotDialog> {
       );
   }
 
-  /*Container generateCreateOrSaveButton(bool isEdit) {
-    return Container(
-      alignment: Alignment.centerRight,
-      child:
-      ElevatedButton(
-        child: !isEdit? const Text("Create"):const Text("Save"),
-        style: ElevatedButton.styleFrom(primary: Colors.green),
-        onPressed: () async {
-          if (formKey.currentState!.validate()) {
-            //Navigator.pop(context);
-            widget.parentSpotDatas.add(CreateSpotData(spotName, spotDescription, spotSoundtrack, imageFiles));
-            widget.parentSpotPreviews.add(CreateSpotPreview(spotName: spotName,
-              parentSpotDatas: widget.parentSpotDatas,
-              parentSpotPreviews: widget.parentSpotPreviews,
-              refreshParent: () { widget.refreshParent(); },
-              spotIndex: widget.parentSpotPreviews.length, //ojo, length
-            ));
-
-            widget.refreshParent();
-
-            Navigator.of(context, rootNavigator: true).pop('dialog');
-          }
-          else {
-          }
-        },
-      ),
+  void showSoundtrackInfoDialog() {
+    // set up the button
+    Widget okButton = ElevatedButton(
+      child: const Text("OK"),
+      onPressed: () {
+        Navigator.of(context, rootNavigator: true).pop('dialog');
+      },
     );
-  }*/
+
+    // set up the AlertDialog
+    AlertDialog alert = AlertDialog(
+      title: const Text("How to add a Spot Soundtrack"),
+      content: const Text('To add a Spotify song as the soundtrack for this spot, open Spotify, tap "Share" on the song you want, and choose the "Copy link" option.\n'
+          'Then paste the link here.'),
+      actions: [
+        okButton,
+      ],
+    );
+    // show the dialog
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return alert;
+      },
+    );
+  }
 
 }

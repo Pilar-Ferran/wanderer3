@@ -233,7 +233,7 @@ class _CreateTripScreenState extends State<CreateTripScreen> {
       batch.set(newSpot, {
         'spot_name': spotData.name,
         'spot_description': spotData.description,
-        'spot_soundtrack': spotData.soundtrack,
+        'spot_soundtrack': parseSoundtrackID(spotData.soundtrack),
         'spot_pictures': allPicPathsInFirebase
       });
     }
@@ -248,91 +248,29 @@ class _CreateTripScreenState extends State<CreateTripScreen> {
     });
   }
 
-  Future<void> createTestTripAndPic() async{
-    String tripPreviewPicFilePathInDevice ="";  //TODO lo obtendremos por image_picker (ya tenemos la dependencia)
-    String tripPreviewPicFilePathInFirebase = "users/ferranib00@gmail.com/trip1/macbasmol.png";
-
-                                                  //Directory appDocDir = await getApplicationDocumentsDirectory();
-                                                  //tripPreviewPicFilePathInDevice = '${appDocDir.absolute}/file-to-upload.png'; //  r'D:\Ferran\Documents\1.Documents\1.Universitat\Q7 coses a BCN\Apps'
-
-    //TODO: do not remove
-    //we find the picture in the device
-    //File file = File(tripPreviewPicFilePathInDevice);
-    //and upload it
-    //await firebase_storage.FirebaseStorage.instance.ref(tripPreviewPicFilePathInFirebase).putFile(file);
-
-    //we create the rest of the trip with a reference to the pic
-
-    //but first we add the local paths to the spot pics, lol
-    List<List<String>> spotPicsLocalPaths = [];
-    createTestTrip(tripPreviewPicFilePathInFirebase, spotPicsLocalPaths);
-  }
-
-  void createTestTrip(String tripPreviewPicFirebasePath, List<List<String>> spotPicsLocalPaths) {
-    var batch = firestore.batch();
-
-    // Create the trip
-    var newTrip = firestore.collection('trips').doc();
-    batch.set(newTrip, {
-      'author_username': "FerranChiese2",
-      'title': "Visit with cool spots",
-      'location': "El Raval, Barcelona, Spain",
-      'description':"this is a description about a trip to El Raval this is a description about a trip to El Raval this is a description about a trip to El Raval this is a description about a trip to El Raval this is a description about a trip to El Raval this is a description about a trip to El Raval this is a description about a trip to El Raval this is a description about a trip to El Raval this is a description about a trip to El Raval this is a description about a trip to El Raval this is a description about a trip to El Raval this is a description about a trip to El Raval ",
-      'preview_pic': tripPreviewPicFirebasePath,
-    });
-
-    // Create the new "spots" subcollection.
-    // we start with the pictures: we upload them and save their firebase paths in spotPicsFirebasePaths
-    List<List<String>> spotPicsFirebasePaths = [];
-    for (int i = 0; i < spotPicsLocalPaths.length; ++i/*var spotPics in spotPicsLocalPaths*/) { //for each spot
-      spotPicsFirebasePaths[i] = [];  //create the list so its not null
-      for (int j = 0; j < spotPicsLocalPaths[i].length; ++j/*var pic in spotPics*/) { //for each pic in the spot
-        //upload pic to storage
-        //save firebase path in spotPicsFirebasePaths
-        //spotPicsFirebasePaths[i][j] =
-      }
+  String? parseSoundtrackID(String? url) {
+    if (url == null) {
+      return url;
     }
+    else {
+      String songID = "";
 
-    //then we create the spots.
-    //should be for each (in a list). this is just one spot, an example
-    var newSpot = newTrip.collection('spots').doc();
-    batch.set(newSpot, {
-      'spot_name': "MACBA Plaza",
-      'spot_description': "aaaaaaaaaaaaaaaaaaa aaaaaaaaaaaaaaaaaaa aaaaaaaaaaaaaaaaaaa aaaaaaaaaaaaaaaaaaa aaaaaaaaaaaaaaaaaaa aaaaaaaaaaaaaaaaaaa ",
-      'spot_soundtrack': "469rBLYJUZHMJLtq2Wch3h",
-      'spot_pictures': [
-        "land1.jpg",
-        "land2.jpg",
-        "land1.jpg",
-        "land2.jpg"
-      ]
-    });
+      for (int i = 0; i < url.length; ++i) {
+      }
 
-    // Commit the batch edits
-    batch.commit()
-        .then((value) => confirmTripAdded())
-        .catchError((err) {
-          print(err);
-          informAddTripError(err);
-        });
-  }
-
-  //TODO does this go in this class? i think so
-  Future<void> createTestTripOld(String previewPicFirebasePath) {
-    //and we create the trip
-    CollectionReference trips = firestore.collection('trips');
-
-    /*return*/Future<void> tripAddFuture = trips.add({
-      'author_username': "FerranChiese",
-      'title': "Visiting El Raval",
-      'location': "El Raval, Barcelona, Spain",
-      'description':"this is a description about a trip to El Raval this is a description about a trip to El Raval this is a description about a trip to El Raval this is a description about a trip to El Raval this is a description about a trip to El Raval this is a description about a trip to El Raval this is a description about a trip to El Raval this is a description about a trip to El Raval this is a description about a trip to El Raval this is a description about a trip to El Raval this is a description about a trip to El Raval this is a description about a trip to El Raval ",
-      'preview_pic': previewPicFirebasePath,
-    })
-        .then((value) => confirmTripAdded())
-        .catchError((onError) => informAddTripError(onError));
-
-    return tripAddFuture;
+      int j = 0;
+      while (j<url.length && url[j]!= 'k') {
+        j++;
+      }
+      //now url[j] == 'k'
+      j += 2;
+      //now url[j] is the first char of the ID
+      while (j<url.length && url[j]!= '?') {
+        songID += url[j];
+        j++;
+      }
+      return songID;
+    }
   }
 
   void confirmTripAdded() {
