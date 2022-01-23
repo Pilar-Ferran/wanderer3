@@ -46,9 +46,6 @@ class _CreateTripScreenState extends State<CreateTripScreen> {
             )
         ),*/
 
-      //SingleChildScrollView(
-        //padding: const EdgeInsets.fromLTRB(25, 0, 25, 0),
-        //padding: const EdgeInsets.symmetric(horizontal: 25, vertical: 120),
       Container(
         padding: const EdgeInsets.fromLTRB(25, 0, 25, 0),
         child: ListView(
@@ -100,7 +97,7 @@ class _CreateTripScreenState extends State<CreateTripScreen> {
 
             const Padding(padding: EdgeInsets.fromLTRB(0, 30, 0, 0),),
 
-            const Text("Spots:"),
+            const Text("Spots: "),
             spotPreviews.isEmpty?  //if there are no spots, show text
             Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -134,6 +131,7 @@ class _CreateTripScreenState extends State<CreateTripScreen> {
               child:
               ElevatedButton(
                 child: const Text("Create trip", style: TextStyle(fontWeight: FontWeight.bold),),
+                style: ElevatedButton.styleFrom(primary: Colors.green),
                 onPressed: spotDatas.isNotEmpty? ()  async {  //if there's at least one spot, button enabled
                   if (formKey.currentState!.validate()) {
                     //TODO could do the isLoading thing that Pilar did
@@ -146,7 +144,6 @@ class _CreateTripScreenState extends State<CreateTripScreen> {
 
                 }:
                 null, //else, button disabled
-                style: ElevatedButton.styleFrom(primary: Colors.green),
               ),
             ),
             ],
