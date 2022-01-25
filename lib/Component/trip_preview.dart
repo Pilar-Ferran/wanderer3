@@ -43,8 +43,9 @@ class TripPreview extends StatelessWidget{
                       Text(tripData.place, style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),)])
                     ,
                 ]),
-                Center(child:
-                FutureBuilder(
+                Center( child:
+                tripData.previewPic != null?
+                FutureBuilder( //if there is pic, draw pic
                     future: tripData.previewPicFuture,
                     builder: (context, snapshot) {
                       if (snapshot.connectionState == ConnectionState.done) {
@@ -60,7 +61,10 @@ class TripPreview extends StatelessWidget{
                       else { //show loading
                         return const PictureLoadingIndicator();
                       }
-                    }) /*alignment: Alignment.center,*/ )  //Container?
+                    })  //Container? /*alignment: Alignment.center,*/
+                :
+                    const Padding(padding: EdgeInsets.fromLTRB(25, 25, 25, 25),), //if there is no pic, put padding
+                )
                 ],
                 crossAxisAlignment: CrossAxisAlignment.center,
                 mainAxisAlignment: MainAxisAlignment.spaceAround,

@@ -47,15 +47,28 @@ class _TimelineScreenState extends State<TimelineScreen> {
       //trip.firestoreId = doc.reference.id;
 
       //we add the preview image, which is stored in a different Firebase service.
-      //trip.previewPic ??= 'Duomo.jpg'; //TODO no hace falta?
+      /*if (trip.previewPic == null ) {
+        print("entra1. trip.previewPic = null");
+      }
+      else {
+        print("entra1. trip.previewPic = "+trip.previewPic!+"\ntrip.title = "+trip.title);
+      }*/
+      /*if (trip.previewPic == null || trip.previewPic == "") {
+        print("entra2");
+        trip.previewPic ??= 'macbasmol.png'; //TODO no hace falta?
+      }*/
       trip.previewPicFuture = getTripPreviewImage(trip.previewPic);
+      //print("trip.previewPicFuture = "+trip.previewPicFuture.toString());
 
       tripsRealLocal.add(trip);
     }
     return tripsRealLocal;
   }
 
-  Future<String> getTripPreviewImage(String previewPicPath) async {
+  Future<String?> getTripPreviewImage(String? previewPicPath) async {
+    if (previewPicPath == null) {
+      return null;
+    }
     return storage.ref().child(previewPicPath).getDownloadURL();
   }
 
