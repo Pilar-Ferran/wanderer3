@@ -1,164 +1,261 @@
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
-import 'package:my_login/Component/button.dart';
-
-import '../constants.dart';
-import 'login_screen.dart';
+import 'package:fluttertoast/fluttertoast.dart';
+import 'package:my_login/Screens/login_screen.dart';
+import 'home_screen.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 class SignupScreen extends StatefulWidget {
-  static const routeName = '/signup';
+  static const routeName = '/signup_screen';
   const SignupScreen({Key? key}) : super(key: key);
-
   @override
-  _SignupScreenState createState() => _SignupScreenState();
+  _SignUpScreenState createState() => _SignUpScreenState();
 }
 
-class _SignupScreenState extends State<SignupScreen> {
-  final formkey = GlobalKey<FormState>();
-  final _auth = FirebaseAuth.instance;
-  String email = '';
-  String password = '';
-  bool isloading = false;
+class _SignUpScreenState extends State<SignupScreen> {
+  final TextEditingController _username = TextEditingController();
+  final TextEditingController _email = TextEditingController();
+  final TextEditingController _password = TextEditingController();
+  bool loading = false;
 
   @override
   Widget build(BuildContext context) {
+    final size = MediaQuery.of(context).size;
+
     return Scaffold(
-      appBar: AppBar(
-        backgroundColor: Colors.grey[200],
-        elevation: 0,
-        leading: IconButton(
-          icon: Icon(Icons.arrow_back_ios, color: Colors.black,size: 30,),
-          onPressed: () => Navigator.of(context).pop(),
-        ),
-      ),
-      body: isloading
+      resizeToAvoidBottomInset: false,
+      body: loading
           ? Center(
-        child: CircularProgressIndicator(),
+        child: SizedBox(
+          height: size.height / 20,
+          width: size.height / 20,
+          child: const CircularProgressIndicator(),
+        ),
       )
-          : Form(
-        key: formkey,
-        child: AnnotatedRegion<SystemUiOverlayStyle>(
-          value: SystemUiOverlayStyle.light,
-          child: Stack(
-            children: [
-              Container(
-                height: double.infinity,
-                width: double.infinity,
-                color: Colors.grey[200],
-                child: SingleChildScrollView(
-                  padding:
-                  EdgeInsets.symmetric(horizontal: 25, vertical: 120),
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Hero(
-                        tag: '1',
-                        child: Text(
-                          "Sign up",
-                          style: TextStyle(
-                              fontSize: 30,
-                              color: Colors.black,
-                              fontWeight: FontWeight.bold),
-                        ),
-                      ),
-                      SizedBox(height: 30),
-                      TextFormField(
-                        keyboardType: TextInputType.emailAddress,
-                        onChanged: (value) {
-                          email = value.toString().trim();
-                        },
-                        validator: (value) => (value!.isEmpty)
-                            ? ' Please enter email'
-                            : null,
-                        textAlign: TextAlign.center,
-                        decoration: kTextFieldDecoration.copyWith(
-                          hintText: 'Enter Your Email',
-                          prefixIcon: Icon(
-                            Icons.email,
-                            color: Colors.black,
-                          ),
-                        ),
-                      ),
-                      SizedBox(height: 30),
-                      TextFormField(
-                        obscureText: true,
-                        validator: (value) {
-                          if (value!.isEmpty) {
-                            return "Please enter Password";
-                          }
-                        },
-                        onChanged: (value) {
-                          password = value;
-                        },
-                        textAlign: TextAlign.center,
-                        decoration: kTextFieldDecoration.copyWith(
-                            hintText: 'Choose a Password',
-                            prefixIcon: Icon(
-                              Icons.lock,
-                              color: Colors.black,
-                            )),
-                      ),
-                      SizedBox(height: 80),
-                      LoginSignupButton(
-                        title: 'Register',
-                        ontapp: () async {
-                          if (formkey.currentState!.validate()) {
-                            setState(() {
-                              isloading = true;
-                            });
-                            try {
-                              await _auth.createUserWithEmailAndPassword(
-                                  email: email, password: password);
-
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                SnackBar(
-                                  backgroundColor: Colors.blueGrey,
-                                  content: Padding(
-                                    padding: const EdgeInsets.all(8.0),
-                                    child: Text(
-                                        'Sucessfully Register.You Can Login Now'),
-                                  ),
-                                  duration: Duration(seconds: 5),
-                                ),
-                              );
-                              Navigator.of(context).pop();
-
-                              setState(() {
-                                isloading = false;
-                              });
-                            } on FirebaseAuthException catch (e) {
-                              showDialog(
-                                context: context,
-                                builder: (ctx) => AlertDialog(
-                                  title:
-                                  Text(' Ops! Registration Failed'),
-                                  content: Text('${e.message}'),
-                                  actions: [
-                                    TextButton(
-                                      onPressed: () {
-                                        Navigator.of(ctx).pop();
-                                      },
-                                      child: Text('Okay'),
-                                    )
-                                  ],
-                                ),
-                              );
-                            }
-                            setState(() {
-                              isloading = false;
-                            });
-                          }
-                        },
-                      ),
-                    ],
+          : Container(
+        constraints: BoxConstraints.expand(),
+        decoration: const BoxDecoration(
+        image: DecorationImage(
+        image: AssetImage('assets/images/ff97d9.png'),
+        fit: BoxFit.cover,
+        ),
+        ),
+    child: Column(
+    children:[
+    SizedBox(
+    height: size.height / 7,
+    ),
+    Container(
+    decoration: const BoxDecoration(
+    image: DecorationImage(
+    image: AssetImage('assets/images/white.jpg'),
+    fit: BoxFit.cover,
+    ),
+    ),
+    child:SingleChildScrollView(
+        child: Column(
+          children: [
+            SizedBox(
+              height: size.height / 20,
+            ),
+            SizedBox(
+              width: size.width / 1.1,
+              child: const Text(
+                "Wanderer",
+                style: TextStyle(
+                  fontSize: 45,
+                  fontWeight: FontWeight.bold,
+                ),
+                textAlign: TextAlign.center,
+              ),
+            ),
+            SizedBox(
+              height: size.height / 30,
+            ),
+            SizedBox(
+              width: size.width / 1.1,
+              child: Text(
+                "Create Account to Continue",
+                style: TextStyle(
+                  color: Colors.grey[700],
+                  fontSize: 20,
+                  fontWeight: FontWeight.w500,
+                ),
+                textAlign: TextAlign.center,
+              ),
+            ),
+            SizedBox(
+              height: size.height / 60,
+            ),
+            Padding(
+              padding: const EdgeInsets.symmetric(vertical: 18.0),
+              child: Container(
+                width: size.width,
+                alignment: Alignment.center,
+                child: field(size, "username", Icons.account_box, _username),
+              ),
+            ),
+            Container(
+              width: size.width,
+              alignment: Alignment.center,
+              child: field(size, "email", Icons.account_box, _email),
+            ),
+            Padding(
+              padding: const EdgeInsets.symmetric(vertical: 18.0),
+              child: Container(
+                width: size.width,
+                alignment: Alignment.center,
+                child: field(size, "password", Icons.lock, _password),
+              ),
+            ),
+            SizedBox(
+              height: size.height / 40,
+            ),
+            customButton(size),
+            SizedBox(
+              height: size.height / 40,
+            ),
+            GestureDetector(
+                onTap: () => Navigator.pushReplacementNamed(context, LoginScreen.routeName),
+                child: const Text(
+                  "Login",
+                  style: TextStyle(
+                    color: Colors.cyan,
+                    fontSize: 18,
+                    fontWeight: FontWeight.w600,
                   ),
                 ),
-              )
-            ],
+              ),
+            SizedBox(
+              height: size.height / 20,
+            ),
+          ],
+        ),
+      ),
+    ),
+    ],
+    ),
+    ),
+    );
+  }
+
+  Widget customButton(Size size) {
+    return GestureDetector(
+      onTap: () {
+        if (_username.text.isNotEmpty &&
+            _email.text.isNotEmpty &&
+            _password.text.isNotEmpty) {
+          setState(() {
+            loading = true;
+          });
+
+          createAccount(_username.text, _email.text, _password.text).then((user) {
+            if (user != null) {
+              setState(() {
+                loading = false;
+              });
+              Navigator.pushNamedAndRemoveUntil(context, HomeScreen.routeName, (_) => false);
+              Fluttertoast.showToast(msg: "Account created successfully");
+
+            } else {
+              print("Registration Failed");
+              setState(() {
+                loading = false;
+              });
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(
+                  content: const Text('Registration Failed', style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 16,
+                    fontWeight: FontWeight.w500,
+                  ),),
+                  backgroundColor: Colors.red,
+                  action: SnackBarAction(label: 'Try again', textColor: Colors.white ,onPressed: ScaffoldMessenger.of(context).hideCurrentSnackBar),
+                ),
+              );
+            }
+          });
+        } else {
+          print("Enter name, email and password");
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: const Text('Complete all the fields', style: TextStyle(
+                color: Colors.white,
+                fontSize: 16,
+                fontWeight: FontWeight.w500,
+              ),),
+              backgroundColor: Colors.cyan,
+              action: SnackBarAction(label: 'Try again', textColor: Colors.white ,onPressed: ScaffoldMessenger.of(context).hideCurrentSnackBar),
+            ),
+          );
+        }
+      },
+      child: Container(
+          height: size.height / 14,
+          width: size.width / 1.2,
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(5),
+            color: Colors.cyan,
+          ),
+          alignment: Alignment.center,
+          child: const Text(
+            "Create Account",
+            style: TextStyle(
+              color: Colors.white,
+              fontSize: 18,
+              fontWeight: FontWeight.bold,
+            ),
+          )),
+    );
+  }
+
+  Widget field(
+      Size size, String hintText, IconData icon, TextEditingController cont) {
+    return SizedBox(
+      height: size.height / 14,
+      width: size.width / 1.1,
+      child: TextField(
+        controller: cont,
+        decoration: InputDecoration(
+          prefixIcon: Icon(icon),
+          hintText: hintText,
+          hintStyle: const TextStyle(color: Colors.grey),
+          border: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(10),
           ),
         ),
       ),
     );
   }
 }
+
+
+Future<User?> createAccount(String username, String email, String password) async {
+  FirebaseAuth _auth = FirebaseAuth.instance;
+
+  FirebaseFirestore _firestore = FirebaseFirestore.instance;
+
+  try {
+    UserCredential userCredential = await _auth.createUserWithEmailAndPassword(
+        email: email, password: password);
+
+    print("Account created successfully");
+
+    userCredential.user!.updateDisplayName(username);
+
+
+    await _firestore.collection('users').doc(_auth.currentUser!.uid).set({
+      "username": username,
+      "email": email,
+      "biography": "Write here your biography",
+      "followers": 0,
+      "following":0,
+      "profile_picture": "users/user_profile_standard.png",
+      "uid": _auth.currentUser!.uid,
+    });
+
+    return userCredential.user;
+  } catch (e) {
+    print(e);
+    return null;
+  }
