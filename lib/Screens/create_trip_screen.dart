@@ -7,6 +7,8 @@ import 'package:fluttertoast/fluttertoast.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:my_login/Component/create_spot_dialog.dart';
 import 'package:my_login/Component/create_spot_preview.dart';
+import 'package:my_login/Screens/home_screen.dart';
+import 'package:my_login/Screens/timeline_screen.dart';
 import 'package:my_login/dataclasses/create_spot_data.dart';
 import 'package:my_login/dataclasses/spot_data.dart';
 import 'package:my_login/user_secure_storage.dart';
@@ -14,7 +16,7 @@ import 'package:path_provider/path_provider.dart';
 import 'package:firebase_storage/firebase_storage.dart' as firebase_storage;
 import 'package:image/image.dart' as img;
 
-class CreateTripScreen extends StatefulWidget { //TODO stateless?
+class CreateTripScreen extends StatefulWidget {
   const CreateTripScreen({Key? key}) : super(key: key);
 
   final String title = "Create a trip";
@@ -35,6 +37,7 @@ class _CreateTripScreenState extends State<CreateTripScreen> {
 
   String? loggedUsername;
   String? loggedUserEmail;
+  bool isloading = false;
 
   @override
   void initState() {
@@ -70,6 +73,10 @@ class _CreateTripScreenState extends State<CreateTripScreen> {
       Container(
         padding: const EdgeInsets.fromLTRB(25, 0, 25, 0),
         child:
+        isloading? const Center(
+          child: CircularProgressIndicator(),
+        )
+            :
         ListView(
             //mainAxisAlignment: MainAxisAlignment.start, //doesnt work? its still centered, idk why
           children: [
@@ -156,9 +163,12 @@ class _CreateTripScreenState extends State<CreateTripScreen> {
                 style: ElevatedButton.styleFrom(primary: Colors.green),
                 onPressed: (spotDatas.isNotEmpty && loggedUsername!=null && loggedUserEmail!=null)? ()  async {  //if there's at least one spot and the username is not null (has been obtained), button enabled
                   if (formKey.currentState!.validate()) {
-                    //TODO could do the isLoading thing that Pilar did
+                    setState(() {
+                      isloading = true;
+                      print("isloading = "+isloading.toString());
+                    });
+
                     createTrip();
-                    //TODO: exit screen, so you cant add the same trip multiple times. also remove it from stack
                   }
                   else {  //if something's missing
 
@@ -298,10 +308,13 @@ class _CreateTripScreenState extends State<CreateTripScreen> {
   void confirmTripAdded() {
     print("trip added to firestore");
     Fluttertoast.showToast(msg: "Trip posted successfully!");
+    //vamos a la pantalla de perfil
+    Navigator.pushNamedAndRemoveUntil(context, HomeScreen.routeName, (_) => false, arguments: 3); //esto hace que se vacie el stack y asi el user no puede volver hacia esta pantalla
+
   }
 
   void informAddTripError(onError) {
     print("error adding to firestore. error = "+onError.toString());
-    Fluttertoast.showToast(msg: "There was an error creating the trip.");
+    Fluttertoast.showToast(msg: "There was an error creating the trip. Please contact a developer");
   }
 }

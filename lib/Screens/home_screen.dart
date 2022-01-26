@@ -22,6 +22,9 @@ class _HomeScreenState extends State<HomeScreen> {
 
   String _barTitle = "Wanderer";
 
+  //used rarely
+  late final int? indexSetByArgs;
+
   int selectedIndex = 0;
   static const List<Widget> fourNavigationScreens = <Widget>[
     TimelineScreen(),
@@ -54,6 +57,18 @@ class _HomeScreenState extends State<HomeScreen> {
       }
 
     });
+  }
+
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+
+    //if we come from a screen which specified what page to go to, we set it
+    indexSetByArgs = ModalRoute.of(context)!.settings.arguments as int?;
+    if (indexSetByArgs != null) {
+      selectedIndex = indexSetByArgs!;
+    }
   }
 
   @override

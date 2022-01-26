@@ -110,7 +110,7 @@ class _TripDetailState extends State<TripDetail> {
                             return const Text("error");
                           }
                           else {
-                            return Image.network(snapshot.data as String);
+                            return Image.network(snapshot.data as String, width: 50, height: 50,);
                           }
                         }
                         else { //show loading
