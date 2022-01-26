@@ -34,7 +34,7 @@ class _LoginScreenState extends State<LoginScreen> {
         constraints: BoxConstraints.expand(),
         decoration: const BoxDecoration(
         image: DecorationImage(
-        image: AssetImage('assets/images/ff97d9.png'),
+        image: AssetImage('images/ff97d9.png'),
         fit: BoxFit.cover,
         ),
         ),
@@ -47,7 +47,7 @@ class _LoginScreenState extends State<LoginScreen> {
             Container(
             decoration: const BoxDecoration(
               image: DecorationImage(
-                image: AssetImage('assets/images/white.jpg'),
+                image: AssetImage('images/white.jpg'),
                 fit: BoxFit.cover,
               ),
             ),
