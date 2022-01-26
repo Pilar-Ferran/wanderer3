@@ -235,27 +235,49 @@ Future<User?> createAccount(String username, String email, String password) asyn
 
   FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
-  try {
-    UserCredential userCredential = await _auth.createUserWithEmailAndPassword(
-        email: email, password: password);
 
-    print("Account created successfully");
-
-    userCredential.user!.updateDisplayName(username);
+  bool? userExistence = await doesUserExist(username);
 
 
-    await _firestore.collection('users').doc(_auth.currentUser!.uid).set({
-      "username": username,
-      "email": email,
-      "biography": "Write here your biography",
-      "followers": 0,
-      "following":0,
-      "profile_picture": "users/user_profile_standard.png",
-      "uid": _auth.currentUser!.uid,
-    });
+  if(userExistence != null && !userExistence){
+    try {
+      UserCredential userCredential = await _auth.createUserWithEmailAndPassword(
+          email: email, password: password);
 
-    return userCredential.user;
-  } catch (e) {
-    print(e);
-    return null;
+      print("Account created successfully");
+
+      userCredential.user!.updateDisplayName(username);
+
+      await _firestore.collection('users').doc(_auth.currentUser!.uid).set({
+        "username": username,
+        "email": email,
+        "biography": "Write here your biography",
+        "followers": 0,
+        "following":0,
+        "profile_picture": "users/user_profile_standard.png",
+        "uid": _auth.currentUser!.uid,
+      });
+
+      return userCredential.user;
+    } catch (e) {
+      print(e);
+      return null;
+    }
   }
+  }
+
+
+
+
+
+Future<bool?> doesUserExist(String currentUserName) async {
+  try {
+    await FirebaseFirestore.instance
+        .collection('users')
+        .where('username', isEqualTo: currentUserName)
+        .get()
+        .then((value) => value.size > 0 ? true : false);
+  } catch (e) {
+    debugPrint(e.toString());
+  }
+}
