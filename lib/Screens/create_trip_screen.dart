@@ -33,24 +33,26 @@ class _CreateTripScreenState extends State<CreateTripScreen> {
   List<CreateSpotData> spotDatas = [];
   List<CreateSpotPreview> spotPreviews = [];
 
+  String? loggedUsername;
   String? loggedUserEmail;
 
   @override
   void initState() {
     super.initState();
-    getLoggedUserEmail();
+    getLoggedUsernameAndEmail();
   }
 
 
   @override
   void didChangeDependencies() {  //TODO inecesario?
     super.didChangeDependencies();
-    getLoggedUserEmail();
+    getLoggedUsernameAndEmail();
   }
 
-  Future<void> getLoggedUserEmail () async {
+  Future<void> getLoggedUsernameAndEmail () async {
+    loggedUsername = await UserSecureStorage.getUsername();
     loggedUserEmail = await UserSecureStorage.getUserEmail();
-    print("persistent email = " +loggedUserEmail!);
+    print("persistent username = " +loggedUsername!+", persistent email = "+loggedUserEmail!);
   }
 
   @override
@@ -152,7 +154,7 @@ class _CreateTripScreenState extends State<CreateTripScreen> {
               ElevatedButton(
                 child: const Text("Create trip", style: TextStyle(fontWeight: FontWeight.bold),),
                 style: ElevatedButton.styleFrom(primary: Colors.green),
-                onPressed: (spotDatas.isNotEmpty && loggedUserEmail!=null)? ()  async {  //if there's at least one spot and the user email is not null (has been obtained), button enabled
+                onPressed: (spotDatas.isNotEmpty && loggedUsername!=null && loggedUserEmail!=null)? ()  async {  //if there's at least one spot and the username is not null (has been obtained), button enabled
                   if (formKey.currentState!.validate()) {
                     //TODO could do the isLoading thing that Pilar did
                     createTrip();
@@ -219,7 +221,7 @@ class _CreateTripScreenState extends State<CreateTripScreen> {
 
       //picFile = resizePreviewImage(picFile);  //doing
 
-      previewPicPathInFirebase = "users/ferranib00@gmail.com/" + tripTitle + "/preview"; //TODO hope I dont need a file extension lol //TODO insert user's email adress
+      previewPicPathInFirebase = "users/"+loggedUserEmail!+"/" + tripTitle + "/preview"; //TODO hope I dont need a file extension lol
       await firebase_storage.FirebaseStorage.instance.ref(previewPicPathInFirebase)
           .putFile(picFile);
     }
@@ -227,7 +229,7 @@ class _CreateTripScreenState extends State<CreateTripScreen> {
     //then create the trip, referencing the preview pic
     var newTrip = firestore.collection('trips').doc();
     batch.set(newTrip, {
-      'author_username': loggedUserEmail, //TODO insert logged user username
+      'author_username': loggedUsername,
       'title': tripTitle,
       'location': tripLocation,
       'description':tripDescription,
@@ -243,7 +245,7 @@ class _CreateTripScreenState extends State<CreateTripScreen> {
       List<String> allPicPathsInFirebase = [];
       for (int i = 0; i < spotData.pictureFiles.length; ++i) {
         File picFile = spotData.pictureFiles[i];
-        String picPathInFirebase ="users/ferranib00@gmail.com/"+ tripTitle +"/"+ spotData.name +"/"+ i.toString();  //TODO hope I dont need a file extension lol //TODO insert user's email adress
+        String picPathInFirebase ="users/"+loggedUserEmail!+"/"+ tripTitle +"/"+ spotData.name +"/"+ i.toString();  //TODO hope I dont need a file extension lol
         allPicPathsInFirebase.add(picPathInFirebase);
         await firebase_storage.FirebaseStorage.instance.ref(picPathInFirebase).putFile(picFile);
       }

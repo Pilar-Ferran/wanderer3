@@ -141,7 +141,8 @@ class _LoginScreenState extends State<LoginScreen> {
                           }
                           else
                             {
-                              UserSecureStorage.setUserEmail("ferranTestingPersistence");
+                              //UserSecureStorage.setUserEmail("ferran@TestingPersistence.com");
+                              //UserSecureStorage.setUsername("ferranTestingPersistence");
                               Navigator.pushNamedAndRemoveUntil(context, HomeScreen.routeName, (_) => false); //esto hace que se vacie el stack y asi el user no puede volver hacia la pantalla de login
                               Fluttertoast.showToast(msg: "Skipped login because developer");
                             }
