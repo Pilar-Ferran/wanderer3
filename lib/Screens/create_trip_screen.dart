@@ -9,6 +9,7 @@ import 'package:my_login/Component/create_spot_dialog.dart';
 import 'package:my_login/Component/create_spot_preview.dart';
 import 'package:my_login/dataclasses/create_spot_data.dart';
 import 'package:my_login/dataclasses/spot_data.dart';
+import 'package:my_login/user_secure_storage.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:firebase_storage/firebase_storage.dart' as firebase_storage;
 import 'package:image/image.dart' as img;
@@ -32,7 +33,25 @@ class _CreateTripScreenState extends State<CreateTripScreen> {
   List<CreateSpotData> spotDatas = [];
   List<CreateSpotPreview> spotPreviews = [];
 
-  //we use spotData but pictures is device paths instead of online stuff //not anymore!!
+  String? loggedUserEmail;
+
+  @override
+  void initState() {
+    super.initState();
+    getLoggedUserEmail();
+  }
+
+
+  @override
+  void didChangeDependencies() {  //TODO inecesario?
+    super.didChangeDependencies();
+    getLoggedUserEmail();
+  }
+
+  Future<void> getLoggedUserEmail () async {
+    loggedUserEmail = await UserSecureStorage.getUserEmail();
+    print("persistent email = " +loggedUserEmail!);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -48,7 +67,8 @@ class _CreateTripScreenState extends State<CreateTripScreen> {
 
       Container(
         padding: const EdgeInsets.fromLTRB(25, 0, 25, 0),
-        child: ListView(
+        child:
+        ListView(
             //mainAxisAlignment: MainAxisAlignment.start, //doesnt work? its still centered, idk why
           children: [
             TextFormField(
@@ -132,7 +152,7 @@ class _CreateTripScreenState extends State<CreateTripScreen> {
               ElevatedButton(
                 child: const Text("Create trip", style: TextStyle(fontWeight: FontWeight.bold),),
                 style: ElevatedButton.styleFrom(primary: Colors.green),
-                onPressed: spotDatas.isNotEmpty? ()  async {  //if there's at least one spot, button enabled
+                onPressed: (spotDatas.isNotEmpty && loggedUserEmail!=null)? ()  async {  //if there's at least one spot and the user email is not null (has been obtained), button enabled
                   if (formKey.currentState!.validate()) {
                     //TODO could do the isLoading thing that Pilar did
                     createTrip();
@@ -207,7 +227,7 @@ class _CreateTripScreenState extends State<CreateTripScreen> {
     //then create the trip, referencing the preview pic
     var newTrip = firestore.collection('trips').doc();
     batch.set(newTrip, {
-      'author_username': "FerranCreating", //TODO insert logged user username
+      'author_username': loggedUserEmail, //TODO insert logged user username
       'title': tripTitle,
       'location': tripLocation,
       'description':tripDescription,

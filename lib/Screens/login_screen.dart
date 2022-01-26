@@ -4,6 +4,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:my_login/Component/button.dart';
 import 'package:my_login/Screens/home_screen.dart';
+import 'package:my_login/user_secure_storage.dart';
 import '../constants.dart';
 import 'signup_screen.dart';
 import 'package:fluttertoast/fluttertoast.dart';
@@ -140,6 +141,7 @@ class _LoginScreenState extends State<LoginScreen> {
                           }
                           else
                             {
+                              UserSecureStorage.setUserEmail("ferranTestingPersistence");
                               Navigator.pushNamedAndRemoveUntil(context, HomeScreen.routeName, (_) => false); //esto hace que se vacie el stack y asi el user no puede volver hacia la pantalla de login
                               Fluttertoast.showToast(msg: "Skipped login because developer");
                             }
