@@ -90,17 +90,23 @@ class _TripDetailState extends State<TripDetail> {
             const Padding(padding: EdgeInsets.fromLTRB(0, 10, 0, 0),),
             Row(        //title, place and pic
               children: [
-                Column(   //title and place
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children:[
-                      Text(tripData.title, style: const TextStyle(fontSize: 25, fontWeight: FontWeight.normal),),
-                      Row(children:[  //place, with padding
-                        const Padding(padding: EdgeInsets.fromLTRB(10, 0, 0, 0),),
-                        Text(tripData.place, style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),)])
-                      ,
-                    ]),
-                Center(child:  //Container?
-                  FutureBuilder( //THIS
+                Row(children: [ //title place and padding left
+                  const Padding(padding: EdgeInsets.fromLTRB(40, 0, 0, 0),),
+                  Column(   //title and place
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children:[
+                        Text(tripData.title, style: const TextStyle(fontSize: 25, fontWeight: FontWeight.normal),),
+                        Row(children:[  //place, with padding
+                          const Padding(padding: EdgeInsets.fromLTRB(10, 0, 0, 0),),
+                          Text(tripData.place, style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),)])
+                        ,
+                      ]),
+                ],),
+
+                Row(  //pic and padding right
+                  children: [
+                    tripData.previewPic != null?
+                    FutureBuilder( //THIS
                       future: tripData.previewPicFuture,
                       builder: (context, snapshot) {
                         if (snapshot.connectionState == ConnectionState.done) { //gets checked many times until its actually received I guess
@@ -117,11 +123,16 @@ class _TripDetailState extends State<TripDetail> {
                           return const PictureLoadingIndicator();
                         }
                       },
-                  ), /*alignment: Alignment.center,*/
+                  )
+                        :
+                    const Padding(padding: EdgeInsets.fromLTRB(25, 25, 25, 25),), //if there is no pic, put padding,
+                    const Padding(padding: EdgeInsets.fromLTRB(0, 0, 40, 0),),
+                  ],
                 )],
               crossAxisAlignment: CrossAxisAlignment.center,
-              mainAxisAlignment: MainAxisAlignment.spaceAround,
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
             ),
+
             const Padding(padding: EdgeInsets.fromLTRB(0, 20, 0, 0),),
             Text(tripData.description, style: const TextStyle(fontSize: 15),),
 

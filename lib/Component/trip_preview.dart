@@ -34,40 +34,48 @@ class TripPreview extends StatelessWidget{
               Text(tripData.authorUser, textAlign: TextAlign.left, style: const TextStyle(fontSize: 18),),
               Row(        //title, place and pic
                 children: [
-                Column(   //title and place
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children:[
-                    Text(tripData.title, style: const TextStyle(fontSize: 25, fontWeight: FontWeight.normal),),
-                    Row(children:[  //place, with padding
-                      const Padding(padding: EdgeInsets.fromLTRB(10, 0, 0, 0),),
-                      Text(tripData.place, style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),)])
-                    ,
-                ]),
-                Center( child:
-                tripData.previewPic != null?
-                FutureBuilder( //if there is pic, draw pic
-                    future: tripData.previewPicFuture,
-                    builder: (context, snapshot) {
-                      if (snapshot.connectionState == ConnectionState.done) {
-                        if (snapshot.hasError) {
-                          //TODO
-                          print("error in snapshot: "+snapshot.error.toString());
-                          return const Text("error");
-                        }
-                        else {
-                          return Image.network(snapshot.data as String, width: 50, height: 50,);
-                        }
-                      }
-                      else { //show loading
-                        return const PictureLoadingIndicator();
-                      }
-                    })  //Container? /*alignment: Alignment.center,*/
-                :
-                    const Padding(padding: EdgeInsets.fromLTRB(25, 25, 25, 25),), //if there is no pic, put padding
-                )
+                  Row(children: [ //title place and padding left
+                    const Padding(padding: EdgeInsets.fromLTRB(40, 0, 0, 0),),
+                    Column(   //title and place
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children:[
+                        Text(tripData.title, style: const TextStyle(fontSize: 25, fontWeight: FontWeight.normal),),
+                        Row(children:[  //place, with padding
+                          const Padding(padding: EdgeInsets.fromLTRB(10, 0, 0, 0),),
+                          Text(tripData.place, style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),)]),
+                      ],
+                    ),
+                  ],),
+
+                  Row(  //pic and padding right
+                    children: [
+                      tripData.previewPic != null?
+                      FutureBuilder( //if there is pic, draw pic
+                          future: tripData.previewPicFuture,
+                          builder: (context, snapshot) {
+                            if (snapshot.connectionState == ConnectionState.done) {
+                              if (snapshot.hasError) {
+                                //TODO
+                                print("error in snapshot: "+snapshot.error.toString());
+                                return const Text("error");
+                              }
+                              else {
+                                return Image.network(snapshot.data as String, width: 50, height: 50,);
+                              }
+                            }
+                            else { //show loading
+                              return const PictureLoadingIndicator();
+                            }
+                          },
+                      )
+                          :
+                      const Padding(padding: EdgeInsets.fromLTRB(25, 25, 25, 25),), //if there is no pic, put padding
+
+                      const Padding(padding: EdgeInsets.fromLTRB(0, 0, 40, 0),),
+                    ],)
                 ],
                 crossAxisAlignment: CrossAxisAlignment.center,
-                mainAxisAlignment: MainAxisAlignment.spaceAround,
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
               ),
               Text(tripData.description, style: const TextStyle(fontSize: 15),),
             ],
