@@ -97,7 +97,6 @@ class _HomeScreenState extends State<HomeScreen> {
       ),
       //he quitado el center
       /*body: Column( //TODO usar
-        //comments borrados
         mainAxisAlignment: MainAxisAlignment.center,
         children: <Widget>[
           Expanded(

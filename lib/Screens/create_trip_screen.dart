@@ -5,6 +5,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_html/style.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:my_login/Component/create_spot_dialog.dart';
 import 'package:my_login/Component/create_spot_preview.dart';
 import 'package:my_login/Screens/home_screen.dart';
@@ -34,10 +35,14 @@ class _CreateTripScreenState extends State<CreateTripScreen> {
   String tripDescription ="";
   List<CreateSpotData> spotDatas = [];
   List<CreateSpotPreview> spotPreviews = [];
+  File? previewPicFile;
+  Image? previewPicImage;
 
   String? loggedUsername;
   String? loggedUserEmail;
   bool isloading = false;
+
+  final ImagePicker imagePicker = ImagePicker();
 
   @override
   void initState() {
@@ -153,6 +158,29 @@ class _CreateTripScreenState extends State<CreateTripScreen> {
                       ));
                       },
                   ),
+            ),
+
+            const Padding(padding: EdgeInsets.fromLTRB(0, 30, 0, 0),),
+            Row(children: [
+              const Text("Select a preview picture:"),
+              IconButton(
+                icon: const Icon(Icons.info),
+                onPressed: () {
+                  showPreviewPicInfoDialog();
+                },
+              ),
+            ],),
+
+            Container( //preview pic selection
+              alignment: Alignment.centerLeft,
+              child:
+              IconButton(
+                icon:previewPicImage==null ? const Icon(Icons.image): previewPicImage!,
+                onPressed: () {
+                  pickImage();
+                  },
+                iconSize: 50,
+              ),
             ),
 
             Container(
@@ -316,5 +344,56 @@ class _CreateTripScreenState extends State<CreateTripScreen> {
   void informAddTripError(onError) {
     print("error adding to firestore. error = "+onError.toString());
     Fluttertoast.showToast(msg: "There was an error creating the trip. Please contact a developer");
+  }
+
+  void setPreviewPic(File imageFile) {
+    previewPicFile = imageFile;
+    previewPicImage = Image.file(imageFile, width: 50, height: 50,);  //TODO when resizing pic
+  }
+
+  Future<void> pickImage() async {
+    try {
+      final imageThing = await imagePicker.pickImage(
+          source: ImageSource.gallery);
+      if (imageThing == null) {
+        return;
+      }
+
+      final File imageFile = File(/*[],*/ imageThing.path);
+      setState(() => {
+        setPreviewPic(imageFile)
+      }); //idk
+    }
+
+    on PlatformException catch (e) {
+      print("permission to gallery rejected. error = "+e.toString());
+      Fluttertoast.showToast(msg: "permission to gallery rejected.");
+    }
+  }
+
+  void showPreviewPicInfoDialog() {
+    // set up the button
+    Widget okButton = ElevatedButton(
+      child: const Text("OK"),
+      onPressed: () {
+        Navigator.of(context, rootNavigator: true).pop('dialog');
+      },
+    );
+
+    // set up the AlertDialog
+    AlertDialog alert = AlertDialog(
+      title: const Text("Preview Picture"),
+      content: const Text('Picture that will be displayed in a small size (50x50 pixels) next to the trip title.'),
+      actions: [
+        okButton,
+      ],
+    );
+    // show the dialog
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return alert;
+      },
+    );
   }
 }

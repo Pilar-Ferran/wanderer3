@@ -5,6 +5,7 @@ class UserSecureStorage {
 
   static const _keyUserEmail = 'user_email';
   static const _keyUsername = 'username';
+  static const _keyIsLogged = 'is_logged';
 
   static Future setUserEmail(String email) async => await _flutterSecureStorage.write(key: _keyUserEmail, value: email);
 
@@ -13,4 +14,8 @@ class UserSecureStorage {
   static Future setUsername(String username) async => await _flutterSecureStorage.write(key: _keyUsername, value: username);
 
   static Future<String?> getUsername() async => await _flutterSecureStorage.read(key: _keyUsername);
+
+  /*static Future setIsLogged(bool isLogged) async => await _flutterSecureStorage.write(key: _keyIsLogged, value: isLogged);
+
+  static Future<bool?> getIsLogged() async => await _flutterSecureStorage.read(key: _keyIsLogged);*/
 }
