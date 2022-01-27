@@ -1,197 +1,230 @@
-import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
-import 'package:firebase_auth/firebase_auth.dart';
-import 'package:google_sign_in/google_sign_in.dart';
-import 'package:my_login/Component/button.dart';
-import 'package:my_login/Screens/home_screen.dart';
-import 'package:my_login/user_secure_storage.dart';
-import '../constants.dart';
 import 'signup_screen.dart';
-import 'package:fluttertoast/fluttertoast.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'home_screen.dart';
+import 'package:flutter/material.dart';
 
 class LoginScreen extends StatefulWidget {
+  static const routeName = '/login_screen';
   const LoginScreen({Key? key}) : super(key: key);
-
   @override
   _LoginScreenState createState() => _LoginScreenState();
 }
 
 class _LoginScreenState extends State<LoginScreen> {
-  final formkey = GlobalKey<FormState>();
-  final _auth = FirebaseAuth.instance;
-  final _googleSignIn = GoogleSignIn();
-  String email = '';
-  String password = '';
-  bool isloading = false;
-
+  final TextEditingController _email = TextEditingController();
+  final TextEditingController _password = TextEditingController();
+  bool loading = false;
 
   @override
   Widget build(BuildContext context) {
+    final size = MediaQuery.of(context).size;
+
     return Scaffold(
-      body: isloading
-          ? const Center(
-        child: CircularProgressIndicator(),
+      resizeToAvoidBottomInset: false,
+      body: loading
+          ? Center(
+        child: SizedBox(
+          height: size.height / 20,
+          width: size.height / 20,
+          child: const CircularProgressIndicator(),
+        ),
       )
-          : Form(
-        key: formkey,
-        child: AnnotatedRegion<SystemUiOverlayStyle>(
-          value: SystemUiOverlayStyle.light,
-          child: Stack(
-            children: [
+          : Container(
+          constraints: BoxConstraints.expand(),
+          decoration: const BoxDecoration(
+            image: DecorationImage(
+              image: AssetImage('images/ff97d9.png'),
+              fit: BoxFit.cover,
+            ),
+          ),
+          child:
+          Column(
+            children:[
+              SizedBox(
+                height: size.height / 5,
+              ),
               Container(
-                height: double.infinity,
-                width: double.infinity,
-                color: Colors.grey[200],
+                decoration: const BoxDecoration(
+                  image: DecorationImage(
+                    image: AssetImage('images/white.jpg'),
+                    fit: BoxFit.cover,
+                  ),
+                ),
                 child: SingleChildScrollView(
-                  padding:
-                  EdgeInsets.symmetric(horizontal: 25, vertical: 120),
                   child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      const Text(
-                        "Sign In",
-                        style: TextStyle(
-                            fontSize: 50,
-                            color: Colors.black,
-                            fontWeight: FontWeight.bold),
+                      SizedBox(
+                        height: size.height / 20,
                       ),
-                      const SizedBox(height: 30),
-                      TextFormField(
-                        keyboardType: TextInputType.emailAddress,
-                        onChanged: (value) {
-                          email = value;
-                        },
-                        validator: (value) {
-                          if (value!.isEmpty) {
-                            return "Please enter Email";
-                          }
-                        },
-                        textAlign: TextAlign.center,
-                        decoration: kTextFieldDecoration.copyWith(
-                          hintText: 'Email',
-                          prefixIcon: const Icon(
-                            Icons.email,
-                            color: Colors.black,
+                      SizedBox(
+                        width: size.width / 1.1,
+                        child: const Text(
+                          "Wanderer",
+                          style: TextStyle(
+                            fontSize: 45,
+                            fontWeight: FontWeight.bold,
+                          ),
+                          textAlign: TextAlign.center,
+                        ),
+                      ),
+                      SizedBox(
+                        height: size.height / 15,
+                      ),
+                      Container(
+                        width: size.width,
+                        alignment: Alignment.center,
+                        child: field(size, "Email", Icons.account_box, _email),
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.symmetric(vertical: 18.0),
+                        child: Container(
+                          width: size.width,
+                          alignment: Alignment.center,
+                          child: field(size, "Password", Icons.lock, _password),
+                        ),
+                      ),
+                      SizedBox(
+                        height: size.height / 40,
+                      ),
+                      customButton(size),
+                      SizedBox(
+                        height: size.height / 40,
+                      ),
+                      GestureDetector(
+                        onTap: () => Navigator.pushReplacementNamed(context, SignupScreen.routeName),
+                        child: const Text(
+                          "Create Account",
+                          style: TextStyle(
+                            color: Colors.cyan,
+                            fontSize: 18,
+                            fontWeight: FontWeight.w600,
                           ),
                         ),
                       ),
-                      const SizedBox(height: 30),
-                      TextFormField(
-                        obscureText: true,
-                        validator: (value) {
-                          if (value!.isEmpty) {
-                            return "Please enter Password";
-                          }
-                        },
-                        onChanged: (value) {
-                          password = value;
-                        },
-                        textAlign: TextAlign.center,
-                        decoration: kTextFieldDecoration.copyWith(
-                            hintText: 'Password',
-                            prefixIcon: const Icon(
-                              Icons.lock,
-                              color: Colors.black,
-                            )),
+                      SizedBox(
+                        height: size.height / 20,
                       ),
-
-
-                      const SizedBox(height: 80),
-                      LoginSignupButton(
-                        title: 'Login',
-                        ontapp: () async {
-                          if (formkey.currentState!.validate()) {
-                            setState(() {
-                              isloading = true;
-                            });
-                            try {
-                              await _auth.signInWithEmailAndPassword(
-                                  email: email, password: password);
-
-                              await Navigator.of(context).push(
-                                MaterialPageRoute(
-                                  builder: (context) => const HomeScreen(), //TODO hacer pushNamedAndRemoveUntil para que se vacie el stack y el user no pueda volver hacia la pantalla de login
-                                ),
-                              );
-
-                              setState(() {
-                                isloading = false;
-                              });
-                            } on FirebaseAuthException catch (e) {
-                              showDialog(
-                                context: context,
-                                builder: (ctx) => AlertDialog(
-                                  title: Text("Oops! Login Failed"),
-                                  content: Text('${e.message}'),
-                                  actions: [
-                                    TextButton(
-                                      onPressed: () {
-                                        Navigator.of(ctx).pop();
-                                      },
-                                      child: Text('Okay'),
-                                    )
-                                  ],
-                                ),
-                              );
-                              print(e);
-                            }
-                            setState(() {
-                              isloading = false;
-                            });
-                          }
-                          else
-                            {
-                              //UserSecureStorage.setUserEmail("ferran@TestingPersistence.com");
-                              //UserSecureStorage.setUsername("ferranTestingPersistence");
-                              Navigator.pushNamedAndRemoveUntil(context, HomeScreen.routeName, (_) => false); //esto hace que se vacie el stack y asi el user no puede volver hacia la pantalla de login
-                              Fluttertoast.showToast(msg: "Skipped login because developer");
-                            }
-                        },
-                      ),
-                      const SizedBox(height: 30),
-                      GestureDetector(
-                        onTap: () {
-                          Navigator.of(context).push(
-                            MaterialPageRoute(
-                              builder: (context) => SignupScreen(),
-                            ),
-                          );
-                        },
-                        child: Row(
-                          children: const [
-                            Text(
-                              "Don't have an Account ?",
-                              style: TextStyle(
-                                  fontSize: 20, color: Colors.black87),
-                            ),
-                            SizedBox(width: 10),
-                            Hero(
-                              tag: '1',
-                              child: Text(
-                                'Sign up',
-                                style: TextStyle(
-                                    fontSize: 21,
-                                    fontWeight: FontWeight.bold,
-                                    color: Colors.black),
-                              ),
-                            )
-                          ],
-                        ),
-                      )
                     ],
                   ),
                 ),
-              )
+              ),
+
             ],
+          )
+      ),
+      //),
+    );
+  }
+
+  Widget customButton(Size size) {
+    return GestureDetector(
+      onTap: () {
+        if (_email.text.isNotEmpty && _password.text.isNotEmpty) {
+          setState(() {
+            loading = true;
+          });
+
+          logIn(_email.text, _password.text).then((user) {
+            if (user != null) {
+              print("Login Successful");
+              setState(() {
+                loading = false;
+              });
+              Navigator.pushNamedAndRemoveUntil(context, HomeScreen.routeName, (_) => false);
+            } else {
+              print("Incorrect Email or Password");
+              setState(() {
+                loading = false;
+              });
+
+
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(
+                  content: const Text('Incorrect Email or Password', style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 16,
+                    fontWeight: FontWeight.w500,
+                  ),),
+                  backgroundColor: Colors.red,
+                  action: SnackBarAction(label: 'Try again', textColor: Colors.white ,onPressed: ScaffoldMessenger.of(context).hideCurrentSnackBar),
+                ),
+              );
+            }
+          });
+        } else {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: const Text('Complete the fields', style: TextStyle(
+                color: Colors.white,
+                fontSize: 16,
+                fontWeight: FontWeight.w500,
+              ),),
+              backgroundColor: Colors.cyan,
+              action: SnackBarAction(label: 'Try again', textColor: Colors.white ,onPressed: ScaffoldMessenger.of(context).hideCurrentSnackBar),
+            ),
+          );
+          print("Complete the fields email and password");
+        }
+      },
+      child: Container(
+          height: size.height / 14,
+          width: size.width / 1.2,
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(5),
+            color: Colors.cyan,
+          ),
+          alignment: Alignment.center,
+          child: const Text(
+            "Login",
+            style: TextStyle(
+              color: Colors.white,
+              fontSize: 18,
+              fontWeight: FontWeight.bold,
+            ),
+          )),
+    );
+  }
+
+  Widget field(
+      Size size, String hintText, IconData icon, TextEditingController cont) {
+    return SizedBox(
+      height: size.height / 14,
+      width: size.width / 1.1,
+      child: TextField(
+        controller: cont,
+        decoration: InputDecoration(
+          prefixIcon: Icon(icon),
+          hintText: hintText,
+          hintStyle: const TextStyle(color: Colors.grey),
+          border: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(10),
           ),
         ),
       ),
     );
-  } //jaja
-
-
-
-
+  }
 }
 
 
+Future<User?> logIn(String email, String password) async {
+  FirebaseAuth _auth = FirebaseAuth.instance;
+  FirebaseFirestore _firestore = FirebaseFirestore.instance;
+
+  try {
+    UserCredential userCredential = await _auth.signInWithEmailAndPassword(
+        email: email, password: password);
+
+    print("Login Sucessfull");
+    _firestore
+        .collection('users')
+        .doc(_auth.currentUser!.uid)
+        .get()
+        .then((value) => userCredential.user!.updateDisplayName(value['username']));
+
+    return userCredential.user;
+  } catch (e) {
+    print(e);
+    return null;
+  }
+}
