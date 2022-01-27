@@ -5,15 +5,20 @@ import 'package:flutter/services.dart';
 import 'package:flutter_html/style.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:my_login/Component/create_spot_dialog.dart';
 import 'package:my_login/Component/create_spot_preview.dart';
+import 'package:my_login/Screens/home_screen.dart';
+import 'package:my_login/Screens/timeline_screen.dart';
 import 'package:my_login/dataclasses/create_spot_data.dart';
 import 'package:my_login/dataclasses/spot_data.dart';
+import 'package:my_login/user_secure_storage.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:firebase_storage/firebase_storage.dart' as firebase_storage;
 import 'package:image/image.dart' as img;
+import 'dart:math' as math;
 
-class CreateTripScreen extends StatefulWidget { //TODO stateless?
+class CreateTripScreen extends StatefulWidget {
   const CreateTripScreen({Key? key}) : super(key: key);
 
   final String title = "Create a trip";
@@ -31,8 +36,33 @@ class _CreateTripScreenState extends State<CreateTripScreen> {
   String tripDescription ="";
   List<CreateSpotData> spotDatas = [];
   List<CreateSpotPreview> spotPreviews = [];
+  File? previewPicFile;
+  Image? previewPicImage;
 
-  //we use spotData but pictures is device paths instead of online stuff //not anymore!!
+  String? loggedUsername;
+  String? loggedUserEmail;
+  bool isloading = false;
+
+  final ImagePicker imagePicker = ImagePicker();
+
+  @override
+  void initState() {
+    super.initState();
+    getLoggedUsernameAndEmail();
+  }
+
+
+  @override
+  void didChangeDependencies() {  //TODO inecesario?
+    super.didChangeDependencies();
+    getLoggedUsernameAndEmail();
+  }
+
+  Future<void> getLoggedUsernameAndEmail () async {
+    loggedUsername = await UserSecureStorage.getUsername();
+    loggedUserEmail = await UserSecureStorage.getUserEmail();
+    print("persistent username = " +loggedUsername!+", persistent email = "+loggedUserEmail!);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -48,7 +78,12 @@ class _CreateTripScreenState extends State<CreateTripScreen> {
 
       Container(
         padding: const EdgeInsets.fromLTRB(25, 0, 25, 0),
-        child: ListView(
+        child:
+        isloading? const Center(
+          child: CircularProgressIndicator(),
+        )
+            :
+        ListView(
             //mainAxisAlignment: MainAxisAlignment.start, //doesnt work? its still centered, idk why
           children: [
             TextFormField(
@@ -126,17 +161,43 @@ class _CreateTripScreenState extends State<CreateTripScreen> {
                   ),
             ),
 
+            const Padding(padding: EdgeInsets.fromLTRB(0, 30, 0, 0),),
+            Row(children: [
+              const Text("Select a preview picture:"),
+              IconButton(
+                icon: const Icon(Icons.info),
+                onPressed: () {
+                  showPreviewPicInfoDialog();
+                },
+              ),
+            ],),
+
+            Container( //preview pic selection
+              alignment: Alignment.centerLeft,
+              child:
+              IconButton(
+                icon:previewPicImage==null ? const Icon(Icons.image): previewPicImage!,
+                onPressed: () {
+                  pickImage();
+                  },
+                iconSize: 50,
+              ),
+            ),
+
             Container(
               alignment: Alignment.centerRight,
               child:
               ElevatedButton(
                 child: const Text("Create trip", style: TextStyle(fontWeight: FontWeight.bold),),
                 style: ElevatedButton.styleFrom(primary: Colors.green),
-                onPressed: spotDatas.isNotEmpty? ()  async {  //if there's at least one spot, button enabled
+                onPressed: (spotDatas.isNotEmpty && loggedUsername!=null && loggedUserEmail!=null)? ()  async {  //if there's at least one spot and the username is not null (has been obtained), button enabled
                   if (formKey.currentState!.validate()) {
-                    //TODO could do the isLoading thing that Pilar did
+                    setState(() {
+                      isloading = true;
+                      print("isloading = "+isloading.toString());
+                    });
+
                     createTrip();
-                    //TODO: exit screen, so you cant add the same trip multiple times. also remove it from stack
                   }
                   else {  //if something's missing
 
@@ -192,22 +253,17 @@ class _CreateTripScreenState extends State<CreateTripScreen> {
     // Create the trip
     //first, the preview pic
     String? previewPicPathInFirebase;
-    if (spotDatas[0].pictureFiles.isNotEmpty) {
-      File picFile = spotDatas[0].pictureFiles[0]; //TODO chosen by user
-      Image previewImage = Image.file(picFile, width:50, height:50, fit: BoxFit.none); //TODO better fit?
-      //picFile = File(previewImage); //TODO: hay q pasar el previewImage a File. quizas será creando un File local?
 
-      //picFile = resizePreviewImage(picFile);  //doing
-
-      previewPicPathInFirebase = "users/ferranib00@gmail.com/" + tripTitle + "/preview"; //TODO hope I dont need a file extension lol //TODO insert user's email adress
+    if (previewPicFile != null) {
+      previewPicPathInFirebase = "users/"+loggedUserEmail!+"/" + tripTitle + "/preview"; //TODO hope I dont need a file extension lol
       await firebase_storage.FirebaseStorage.instance.ref(previewPicPathInFirebase)
-          .putFile(picFile);
+          .putFile(previewPicFile!);
     }
 
     //then create the trip, referencing the preview pic
     var newTrip = firestore.collection('trips').doc();
     batch.set(newTrip, {
-      'author_username': "FerranCreating", //TODO insert logged user username
+      'author_username': loggedUsername,
       'title': tripTitle,
       'location': tripLocation,
       'description':tripDescription,
@@ -223,7 +279,7 @@ class _CreateTripScreenState extends State<CreateTripScreen> {
       List<String> allPicPathsInFirebase = [];
       for (int i = 0; i < spotData.pictureFiles.length; ++i) {
         File picFile = spotData.pictureFiles[i];
-        String picPathInFirebase ="users/ferranib00@gmail.com/"+ tripTitle +"/"+ spotData.name +"/"+ i.toString();  //TODO hope I dont need a file extension lol //TODO insert user's email adress
+        String picPathInFirebase ="users/"+loggedUserEmail!+"/"+ tripTitle +"/"+ spotData.name +"/"+ i.toString();  //TODO hope I dont need a file extension lol
         allPicPathsInFirebase.add(picPathInFirebase);
         await firebase_storage.FirebaseStorage.instance.ref(picPathInFirebase).putFile(picFile);
       }
@@ -276,10 +332,65 @@ class _CreateTripScreenState extends State<CreateTripScreen> {
   void confirmTripAdded() {
     print("trip added to firestore");
     Fluttertoast.showToast(msg: "Trip posted successfully!");
+    //vamos a la pantalla de perfil
+    Navigator.pushNamedAndRemoveUntil(context, HomeScreen.routeName, (_) => false, arguments: 3); //esto hace que se vacie el stack y asi el user no puede volver hacia esta pantalla
+
   }
 
   void informAddTripError(onError) {
     print("error adding to firestore. error = "+onError.toString());
-    Fluttertoast.showToast(msg: "There was an error creating the trip.");
+    Fluttertoast.showToast(msg: "There was an error creating the trip. Please contact a developer");
+  }
+
+  Future<void> setPreviewPic(File imageFile) async {
+    previewPicImage = Image.file(imageFile, width: 50, height: 50/*, fit: BoxFit.none*/);//TODO better fit?
+    previewPicFile = imageFile;
+  }
+
+  Future<void> pickImage() async {
+    try {
+      final imageThing = await imagePicker.pickImage(
+          source: ImageSource.gallery,
+      );
+      if (imageThing == null) {
+        return;
+      }
+
+      final File imageFile = File(/*[],*/ imageThing.path);
+      setState(() => {
+        setPreviewPic(imageFile)
+      }); //idk
+    }
+
+    on PlatformException catch (e) {
+      print("permission to gallery rejected. error = "+e.toString());
+      Fluttertoast.showToast(msg: "permission to gallery rejected.");
+    }
+  }
+
+  void showPreviewPicInfoDialog() {
+    // set up the button
+    Widget okButton = ElevatedButton(
+      child: const Text("OK"),
+      onPressed: () {
+        Navigator.of(context, rootNavigator: true).pop('dialog');
+      },
+    );
+
+    // set up the AlertDialog
+    AlertDialog alert = AlertDialog(
+      title: const Text("Preview Picture"),
+      content: const Text('Picture that will be displayed in a small size (50x50 pixels) next to the trip title.'),
+      actions: [
+        okButton,
+      ],
+    );
+    // show the dialog
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return alert;
+      },
+    );
   }
 }

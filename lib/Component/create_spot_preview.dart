@@ -28,17 +28,21 @@ class _CreateSpotPreviewState extends State<CreateSpotPreview> {
   Widget build(BuildContext context) {
     return Card(
       //margin: const EdgeInsets.fromLTRB(10, 10, 10, 10),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      child: Column(  //everything
+        //mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Row(  //title
+          Row(  //title and padding
             children: [
               const Padding(padding: EdgeInsets.fromLTRB(5, 0, 0, 0),),
-              Text(/*widget.spotName*/widget.parentSpotDatas[widget.spotIndex].name),
+              SizedBox(
+                width: 250, //could be done better, could be device dependent. but it works and looks good. makes sure the title doesnt overflow to the right
+                child: Text(/*widget.spotName*/widget.parentSpotDatas[widget.spotIndex].name, maxLines: 100,),
+              ),
             ],
           ),
 
           Row(  //buttons
+            mainAxisAlignment: MainAxisAlignment.end,
             children: [
               ElevatedButton(
                   onPressed: () {
