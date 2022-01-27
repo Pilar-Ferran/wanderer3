@@ -365,7 +365,10 @@ class _ExploreScreenState extends State<ExploreScreen> {
 
   }
 
-  Future<String> getImage(String imagePath) async {
+  Future<String?> getImage(String? imagePath) async {
+    if (imagePath == null) {
+      return null;
+    }
     final ref = FirebaseStorage.instance.ref().child(imagePath);
     var url = await ref.getDownloadURL();
     return url;
