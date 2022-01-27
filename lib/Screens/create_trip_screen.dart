@@ -16,6 +16,7 @@ import 'package:my_login/user_secure_storage.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:firebase_storage/firebase_storage.dart' as firebase_storage;
 import 'package:image/image.dart' as img;
+import 'dart:math' as math;
 
 class CreateTripScreen extends StatefulWidget {
   const CreateTripScreen({Key? key}) : super(key: key);
@@ -252,28 +253,11 @@ class _CreateTripScreenState extends State<CreateTripScreen> {
     // Create the trip
     //first, the preview pic
     String? previewPicPathInFirebase;
-    /*if (spotDatas[0].pictureFiles.isNotEmpty) {
-      File picFile = spotDatas[0].pictureFiles[0]; //TODO chosen by user
-      Image previewImage = Image.file(picFile, width:50, height:50, fit: BoxFit.none); //TODO better fit?
-      //picFile = File(previewImage); //TODO: hay q pasar el previewImage a File. quizas será creando un File local?
-
-      //picFile = resizePreviewImage(picFile);  //doing
-
-      previewPicPathInFirebase = "users/"+loggedUserEmail!+"/" + tripTitle + "/preview"; //TODO hope I dont need a file extension lol
-      await firebase_storage.FirebaseStorage.instance.ref(previewPicPathInFirebase)
-          .putFile(picFile);
-    }*/
 
     if (previewPicFile != null) {
-      Image previewImage = Image.file(previewPicFile!, width:50, height:50, fit: BoxFit.none); //TODO better fit?  //and TODO make this work. //and TODO do it in PickImage
-      File picFile = previewPicFile!; //stub
-      //picFile = File(previewImage); //TODO: hay q pasar el previewImage a File. quizas será creando un File local?
-      //picFile = resizePreviewImage(picFile);  //doing
-
-
       previewPicPathInFirebase = "users/"+loggedUserEmail!+"/" + tripTitle + "/preview"; //TODO hope I dont need a file extension lol
       await firebase_storage.FirebaseStorage.instance.ref(previewPicPathInFirebase)
-          .putFile(picFile);
+          .putFile(previewPicFile!);
     }
 
     //then create the trip, referencing the preview pic
@@ -358,15 +342,36 @@ class _CreateTripScreenState extends State<CreateTripScreen> {
     Fluttertoast.showToast(msg: "There was an error creating the trip. Please contact a developer");
   }
 
-  void setPreviewPic(File imageFile) {
-    previewPicFile = imageFile;
-    previewPicImage = Image.file(imageFile, width: 50, height: 50,);  //TODO when resizing pic
+  Future<void> setPreviewPic(File imageFile) async {
+    //previewPicImage = Image.file(imageFile, width: 50, height: 50/*, fit: BoxFit.none*/);//TODO better fit?
+    //previewPicFile = /*resizePreviewImage(*/imageFile/*)*/;
+    //picFile = File(previewImage); //intento pasando el previewImage a File. quizas será creando un File local?
+
+    //and now we resize it
+    final tempDir = await getTemporaryDirectory();
+    final path = tempDir.path;
+    //int rand = math.Random().nextInt(10000);
+    String timestampPath = DateTime.now().millisecondsSinceEpoch.toString();  //random unique string
+
+    img.Image? image = img.decodeImage(imageFile.readAsBytesSync());
+    img.Image smallerImage = img.copyResize(image!, width: 50, height: 50, interpolation: img.Interpolation.cubic); // choose the size here, it will maintain aspect ratio
+
+
+    var compressedImage = File('$path/img_$timestampPath.jpg')..writeAsBytesSync(img.encodeJpg(/*image*/smallerImage));
+    //TODO might need to delete it later?
+
+    previewPicFile = compressedImage;
+    previewPicImage = Image.file(previewPicFile!);
   }
 
   Future<void> pickImage() async {
     try {
       final imageThing = await imagePicker.pickImage(
-          source: ImageSource.gallery);
+          source: ImageSource.gallery,
+      /*maxHeight: 50,
+      maxWidth: 50,
+      imageQuality: 100*/
+      );
       if (imageThing == null) {
         return;
       }
