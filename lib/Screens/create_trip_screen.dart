@@ -252,12 +252,24 @@ class _CreateTripScreenState extends State<CreateTripScreen> {
     // Create the trip
     //first, the preview pic
     String? previewPicPathInFirebase;
-    if (spotDatas[0].pictureFiles.isNotEmpty) {
+    /*if (spotDatas[0].pictureFiles.isNotEmpty) {
       File picFile = spotDatas[0].pictureFiles[0]; //TODO chosen by user
       Image previewImage = Image.file(picFile, width:50, height:50, fit: BoxFit.none); //TODO better fit?
       //picFile = File(previewImage); //TODO: hay q pasar el previewImage a File. quizas será creando un File local?
 
       //picFile = resizePreviewImage(picFile);  //doing
+
+      previewPicPathInFirebase = "users/"+loggedUserEmail!+"/" + tripTitle + "/preview"; //TODO hope I dont need a file extension lol
+      await firebase_storage.FirebaseStorage.instance.ref(previewPicPathInFirebase)
+          .putFile(picFile);
+    }*/
+
+    if (previewPicFile != null) {
+      Image previewImage = Image.file(previewPicFile!, width:50, height:50, fit: BoxFit.none); //TODO better fit?  //and TODO make this work. //and TODO do it in PickImage
+      File picFile = previewPicFile!; //stub
+      //picFile = File(previewImage); //TODO: hay q pasar el previewImage a File. quizas será creando un File local?
+      //picFile = resizePreviewImage(picFile);  //doing
+
 
       previewPicPathInFirebase = "users/"+loggedUserEmail!+"/" + tripTitle + "/preview"; //TODO hope I dont need a file extension lol
       await firebase_storage.FirebaseStorage.instance.ref(previewPicPathInFirebase)
