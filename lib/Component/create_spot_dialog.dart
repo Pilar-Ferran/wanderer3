@@ -141,7 +141,8 @@ class _CreateSpotDialogState extends State<CreateSpotDialog> {
                   ),
                   const Padding(padding: EdgeInsets.fromLTRB(0, 10, 0, 0),),
                   Column(
-                    children: addPaddingBetweenImages(imageImages),
+                    children: //addPaddingBetweenImages(imageImages),
+                    imagesWithPaddingAndDeleteButton(imageImages),
                   ),
 
                   Container(  //add pic button
@@ -231,6 +232,77 @@ class _CreateSpotDialogState extends State<CreateSpotDialog> {
       widgets.add(image);
       widgets.add(const Padding(padding: EdgeInsets.fromLTRB(0, 10, 0, 0),));
     }
+    return widgets;
+  }
+
+  void deletePic(int index) {
+    setState(() {
+      imageImages.removeAt(index);
+      imageFiles.removeAt(index);
+    });
+  }
+
+  showDeletePicConfirmationDialog(BuildContext context, int index) {
+    // set up the buttons
+    Widget cancelButton = ElevatedButton(
+      child: const Text("Cancel"),
+      onPressed:  () {
+        Navigator.of(context).pop();
+      },
+    );
+    Widget continueButton = ElevatedButton(
+      child: const Text("Delete"),
+      onPressed:  () {
+        deletePic(index);
+        Navigator.of(context).pop();
+      },
+    );
+
+    // set up the AlertDialog
+    AlertDialog alert = AlertDialog(
+      title: const Text("Delete picture?"),
+      actions: [
+        cancelButton,
+        continueButton,
+      ],
+    );
+    // show the dialog
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return alert;
+      },
+    );
+  }
+
+  List<Widget> imagesWithPaddingAndDeleteButton(List<Widget> imageList) {
+    List<Widget> widgets = [];
+
+    for(int i = 0; i < imageList.length; ++i) {
+      Stack stack = Stack(children: [
+
+        imageList[i],
+
+        Container(  //delete button
+          decoration: const BoxDecoration(shape: BoxShape.circle, color: Colors.red,),
+          child: IconButton(
+            icon: const Icon(Icons.delete),
+            color: Colors.black,
+            iconSize: 30,
+            onPressed: () {
+              showDeletePicConfirmationDialog(context, i);
+              Fluttertoast.showToast(msg: "delete");
+            },
+          ),
+        )
+      ],
+        alignment: AlignmentDirectional.bottomEnd,
+      );
+
+      widgets.add(stack);
+      widgets.add(const Padding(padding: EdgeInsets.fromLTRB(0, 10, 0, 0),));
+    }
+
     return widgets;
   }
 

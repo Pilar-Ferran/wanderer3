@@ -343,34 +343,14 @@ class _CreateTripScreenState extends State<CreateTripScreen> {
   }
 
   Future<void> setPreviewPic(File imageFile) async {
-    //previewPicImage = Image.file(imageFile, width: 50, height: 50/*, fit: BoxFit.none*/);//TODO better fit?
-    //previewPicFile = /*resizePreviewImage(*/imageFile/*)*/;
-    //picFile = File(previewImage); //intento pasando el previewImage a File. quizas será creando un File local?
-
-    //and now we resize it
-    final tempDir = await getTemporaryDirectory();
-    final path = tempDir.path;
-    //int rand = math.Random().nextInt(10000);
-    String timestampPath = DateTime.now().millisecondsSinceEpoch.toString();  //random unique string
-
-    img.Image? image = img.decodeImage(imageFile.readAsBytesSync());
-    img.Image smallerImage = img.copyResize(image!, width: 50, height: 50, interpolation: img.Interpolation.cubic); // choose the size here, it will maintain aspect ratio
-
-
-    var compressedImage = File('$path/img_$timestampPath.jpg')..writeAsBytesSync(img.encodeJpg(/*image*/smallerImage));
-    //TODO might need to delete it later?
-
-    previewPicFile = compressedImage;
-    previewPicImage = Image.file(previewPicFile!);
+    previewPicImage = Image.file(imageFile, width: 50, height: 50/*, fit: BoxFit.none*/);//TODO better fit?
+    previewPicFile = imageFile;
   }
 
   Future<void> pickImage() async {
     try {
       final imageThing = await imagePicker.pickImage(
           source: ImageSource.gallery,
-      /*maxHeight: 50,
-      maxWidth: 50,
-      imageQuality: 100*/
       );
       if (imageThing == null) {
         return;
