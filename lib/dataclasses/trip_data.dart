@@ -25,13 +25,5 @@ class TripData {
     return TripData(json['author_username'] as String, json['title'] as String, json['location'] as String,
         json['description'] as String, json['preview_pic'] as String);
   }
-  
-    // creating a Trip object from a firebase snapshot
- factory TripData.fromSnapshot(DocumentSnapshot snapshot) {
-   return TripData(snapshot['title'],
-   snapshot['description'],
-   snapshot['location'],
-   snapshot['author_username'],
-   snapshot['preview_pic']);
- }
+
 }
