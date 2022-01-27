@@ -31,89 +31,89 @@ class _LoginScreenState extends State<LoginScreen> {
         ),
       )
           : Container(
-          constraints: BoxConstraints.expand(),
-          decoration: const BoxDecoration(
-            image: DecorationImage(
-              image: AssetImage('images/ff97d9.png'),
-              fit: BoxFit.cover,
-            ),
-          ),
+        constraints: BoxConstraints.expand(),
+        decoration: const BoxDecoration(
+        image: DecorationImage(
+        image: AssetImage('images/ff97d9.png'),
+        fit: BoxFit.cover,
+        ),
+        ),
           child:
-          Column(
+            Column(
             children:[
-              SizedBox(
-                height: size.height / 5,
+            SizedBox(
+              height: size.height / 5,
+            ),
+            Container(
+            decoration: const BoxDecoration(
+              image: DecorationImage(
+                image: AssetImage('images/white.jpg'),
+                fit: BoxFit.cover,
               ),
-              Container(
-                decoration: const BoxDecoration(
-                  image: DecorationImage(
-                    image: AssetImage('images/white.jpg'),
-                    fit: BoxFit.cover,
-                  ),
+            ),
+            child: SingleChildScrollView(
+              child: Column(
+          children: [
+            SizedBox(
+              height: size.height / 20,
+            ),
+            SizedBox(
+              width: size.width / 1.1,
+              child: const Text(
+                "Wanderer",
+                style: TextStyle(
+                  fontSize: 45,
+                  fontWeight: FontWeight.bold,
                 ),
-                child: SingleChildScrollView(
-                  child: Column(
-                    children: [
-                      SizedBox(
-                        height: size.height / 20,
-                      ),
-                      SizedBox(
-                        width: size.width / 1.1,
-                        child: const Text(
-                          "Wanderer",
-                          style: TextStyle(
-                            fontSize: 45,
-                            fontWeight: FontWeight.bold,
-                          ),
-                          textAlign: TextAlign.center,
-                        ),
-                      ),
-                      SizedBox(
-                        height: size.height / 15,
-                      ),
-                      Container(
-                        width: size.width,
-                        alignment: Alignment.center,
-                        child: field(size, "Email", Icons.account_box, _email),
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.symmetric(vertical: 18.0),
-                        child: Container(
-                          width: size.width,
-                          alignment: Alignment.center,
-                          child: field(size, "Password", Icons.lock, _password),
-                        ),
-                      ),
-                      SizedBox(
-                        height: size.height / 40,
-                      ),
-                      customButton(size),
-                      SizedBox(
-                        height: size.height / 40,
-                      ),
-                      GestureDetector(
-                        onTap: () => Navigator.pushReplacementNamed(context, SignupScreen.routeName),
-                        child: const Text(
-                          "Create Account",
-                          style: TextStyle(
-                            color: Colors.cyan,
-                            fontSize: 18,
-                            fontWeight: FontWeight.w600,
-                          ),
-                        ),
-                      ),
-                      SizedBox(
-                        height: size.height / 20,
-                      ),
-                    ],
-                  ),
+                textAlign: TextAlign.center,
+              ),
+            ),
+            SizedBox(
+              height: size.height / 15,
+            ),
+            Container(
+              width: size.width,
+              alignment: Alignment.center,
+              child: field(size, "Email", Icons.account_box, _email),
+            ),
+            Padding(
+              padding: const EdgeInsets.symmetric(vertical: 18.0),
+              child: Container(
+                width: size.width,
+                alignment: Alignment.center,
+                child: field(size, "Password", Icons.lock, _password),
+              ),
+            ),
+            SizedBox(
+              height: size.height / 40,
+            ),
+            customButton(size),
+            SizedBox(
+              height: size.height / 40,
+            ),
+            GestureDetector(
+              onTap: () => Navigator.pushReplacementNamed(context, SignupScreen.routeName),
+              child: const Text(
+                "Create Account",
+                style: TextStyle(
+                  color: Colors.cyan,
+                  fontSize: 18,
+                  fontWeight: FontWeight.w600,
                 ),
               ),
+            ),
+            SizedBox(
+              height: size.height / 20,
+            ),
+          ],
+          ),
+        ),
+            ),
 
-            ],
-          )
+        ],
+            )
       ),
-      //),
+    //),
     );
   }
 
@@ -228,3 +228,4 @@ Future<User?> logIn(String email, String password) async {
     return null;
   }
 }
+
