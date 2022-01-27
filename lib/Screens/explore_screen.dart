@@ -2,6 +2,7 @@ import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:my_login/Component/picture_loading_indicator.dart';
+import 'package:my_login/dataclasses/trip_data.dart';
 import '../Component/trip_preview.dart';
 import '../icons_app.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -17,8 +18,53 @@ class ExploreScreen extends StatefulWidget {
 class _ExploreScreenState extends State<ExploreScreen> {
   Map<String, dynamic>? userMap;
   bool loading = false;
+  bool loading2= false;
   final TextEditingController _search = TextEditingController();
+  final TextEditingController _searchtrip = TextEditingController();
+  late Future resultsLoaded;
+  List _allResults = [];
+  List _resultsList = [];
 
+
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    resultsLoaded = getUsersPastTripsStreamSnapshots();
+  }
+
+
+
+  searchResultsList() {
+    var showResults = [];
+
+    if(_searchtrip.text != "") {
+      for(var tripSnapshot in _allResults){
+        var title = TripData.fromSnapshot(tripSnapshot).place;
+        if(title.contains(_searchtrip.text)) {
+          TripData aux= TripData.fromSnapshot(tripSnapshot);
+
+          showResults.add(aux);
+        }
+      }
+
+    } else {
+
+      showResults = List.from(_allResults);
+    }
+    setState(() {
+      _resultsList = showResults;
+    });
+  }
+
+  getUsersPastTripsStreamSnapshots() async {
+    var data = await FirebaseFirestore.instance.collection('trips').where("location", isEqualTo: _searchtrip.text).get();
+    setState(() {
+      _allResults = data.docs;
+    });
+    searchResultsList();
+    print(_allResults);
+  }
   @override
 
   Widget build(BuildContext context) {
@@ -48,10 +94,68 @@ class _ExploreScreenState extends State<ExploreScreen> {
         ),
         body: TabBarView(
           children: [
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              mainAxisSize: MainAxisSize.min,
-              children: const [Text("here you search places"),],
+            Container(
+              constraints: const BoxConstraints.expand(),
+              decoration: const BoxDecoration(
+                image: DecorationImage(
+                  image: AssetImage('images/cyan.jpg'),
+                  fit: BoxFit.cover,
+                ),
+              ),
+              child:Column(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                mainAxisSize: MainAxisSize.min,
+
+                    children: [
+                      SizedBox(
+                        height: size.height / 20,
+                      ),
+                      Container(
+                        height: size.height / 14,
+                        width: size.width,
+                        alignment: Alignment.center,
+                        child: Container(
+                          height: size.height / 14,
+                          width: size.width / 1.15,
+                          child: TextField(
+                            controller: _searchtrip,
+                            decoration: InputDecoration(
+                              filled:true,
+                              fillColor: Colors.white,
+                              hintText: "Search Trip",
+                              border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(10),
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+                      SizedBox(
+                        height: size.height / 50,
+                      ),
+                      ElevatedButton(
+                        onPressed: getUsersPastTripsStreamSnapshots,
+                        child: const Text("Search", style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 18,
+                          fontWeight: FontWeight.w600,
+                        ),),
+                      ),
+                      SizedBox(
+                        height: size.height / 30,
+                      ),
+                      Expanded(
+                              child: ListView.builder(
+                              itemCount: _resultsList.length,
+                              itemBuilder: (BuildContext context, int index) =>
+                              TripPreview(_resultsList[index]),
+                              )
+
+                      ),
+    ],
+                  ),
+
+
             ),
         Container(
           constraints: const BoxConstraints.expand(),
@@ -121,7 +225,7 @@ class _ExploreScreenState extends State<ExploreScreen> {
                         ListTile(
                           onTap:() {},
                           leading: FutureBuilder(
-                            future: getUserImage(userMap!['profile_picture']),
+                            future: getImage(userMap!['profile_picture']),
                             builder: (context, snapshot){
                               if (snapshot.connectionState == ConnectionState.done) {
                                 if (snapshot.hasError) {
@@ -185,7 +289,6 @@ class _ExploreScreenState extends State<ExploreScreen> {
       loading = false;
       userMap=null;
     });
-      print('hola');
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: const Text('No user found', style: TextStyle(
@@ -202,11 +305,14 @@ class _ExploreScreenState extends State<ExploreScreen> {
 
   }
 
-  Future<String> getUserImage(String imagePath) async {
+  Future<String> getImage(String imagePath) async {
     final ref = FirebaseStorage.instance.ref().child(imagePath);
     var url = await ref.getDownloadURL();
     return url;
   }
+
+
+
 
 }
 
