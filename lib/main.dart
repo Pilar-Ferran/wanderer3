@@ -9,6 +9,7 @@ import 'package:my_login/Screens/spot_detail.dart';
 
 import 'Screens/login_screen.dart';
 import 'Screens/trip_detail.dart';
+import 'Screens/user_detail.dart';
 
 void main()async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -40,6 +41,7 @@ class MyApp extends StatelessWidget {
         SpotDetail.routeName: (context) => const SpotDetail(),
         LogoutScreen.routeName: (context) => const LogoutScreen(),
         LoginScreen.routeName: (context) => const LoginScreen(),
+        UserDetail.routeName: (context) => const UserDetail(),
       },
     );
   }
