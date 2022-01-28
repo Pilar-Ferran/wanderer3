@@ -2,6 +2,8 @@ import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:my_login/Component/picture_loading_indicator.dart';
+import 'package:my_login/Screens/trip_detail.dart';
+import 'package:my_login/Screens/user_detail.dart';
 import 'package:my_login/dataclasses/trip_data.dart';
 import '../icons_app.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -20,7 +22,6 @@ class _ExploreScreenState extends State<ExploreScreen> {
   bool loading2= false;
   final TextEditingController _search = TextEditingController();
   final TextEditingController _searchtrip = TextEditingController();
-  late Future resultsLoaded;
   List _allResults = [];
   List _resultsList = [];
 
@@ -173,43 +174,44 @@ class _ExploreScreenState extends State<ExploreScreen> {
                       SizedBox(
                         height: size.height / 30,
                       ),
+
                     Expanded(
                       child: ListView.builder(
                         itemCount: _resultsList.length,
                         itemBuilder: (BuildContext context, int index) {
-                      return Card(
-                        child: Container(
-                          color: Colors.white,
-                          child:ListTile(
-                          onTap:() {},
-                          leading: FutureBuilder(
-                            future: getImage(_resultsList[index].previewPic),
-                            builder: (context, snapshot){
-                              if (snapshot.connectionState == ConnectionState.done) {
-                                if (snapshot.hasError) {
-                                  print("error in snapshot: "+snapshot.error.toString());
-                                  return const Text("error");
-                                }
-                                else {
-                                  return Image.network(snapshot.data as String);
-                                }
-                              }
-                              else { //show loading
-                                return const PictureLoadingIndicator();
-                              }
-                            },),
-                          selectedTileColor: Colors.white,
-                          title: Text(
-                            _resultsList[index].title,
-                            style: const TextStyle(
-                              color: Colors.black,
-                              fontSize: 17,
-                              fontWeight: FontWeight.w500,
-                            ),
-                          ),
-                          subtitle: Text(_resultsList[index].authorUser),
-                          trailing: Icon(Icons.account_balance, color: Colors.black),
-                        ),),); }
+                          return Card(
+                            child: Container(
+                              color: Colors.white,
+                              child: ListTile(
+                                onTap:() {Navigator.pushNamed(context, TripDetail.routeName, arguments: _resultsList[index]);},
+                                leading: FutureBuilder(
+                                  future: getImage(_resultsList[index].previewPic),
+                                  builder: (context, snapshot){
+                                    if (snapshot.connectionState == ConnectionState.done) {
+                                      if (snapshot.hasError) {
+                                        print("error in snapshot: "+snapshot.error.toString());
+                                        return const Text("error");
+                                      }
+                                      else {
+                                        return Image.network(snapshot.data as String);
+                                      }
+                                    }
+                                    else { //show loading
+                                      return const PictureLoadingIndicator();
+                                    }
+                                  },),
+                                selectedTileColor: Colors.white,
+                                title: Text(
+                                  _resultsList[index].title,
+                                  style: const TextStyle(
+                                    color: Colors.black,
+                                    fontSize: 17,
+                                    fontWeight: FontWeight.w500,
+                                  ),
+                                ),
+                                subtitle: Text(_resultsList[index].authorUser),
+                                trailing: Icon(Icons.account_balance, color: Colors.black),
+                              ),),);}
                 ),
                     ),
     ],
@@ -279,13 +281,13 @@ class _ExploreScreenState extends State<ExploreScreen> {
                 height: size.height / 30,
               ),
                     userMap!=null ?
-                        Container(
+                     Container(
                           color: Colors.white,
                           child:
                         ListTile(
-                          onTap:() {},
+                          onTap:() {Navigator.pushNamed(context, UserDetail.routeName, arguments: userMap);},
                           leading: FutureBuilder(
-                            future: getImage(userMap!['profile_picture']),
+                            future:  getImage(userMap!['profile_picture']),
                             builder: (context, snapshot){
                               if (snapshot.connectionState == ConnectionState.done) {
                                 if (snapshot.hasError) {
@@ -312,6 +314,7 @@ class _ExploreScreenState extends State<ExploreScreen> {
                           subtitle: Text(userMap!['biography']),
                           trailing: Icon(Icons.chat, color: Colors.black),
                         ),)
+
                         : Container(),
     ],
       ),
