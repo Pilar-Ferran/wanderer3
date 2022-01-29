@@ -160,9 +160,9 @@ class _SignUpScreenState extends State<SignupScreen> {
           createAccount(_username.text, _email.text, _password.text).then((
               user) {
             if (user != null) {
-              setState(() {
+              /*setState(() {
                 loading = false;
-              });
+              });*/
               UserSecureStorage.setUserEmail(_email.text);
               UserSecureStorage.setUsername(_username.text);
               Navigator.pushNamedAndRemoveUntil(

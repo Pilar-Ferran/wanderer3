@@ -136,11 +136,13 @@ class _LoginScreenState extends State<LoginScreen> {
           logIn(_email.text, _password.text).then((user) {
             if (user != null) {
               print("Login Successful");
-              setState(() {
-                loading = false;
-              });
+
               UserSecureStorage.setUsername(userMap!['username']);
               UserSecureStorage.setUserEmail(_email.text);
+              /*setState(() {
+                loading = false;
+              });*/
+
               Navigator.pushNamedAndRemoveUntil(
                   context, HomeScreen.routeName, (_) => false);
             } else {
