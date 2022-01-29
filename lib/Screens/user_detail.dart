@@ -5,6 +5,8 @@ import 'package:my_login/Component/picture_loading_indicator.dart';
 import 'package:my_login/Screens/trip_detail.dart';
 import 'package:my_login/dataclasses/trip_data.dart';
 
+import '../user_secure_storage.dart';
+
 
 class UserDetail extends StatefulWidget {
   static const routeName = '/user_detail';
@@ -19,17 +21,34 @@ class _UserDetailState extends State<UserDetail> {
     late final Map<String, dynamic> args;
     List _allResults = [];
     List _resultsList = [];
+    late bool didFollow;
+    late String follow;
+    String? loggedUsername;
+    String? loggedUserEmail;
+    Map<String, dynamic>? userMapUid;
 
+    @override
+    void initState() {
+      super.initState();
+      getLoggedUsernameAndEmail();
+
+    }
     @override
     void didChangeDependencies() {
       super.didChangeDependencies();
+      //getLoggedUsernameAndEmail();
       args = ModalRoute.of(context)!.settings.arguments as Map<String, dynamic>;
+      //doesFollow(args['list_followers']);
       getUsersPastTripsStreamSnapshots();
+
     }
 
-
-
-
+    Future<void> getLoggedUsernameAndEmail () async {
+      loggedUsername = await UserSecureStorage.getUsername();
+      loggedUserEmail = await UserSecureStorage.getUserEmail();
+      uidFromEmail(loggedUserEmail!);
+      print("persistent username = " +loggedUsername!+", persistent email = "+loggedUserEmail!);
+    }
 
     searchResultsList() {
       var showResults = [];
@@ -75,6 +94,7 @@ class _UserDetailState extends State<UserDetail> {
 
     @override
     Widget build(BuildContext context) {
+      doesFollow(args['list_followers']);
       final size = MediaQuery.of(context).size;
       final Map<String,dynamic> userCharact=args;
       return Scaffold(
@@ -93,8 +113,16 @@ class _UserDetailState extends State<UserDetail> {
       ), child: Column(
               children: [
                 Container(
-                  margin: const EdgeInsets.only(left: 20, right: 10, top: 30),
-                  child: Row(
+                  padding: const EdgeInsets.only(left: 20, right: 10, top: 30),
+                    decoration: const BoxDecoration(
+                      image: DecorationImage(
+                        image: AssetImage('images/white.jpg'),
+                        fit: BoxFit.cover,
+                      ),
+                    ),
+                    child: SingleChildScrollView(
+                      child:
+                     Row(
                     children: [
                       Expanded(
                         flex: 1,
@@ -155,10 +183,18 @@ class _UserDetailState extends State<UserDetail> {
                       )
                     ],
                   ),
+                    ),
                 ),
 
             Container(
-                    margin: const EdgeInsets.only(left: 20, right: 10, top: 0),
+                    padding: const EdgeInsets.only(left: 20, right: 10, top: 0),
+              decoration: const BoxDecoration(
+                image: DecorationImage(
+                  image: AssetImage('images/white.jpg'),
+                  fit: BoxFit.cover,
+                ),
+              ),
+              child: SingleChildScrollView(
                     child: Row(
                       children: [
                         Expanded(
@@ -177,30 +213,40 @@ class _UserDetailState extends State<UserDetail> {
                           flex: 9,
                         )
                       ],
-                    ),),
+                    ),),),
 
                 Container(
-                  margin: const EdgeInsets.only(left: 10, right: 10, top: 30, bottom: 25),
+                  padding: const EdgeInsets.only(left: 10, right: 10, top: 30, bottom: 25),
+                  decoration: const BoxDecoration(
+                    image: DecorationImage(
+                      image: AssetImage('images/white.jpg'),
+                      fit: BoxFit.cover,
+                    ),
+                  ),
+                  child: SingleChildScrollView(
                   child: Row(
                     children: [
                       Expanded(
                         flex: 8,
-                        child: Container(
-                          height: 40,
-                          decoration: BoxDecoration(color: Colors.cyan, border: Border.all(color: Colors.blue), borderRadius: BorderRadius.circular(5)),
-                          padding: const EdgeInsets.all(8),
-                          child: const Center(
-                            child:  Text('Follow', style: const TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.bold),),
+                        child: customButton(size),
                           ),
+                    ],
                         ),
                       ),
+                ),
 
-                    ],
-                  ),
+            Container(
+              decoration: const BoxDecoration(
+                image: DecorationImage(
+                  image: AssetImage('images/white.jpg'),
+                  fit: BoxFit.cover,
                 ),
-            const Divider(
+              ),
+              child: const SingleChildScrollView(
+                child: Divider(
+                    thickness: 15,
                     color: Colors.cyan
-                ),
+                ),),),
 
 
                 Expanded(
@@ -258,5 +304,103 @@ class _UserDetailState extends State<UserDetail> {
       return url;
     }
 
+    Widget customButton(Size size) {
+      return GestureDetector(
+        onTap: () {
+          print(didFollow.toString() +' 1');
+          doesFollow(args['list_followers']);
+          print(didFollow.toString() +' 2');
+          if(didFollow){
+            var list = [loggedUserEmail];
+            FirebaseFirestore.instance.collection('users').doc(args['uid']).update({"list_followers": FieldValue.arrayRemove(list)});
+            FirebaseFirestore.instance.collection('users').doc(args['uid']).update({"followers": FieldValue.increment(-1) });
+            print(args['list_followers'] );
+            args['list_followers'].remove(loggedUserEmail);
+            print(args['list_followers']);
+            var list2=[args['email']];
+            print(userMapUid!['uid'] + ' 1');
+            FirebaseFirestore.instance.collection('users').doc(userMapUid!['uid']).update({"list_following": FieldValue.arrayRemove(list2)});
+            FirebaseFirestore.instance.collection('users').doc(userMapUid!['uid']).update({"following": FieldValue.increment(-1) });
+            args['followers']=args['followers']-1;
+            /*setState(() {
+              follow="Follow";
+              didFollow=false;
+            });*/
+          }
+          else{
+            var list = [loggedUserEmail];
+            FirebaseFirestore.instance.collection('users').doc(args['uid']).update({"list_followers": FieldValue.arrayUnion(list)});
+            FirebaseFirestore.instance.collection('users').doc(args['uid']).update({"followers": FieldValue.increment(1) });
+
+            args['list_followers'].add(loggedUserEmail);
+            var list2=[args['email']];
+
+
+            FirebaseFirestore.instance.collection('users').doc(userMapUid!['uid']).update({"list_following": FieldValue.arrayUnion(list2)});
+            FirebaseFirestore.instance.collection('users').doc(userMapUid!['uid']).update({"following": FieldValue.increment(1) });
+            args['followers']=args['followers']+1;
+
+            /*setState(() {
+              follow="Unfollow";
+              didFollow=true;
+            });*/
+          }
+          print(didFollow.toString() +' 3');
+          doesFollow(args['list_followers']);
+          print(didFollow.toString() +' 4');
+
+        },
+        child: Container(
+        height: 40,
+        decoration: BoxDecoration(color: Colors.cyan, border: Border.all(color: Colors.blue), borderRadius: BorderRadius.circular(5)),
+      padding: const EdgeInsets.all(8),
+      child:  Center(
+      child:  Text(follow, style: TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.bold),),
+      ),),);
+    }
+
+
+    uidFromEmail(String email) async {
+      FirebaseFirestore _firestore = FirebaseFirestore.instance;
+      print(email.toString() + ' especial');
+      await _firestore
+          .collection('users')
+          .where("email", isEqualTo: email)
+          .get()
+          .then((value) {
+        setState(() {
+          userMapUid = value.docs[0].data();
+          print(userMapUid);
+        });
+      }).onError((error, stackTrace) {
+        setState(() {
+          userMapUid = null;
+        });
+      });
+    }
+
+    doesFollow(List followers)  {
+      print(followers);
+      if(followers.isEmpty){
+        setState(() {
+          follow="Follow";
+          didFollow=false;
+        });
+      }
+      for (var follower in followers){
+        if(follower==loggedUserEmail){
+          setState(() {
+            follow="Unfollow";
+            didFollow=true;
+          });
+      }else{
+          setState(() {
+            follow="Follow";
+            didFollow=false;
+          });
+
+        }
+      }
+    }
 
   }

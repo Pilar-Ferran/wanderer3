@@ -2,11 +2,14 @@ import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:my_login/Component/picture_loading_indicator.dart';
+import 'package:my_login/Screens/logout_screen.dart';
 import 'package:my_login/Screens/trip_detail.dart';
 import 'package:my_login/Screens/user_detail.dart';
 import 'package:my_login/dataclasses/trip_data.dart';
 import '../icons_app.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+
+import '../user_secure_storage.dart';
 
 
 class ExploreScreen extends StatefulWidget {
@@ -24,10 +27,22 @@ class _ExploreScreenState extends State<ExploreScreen> {
   final TextEditingController _searchtrip = TextEditingController();
   List _allResults = [];
   List _resultsList = [];
+  String? loggedUsername;
+  String? loggedUserEmail;
 
 
+  @override
+  void initState() {
+    super.initState();
+    getLoggedUsernameAndEmail();
 
+  }
 
+  Future<void> getLoggedUsernameAndEmail () async {
+    loggedUsername = await UserSecureStorage.getUsername();
+    loggedUserEmail = await UserSecureStorage.getUserEmail();
+    print("persistent username = " +loggedUsername!+", persistent email = "+loggedUserEmail!);
+  }
   searchResultsList() {
     var showResults = [];
 
@@ -285,7 +300,7 @@ class _ExploreScreenState extends State<ExploreScreen> {
                           color: Colors.white,
                           child:
                         ListTile(
-                          onTap:() {Navigator.pushNamed(context, UserDetail.routeName, arguments: userMap);},
+                          onTap:() {(userMap!['email']==loggedUserEmail) ? Navigator.pushNamed(context, LogoutScreen.routeName): Navigator.pushNamed(context, UserDetail.routeName, arguments: userMap);},
                           leading: FutureBuilder(
                             future:  getImage(userMap!['profile_picture']),
                             builder: (context, snapshot){

@@ -124,7 +124,7 @@ class _SignUpScreenState extends State<SignupScreen> {
                     GestureDetector(
                       onTap: () =>
                           Navigator.pushReplacementNamed(
-                              context, LoginScreen.routeName),
+                              context, HomeScreen.routeName),
                       child: const Text(
                         "Login",
                         style: TextStyle(
@@ -247,6 +247,7 @@ class _SignUpScreenState extends State<SignupScreen> {
       ),
     );
   }
+
 
   Future<bool> doesUserExist(String currentUserName) async {
     var data = await FirebaseFirestore.instance.collection("users").where(
