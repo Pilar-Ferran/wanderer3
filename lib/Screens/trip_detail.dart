@@ -26,16 +26,16 @@ class TripDetail extends StatefulWidget {
 class _TripDetailState extends State<TripDetail> {
 
   FirebaseFirestore firestore = FirebaseFirestore.instance;
-  firebase_storage.FirebaseStorage storage = firebase_storage.FirebaseStorage.instance; //THIS
-  late Future<String> futureUrl; //THIS
-  late String imgUrl; //THIS
+  firebase_storage.FirebaseStorage storage = firebase_storage.FirebaseStorage.instance;
+  late Future<String> futureUrl;
+  late String imgUrl;
 
   late Future<List<SpotData>> futureSpots;
 
   late final TripData args;
   Map<String, dynamic>? userMap;
 
-  LoggedUserInfo loggedUserInfo = LoggedUserInfo();
+  LoggedUserInfo loggedUserInfo = LoggedUserInfo();   //TODO
 
   @override
   void didChangeDependencies() {

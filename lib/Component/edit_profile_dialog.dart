@@ -6,6 +6,7 @@ import 'package:flutter/widgets.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 
 
+import '../logged_user_info.dart';
 import '../user_secure_storage.dart';
 
 import 'dart:async';
@@ -40,9 +41,10 @@ class _EditProfileDialogState extends State<EditProfileDialog> {
 
 
   Future<void> getLoggedUsernameAndEmail () async {
-    loggedUsername = await UserSecureStorage.getUsername();
-    loggedUserEmail = await UserSecureStorage.getUserEmail();
-    print("persistent username = " +loggedUsername!+", persistent email = "+loggedUserEmail!);
+    LoggedUserInfo userInfo = LoggedUserInfo();
+    loggedUsername = userInfo.loggedUsername;
+    loggedUserEmail = userInfo.loggedUserEmail;
+    //print("edit profile. username = " +loggedUsername!+", persistent email = "+loggedUserEmail!);
   }
 
   @override
@@ -50,7 +52,7 @@ class _EditProfileDialogState extends State<EditProfileDialog> {
     final size = MediaQuery.of(context).size;
 
     return Dialog(
-        child: ListView(children: [
+        child: /*ListView(children: [*/
           Container(
             padding: const EdgeInsets.fromLTRB(20, 10, 20, 10),
             child: Column(  //this could be in a different class
@@ -123,9 +125,10 @@ class _EditProfileDialogState extends State<EditProfileDialog> {
                   ],),
                 ),
               ],
+              mainAxisSize: MainAxisSize.min,
             ),
           )
-        ],)
+        //],)
     );
   }
 
