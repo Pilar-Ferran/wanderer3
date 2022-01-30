@@ -7,6 +7,8 @@ import '../Component/trip_preview.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart' as firebase_storage;
 
+import '../user_secure_storage.dart';
+
 class TimelineScreen extends StatefulWidget {
   const TimelineScreen({Key? key}) : super(key: key);
 
@@ -23,10 +25,20 @@ class _TimelineScreenState extends State<TimelineScreen> {
   FirebaseFirestore firestore = FirebaseFirestore.instance;
   firebase_storage.FirebaseStorage storage = firebase_storage.FirebaseStorage.instance;
 
+  String? loggedUsername;
+  String? loggedUserEmail;
+
   @override
-  void initState() {
+  initState() {
     super.initState();
     futureTrips = getTrips();
+  }
+
+  Future<void> iniLoggedUserInfo() async {
+    print("iniLoggedUserInfo()");
+    loggedUsername = await UserSecureStorage.getUsername();
+    loggedUserEmail = await UserSecureStorage.getUserEmail();
+    print("loggedUsername = "+loggedUsername!);
   }
 
   //hace el get de trips para la timeline
@@ -34,12 +46,37 @@ class _TimelineScreenState extends State<TimelineScreen> {
     List<TripData> tripsRealLocal = [];
     CollectionReference trips = firestore.collection('trips');
 
+    await iniLoggedUserInfo();
+
+    QuerySnapshot<Object?> myUserQuery = await firestore.collection('users').where('username', isEqualTo: loggedUsername).get();
+    var myUserData = myUserQuery.docs[0].data() as Map<String, dynamic>;
+
+    for (String followedEmail in myUserData['list_following']) {
+      QuerySnapshot<Object?> followedUserQuery = await firestore.collection('users').where('email', isEqualTo:followedEmail).get();
+      var followedUserData = followedUserQuery.docs[0].data() as Map<String, dynamic>;
+      String followedUsername = followedUserData['username'];
+      QuerySnapshot<Object?> followedUserPostsQuery = await firestore.collection('trips').where('author_username', isEqualTo:followedUsername).get();
+
+      for (var followedUserPost in followedUserPostsQuery.docs) {
+        var post = followedUserPost.data() as Map<String, dynamic>;
+        TripData trip = TripData.fromJson(post);
+        trip.firestorePath = followedUserPost.reference.path;
+        trip.previewPicFuture = getTripPreviewImage(trip.previewPic);
+        tripsRealLocal.add(trip);
+      }
+    }
+
+    //final Map<String,dynamic> userCharact=args;
+    //userMapUid!['username'];
+
+    /*QuerySnapshot<Object?> coolTrips = await firestore.collection('trips').where('author_username', isEqualTo: loggedUsername).get();
+    //List coolTripsList = coolTrips.docs;
+
     QuerySnapshot<Object?> querySnapshot = await trips.get();
 
     //mete en tripsRealLocal todos los trips de la BD
-    for (var doc in querySnapshot.docs) {
+    for (var doc in coolTrips.docs) {
       var docData = doc.data() as Map<String, dynamic>;
-      //print("doc.data be like: " + doc.data().toString());
       TripData trip = TripData.fromJson(docData);
 
       //we add the firebase path, to find more info about it later
@@ -47,21 +84,10 @@ class _TimelineScreenState extends State<TimelineScreen> {
       //trip.firestoreId = doc.reference.id;
 
       //we add the preview image, which is stored in a different Firebase service.
-      /*if (trip.previewPic == null ) {
-        print("entra1. trip.previewPic = null");
-      }
-      else {
-        print("entra1. trip.previewPic = "+trip.previewPic!+"\ntrip.title = "+trip.title);
-      }*/
-      /*if (trip.previewPic == null || trip.previewPic == "") {
-        print("entra2");
-        trip.previewPic ??= 'macbasmol.png'; //TODO no hace falta?
-      }*/
       trip.previewPicFuture = getTripPreviewImage(trip.previewPic);
-      //print("trip.previewPicFuture = "+trip.previewPicFuture.toString());
 
       tripsRealLocal.add(trip);
-    }
+    }*/
     return tripsRealLocal;
   }
 

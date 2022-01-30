@@ -109,7 +109,11 @@ class _TripDetailState extends State<TripDetail> {
                   Column(   //title and place
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children:[
-                        Text(tripData.title, style: const TextStyle(fontSize: 25, fontWeight: FontWeight.normal),),
+                        SizedBox(
+                            width: 200,
+                            child:
+                            Text(tripData.title, style: const TextStyle(fontSize: 25, fontWeight: FontWeight.normal),),
+                        ),
                         Row(children:[  //place, with padding
                           const Padding(padding: EdgeInsets.fromLTRB(10, 0, 0, 0),),
                           Text(tripData.place, style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),)])
@@ -151,6 +155,16 @@ class _TripDetailState extends State<TripDetail> {
             Text(tripData.description, style: const TextStyle(fontSize: 15),),
 
             //map
+            const Padding(padding: EdgeInsets.fromLTRB(0, 5, 0, 0),),
+            Padding(  //black line
+              padding:const EdgeInsets.symmetric(horizontal:10.0),
+              child:Container(
+                height:1.0,
+                width:130.0,
+                color:Colors.black,),),
+            const Padding(padding: EdgeInsets.fromLTRB(0, 5, 0, 0),),
+            const Text("Spots: "),
+            const Padding(padding: EdgeInsets.fromLTRB(0, 10, 0, 0),),
             FutureBuilder(
                 future: futureSpots,
                 builder: (context, snapshot) {
@@ -168,7 +182,7 @@ class _TripDetailState extends State<TripDetail> {
                         /*return ListView(
                             children: spotWidgets
                         );*/
-                        return Column(children: spotWidgets,);
+                        return Column(children: spotWidgets,crossAxisAlignment: CrossAxisAlignment.start,);
                       }
                       else {
                         return const Text("oopsie, null");
