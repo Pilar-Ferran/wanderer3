@@ -14,15 +14,23 @@ class SpotPreview extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-        padding: const EdgeInsets.fromLTRB(10, 10, 10, 10),
+    //return Container(
+    return Card(
+        //margin: const EdgeInsets.fromLTRB(10, 10, 10, 10),
         child: InkWell(
           onTap: () {
             Navigator.pushNamed(context, SpotDetail.routeName, arguments: SpotTripPair(spotData, tripData));
           },
-          child: Ink(
-            child: Text(spotData.name),
-          ),
+          //child: Ink(
+          child:
+          Row(  //title and padding
+              children: [
+            Container(child:
+            /*child:*/ Text(spotData.name, style: const TextStyle(fontSize: 18,),),
+              padding: const EdgeInsets.fromLTRB(5, 5, 5, 5),
+            ),
+          ],)
+          //),
         )
     );
   }

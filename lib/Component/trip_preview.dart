@@ -39,7 +39,13 @@ class TripPreview extends StatelessWidget{
                     Column(   //title and place
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children:[
-                        Text(tripData.title, style: const TextStyle(fontSize: 25, fontWeight: FontWeight.normal),),
+                        //Container(child:
+                        SizedBox(
+                          width: 200, //could be done better, could be device dependent. but it works and looks good. makes sure the title doesnt overflow to the right
+                          child:
+                          Text(tripData.title, style: const TextStyle(fontSize: 25, fontWeight: FontWeight.normal),),
+                        ),
+                        //color: Colors.pink,),
                         Row(children:[  //place, with padding
                           const Padding(padding: EdgeInsets.fromLTRB(10, 0, 0, 0),),
                           Text(tripData.place, style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),)]),
