@@ -48,8 +48,6 @@ class _CreateTripScreenState extends State<CreateTripScreen> {
 
   final ImagePicker imagePicker = ImagePicker();
 
-  late final FirebaseAuth _auth;
-
   @override
   void initState() {
     super.initState();
@@ -61,14 +59,13 @@ class _CreateTripScreenState extends State<CreateTripScreen> {
   void didChangeDependencies() {  //TODO inecesario?
     super.didChangeDependencies();
     getLoggedUsernameAndEmail();
-    _auth = FirebaseAuth.instance;
   }
 
   Future<void> getLoggedUsernameAndEmail () async {
     LoggedUserInfo userInfo = LoggedUserInfo();
-    loggedUsername =  /*userInfo.loggedUsername;*/ await UserSecureStorage.getUsername();
-    loggedUserEmail = /*userInfo.loggedUserEmail;*/ await UserSecureStorage.getUserEmail();
-    print("persistent username = " +loggedUsername!+", persistent email = "+loggedUserEmail!);
+    loggedUsername =  userInfo.loggedUsername; //await UserSecureStorage.getUsername();
+    loggedUserEmail = userInfo.loggedUserEmail; //await UserSecureStorage.getUserEmail();
+    //print("persistent username = " +loggedUsername!+", persistent email = "+loggedUserEmail!);
   }
 
   @override
@@ -272,7 +269,7 @@ class _CreateTripScreenState extends State<CreateTripScreen> {
       'location': tripLocation,
       'description':tripDescription,
       'preview_pic': previewPicPathInFirebase,
-      'author_uid': _auth.currentUser!.uid
+      'trip_id': newTrip.id //_auth.currentUser!.uid
     });
 
     String timestampString = DateTime.now().millisecondsSinceEpoch.toString();  //makes sure that no two trips have the same path

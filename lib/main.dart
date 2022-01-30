@@ -31,10 +31,11 @@ class _MyAppState extends State<MyApp> {
 
   // This widget is the root of your application.
 
+  LoggedUserInfo userInfo = LoggedUserInfo();
+
   @override
   Future<void> didChangeDependencies() async {
     super.didChangeDependencies();
-    LoggedUserInfo userInfo = LoggedUserInfo();
     await userInfo.iniLoggedUserInfo();
   }
 
@@ -46,8 +47,13 @@ class _MyAppState extends State<MyApp> {
           primarySwatch: Colors.cyan,
         cardColor: Colors.deepOrangeAccent, /*Color.fromRGBO(255, 170, 0, 0.5)*/ //the light orange
       ),
-      //TODO: cuando hagamos datos persistentes en el dispositivo, uno será el estado de login. Aquí habria que comprobar si logged in y poner home en HomeScreen
-      home:LoginScreen(),
+
+      //TODO: es un poco chapuzero
+      home: userInfo.loggedUserEmail == null?
+      LoginScreen():
+      HomeScreen()
+      ,
+
       initialRoute: '/',
       routes: {
         SignupScreen.routeName: (context) => const SignupScreen(),
