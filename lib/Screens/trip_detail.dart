@@ -11,7 +11,8 @@ import 'package:my_login/dataclasses/spot_data.dart';
 import 'package:my_login/dataclasses/trip_data.dart';
 import 'package:firebase_storage/firebase_storage.dart' as firebase_storage;
 
-import '../logged_user_info.dart'; //THIS
+import '../logged_user_info.dart';
+import '../user_secure_storage.dart'; //THIS
 
 
 class TripDetail extends StatefulWidget {
@@ -35,13 +36,21 @@ class _TripDetailState extends State<TripDetail> {
   late final TripData args;
   Map<String, dynamic>? userMap;
 
-  LoggedUserInfo loggedUserInfo = LoggedUserInfo();   //TODO
+  LoggedUserInfo loggedUserInfo = LoggedUserInfo();   //TODO, or not
+  String? loggedUsername;
+  String? loggedUserEmail;
 
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
     args = ModalRoute.of(context)!.settings.arguments as TripData;
     futureSpots = getSpots();
+    iniLoggedUserInfo();
+  }
+
+  Future<void> iniLoggedUserInfo() async {  //TODO problems w async?
+    loggedUsername = await UserSecureStorage.getUsername();
+    loggedUserEmail = await UserSecureStorage.getUserEmail();
   }
 
   Future<List<SpotData>> getSpots() async {
@@ -90,15 +99,19 @@ class _TripDetailState extends State<TripDetail> {
       appBar: AppBar(title: Text(args.title),),
       body: Container(  //TODO: center?
         padding: const EdgeInsets.fromLTRB(10, 10, 10, 10),
-        child: Column(  //main  //TODO may need to be ListView in the future, bc Column isnt scrollable
-          crossAxisAlignment: CrossAxisAlignment.start,
+        child: ListView(  //main  // may need to be ListView in the future, bc Column isnt scrollable
+          //crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            TextButton(
+            GestureDetector(
               child: Text(tripData.authorUser, textAlign: TextAlign.left, style: const TextStyle(fontSize: 18),),
-              onPressed: () {
-                /*(userMap!['email']==loggedUserEmail) ? Navigator.pushNamed(context, SearchYourselfScreen.routeName)
-                    :
-                Navigator.pushNamed(context, UserDetail.routeName, arguments: userMap);*/
+              onTap: () async {
+                if (loggedUsername!=null && tripData.authorUser!=loggedUsername) { //si no soy yo
+                  QuerySnapshot<Object?> authorQuery = await firestore
+                      .collection('users').where(
+                      'username', isEqualTo: tripData.authorUser).get();
+                  var authorData = authorQuery.docs[0].data() as Map<String,dynamic>;
+                  Navigator.pushNamed(context, UserDetail.routeName, arguments: authorData);
+                }
               },
             ),
             const Padding(padding: EdgeInsets.fromLTRB(0, 10, 0, 0),),
