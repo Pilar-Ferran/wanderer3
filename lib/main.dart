@@ -3,6 +3,7 @@ import 'dart:developer';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:my_login/Screens/logout_screen.dart';
+import 'package:my_login/Screens/search_yourself_screen.dart';
 import 'package:my_login/Screens/signup_screen.dart';
 import 'package:my_login/Screens/home_screen.dart';
 import 'package:my_login/Screens/spot_detail.dart';
@@ -63,6 +64,7 @@ class _MyAppState extends State<MyApp> {
         LogoutScreen.routeName: (context) => const LogoutScreen(),
         LoginScreen.routeName: (context) => const LoginScreen(),
         UserDetail.routeName: (context) => const UserDetail(),
+        SearchYourselfScreen.routeName: (context) => const SearchYourselfScreen(),
       },
     );
   }
