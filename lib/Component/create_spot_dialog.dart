@@ -291,7 +291,6 @@ class _CreateSpotDialogState extends State<CreateSpotDialog> {
             iconSize: 30,
             onPressed: () {
               showDeletePicConfirmationDialog(context, i);
-              Fluttertoast.showToast(msg: "delete");
             },
           ),
         )

@@ -254,6 +254,10 @@ class _CreateTripScreenState extends State<CreateTripScreen> {
     //first, the preview pic
     String? previewPicPathInFirebase;
 
+    if (previewPicFile == null && spotDatas[0].pictureFiles.isNotEmpty) {
+      previewPicFile = spotDatas[0].pictureFiles[0];
+    }
+
     if (previewPicFile != null) {
       previewPicPathInFirebase = "users/"+loggedUserEmail!+"/" + tripTitle + "/preview"; //TODO hope I dont need a file extension lol
       await firebase_storage.FirebaseStorage.instance.ref(previewPicPathInFirebase)
@@ -270,6 +274,8 @@ class _CreateTripScreenState extends State<CreateTripScreen> {
       'preview_pic': previewPicPathInFirebase,
     });
 
+    String timestampString = DateTime.now().millisecondsSinceEpoch.toString();  //makes sure that no two trips have the same path
+
     // Create the new "spots" subcollection. //anava a ferho com a l'altre metode (createTestTrip) pero aqui ho he fet millor.
 
     //create the spots.
@@ -279,7 +285,8 @@ class _CreateTripScreenState extends State<CreateTripScreen> {
       List<String> allPicPathsInFirebase = [];
       for (int i = 0; i < spotData.pictureFiles.length; ++i) {
         File picFile = spotData.pictureFiles[i];
-        String picPathInFirebase ="users/"+loggedUserEmail!+"/"+ tripTitle +"/"+ spotData.name +"/"+ i.toString();  //TODO hope I dont need a file extension lol
+        String picPathInFirebase ="users/"+loggedUserEmail!+"/"+ tripTitle + timestampString +"/"+ spotData.name +"/"+ i.toString();  //TODO hope I dont need a file extension lol
+        //print("picPathInFirebase = "+picPathInFirebase);
         allPicPathsInFirebase.add(picPathInFirebase);
         await firebase_storage.FirebaseStorage.instance.ref(picPathInFirebase).putFile(picFile);
       }
