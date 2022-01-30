@@ -4,7 +4,9 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:my_login/Component/picture_loading_indicator.dart';
+import 'package:my_login/Screens/user_detail.dart';
 import 'package:my_login/Component/spot_preview.dart';
+import 'package:my_login/Screens/search_yourself_screen.dart';
 import 'package:my_login/dataclasses/spot_data.dart';
 import 'package:my_login/dataclasses/trip_data.dart';
 import 'package:firebase_storage/firebase_storage.dart' as firebase_storage; //THIS
@@ -29,6 +31,7 @@ class _TripDetailState extends State<TripDetail> {
   late Future<List<SpotData>> futureSpots;
 
   late final TripData args;
+  Map<String, dynamic>? userMap;
 
   @override
   void didChangeDependencies() {
@@ -86,7 +89,14 @@ class _TripDetailState extends State<TripDetail> {
         child: Column(  //main  //TODO may need to be ListView in the future, bc Column isnt scrollable
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(tripData.authorUser, textAlign: TextAlign.left, style: const TextStyle(fontSize: 18),),
+            TextButton(
+              child: Text(tripData.authorUser, textAlign: TextAlign.left, style: const TextStyle(fontSize: 18),),
+              onPressed: () {
+                /*(userMap!['email']==loggedUserEmail) ? Navigator.pushNamed(context, SearchYourselfScreen.routeName)
+                    :
+                Navigator.pushNamed(context, UserDetail.routeName, arguments: userMap);*/
+              },
+            ),
             const Padding(padding: EdgeInsets.fromLTRB(0, 10, 0, 0),),
             Row(        //title, place and pic
               children: [

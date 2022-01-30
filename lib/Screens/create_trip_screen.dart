@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_html/style.dart';
@@ -45,6 +46,8 @@ class _CreateTripScreenState extends State<CreateTripScreen> {
 
   final ImagePicker imagePicker = ImagePicker();
 
+  late final FirebaseAuth _auth;
+
   @override
   void initState() {
     super.initState();
@@ -56,6 +59,7 @@ class _CreateTripScreenState extends State<CreateTripScreen> {
   void didChangeDependencies() {  //TODO inecesario?
     super.didChangeDependencies();
     getLoggedUsernameAndEmail();
+    _auth = FirebaseAuth.instance;
   }
 
   Future<void> getLoggedUsernameAndEmail () async {
@@ -90,7 +94,7 @@ class _CreateTripScreenState extends State<CreateTripScreen> {
               decoration:
               const InputDecoration(
                 hintText: 'Trip title',
-                labelText: 'Title',
+                labelText: 'Title *',
               ),
               onChanged: (value) {
                 tripTitle = value;
@@ -105,7 +109,7 @@ class _CreateTripScreenState extends State<CreateTripScreen> {
               decoration:
               const InputDecoration(
                 hintText: 'Trip location',
-                labelText: 'Location',
+                labelText: 'Location *',
               ),
               onChanged: (value) {
                 tripLocation = value;
@@ -200,7 +204,7 @@ class _CreateTripScreenState extends State<CreateTripScreen> {
                     createTrip();
                   }
                   else {  //if something's missing
-
+                    showToastFormInvalid();
                   }
 
                 }:
@@ -272,6 +276,7 @@ class _CreateTripScreenState extends State<CreateTripScreen> {
       'location': tripLocation,
       'description':tripDescription,
       'preview_pic': previewPicPathInFirebase,
+      'author_uid': _auth.currentUser!.uid
     });
 
     String timestampString = DateTime.now().millisecondsSinceEpoch.toString();  //makes sure that no two trips have the same path
@@ -399,5 +404,9 @@ class _CreateTripScreenState extends State<CreateTripScreen> {
         return alert;
       },
     );
+  }
+
+  void showToastFormInvalid() {
+    Fluttertoast.showToast(msg: "Please fill all the required fields");
   }
 }

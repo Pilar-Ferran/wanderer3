@@ -23,7 +23,7 @@ class _HomeScreenState extends State<HomeScreen> {
   String _barTitle = "Wanderer";
 
   //used rarely
-  late final int? indexSetByArgs;
+  late int? indexSetByArgs;
 
   int selectedIndex = 0;
   static const List<Widget> fourNavigationScreens = <Widget>[
