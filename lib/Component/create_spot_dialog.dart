@@ -94,7 +94,8 @@ class _CreateSpotDialogState extends State<CreateSpotDialog> {
                     },
                     validator: (value) {
                       if (value!.isEmpty) {
-                        return "Please enter a title";
+                        Fluttertoast.showToast(msg: "Please enter a name for the spot");
+                        return "Please enter a name";
                       } //else return null?
                     },
                   ),
@@ -281,7 +282,9 @@ class _CreateSpotDialogState extends State<CreateSpotDialog> {
     for(int i = 0; i < imageList.length; ++i) {
       Stack stack = Stack(children: [
 
+        Center(child:
         imageList[i],
+        ),
 
         Container(  //delete button
           decoration: const BoxDecoration(shape: BoxShape.circle, color: Colors.red,),
@@ -291,7 +294,6 @@ class _CreateSpotDialogState extends State<CreateSpotDialog> {
             iconSize: 30,
             onPressed: () {
               showDeletePicConfirmationDialog(context, i);
-              Fluttertoast.showToast(msg: "delete");
             },
           ),
         )

@@ -10,6 +10,7 @@ import 'package:my_login/Screens/spot_detail.dart';
 import 'Screens/login_screen.dart';
 import 'Screens/trip_detail.dart';
 import 'Screens/user_detail.dart';
+import 'logged_user_info.dart';
 
 void main()async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -19,10 +20,24 @@ void main()async {
   );
 }
 
-class MyApp extends StatelessWidget {
+class MyApp extends StatefulWidget {
   const MyApp({Key? key}) : super(key: key);
 
+  @override
+  State<StatefulWidget> createState() => _MyAppState();
+}
+
+class _MyAppState extends State<MyApp> {
+
   // This widget is the root of your application.
+
+  @override
+  Future<void> didChangeDependencies() async {
+    super.didChangeDependencies();
+    LoggedUserInfo userInfo = LoggedUserInfo();
+    await userInfo.iniLoggedUserInfo();
+  }
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -45,4 +60,5 @@ class MyApp extends StatelessWidget {
       },
     );
   }
+
 }

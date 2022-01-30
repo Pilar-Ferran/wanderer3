@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_html/style.dart';
@@ -17,6 +18,8 @@ import 'package:path_provider/path_provider.dart';
 import 'package:firebase_storage/firebase_storage.dart' as firebase_storage;
 import 'package:image/image.dart' as img;
 import 'dart:math' as math;
+
+import '../logged_user_info.dart';
 
 class CreateTripScreen extends StatefulWidget {
   const CreateTripScreen({Key? key}) : super(key: key);
@@ -45,6 +48,8 @@ class _CreateTripScreenState extends State<CreateTripScreen> {
 
   final ImagePicker imagePicker = ImagePicker();
 
+  late final FirebaseAuth _auth;
+
   @override
   void initState() {
     super.initState();
@@ -56,11 +61,13 @@ class _CreateTripScreenState extends State<CreateTripScreen> {
   void didChangeDependencies() {  //TODO inecesario?
     super.didChangeDependencies();
     getLoggedUsernameAndEmail();
+    _auth = FirebaseAuth.instance;
   }
 
   Future<void> getLoggedUsernameAndEmail () async {
-    loggedUsername = await UserSecureStorage.getUsername();
-    loggedUserEmail = await UserSecureStorage.getUserEmail();
+    LoggedUserInfo userInfo = LoggedUserInfo();
+    loggedUsername =  /*userInfo.loggedUsername;*/ await UserSecureStorage.getUsername();
+    loggedUserEmail = /*userInfo.loggedUserEmail;*/ await UserSecureStorage.getUserEmail();
     print("persistent username = " +loggedUsername!+", persistent email = "+loggedUserEmail!);
   }
 
@@ -69,13 +76,6 @@ class _CreateTripScreenState extends State<CreateTripScreen> {
     return Form(
       key: formKey,
       child:
-        /*AnnotatedRegion<SystemUiOverlayStyle>(
-            value: SystemUiOverlayStyle.light,
-            child: Stack(
-              children: [],
-            )
-        ),*/
-
       Container(
         padding: const EdgeInsets.fromLTRB(25, 0, 25, 0),
         child:
@@ -90,7 +90,7 @@ class _CreateTripScreenState extends State<CreateTripScreen> {
               decoration:
               const InputDecoration(
                 hintText: 'Trip title',
-                labelText: 'Title',
+                labelText: 'Title *',
               ),
               onChanged: (value) {
                 tripTitle = value;
@@ -105,7 +105,7 @@ class _CreateTripScreenState extends State<CreateTripScreen> {
               decoration:
               const InputDecoration(
                 hintText: 'Trip location',
-                labelText: 'Location',
+                labelText: 'Location *',
               ),
               onChanged: (value) {
                 tripLocation = value;
@@ -200,7 +200,7 @@ class _CreateTripScreenState extends State<CreateTripScreen> {
                     createTrip();
                   }
                   else {  //if something's missing
-
+                    showToastFormInvalid();
                   }
 
                 }:
@@ -254,6 +254,10 @@ class _CreateTripScreenState extends State<CreateTripScreen> {
     //first, the preview pic
     String? previewPicPathInFirebase;
 
+    if (previewPicFile == null && spotDatas[0].pictureFiles.isNotEmpty) {
+      previewPicFile = spotDatas[0].pictureFiles[0];
+    }
+
     if (previewPicFile != null) {
       previewPicPathInFirebase = "users/"+loggedUserEmail!+"/" + tripTitle + "/preview"; //TODO hope I dont need a file extension lol
       await firebase_storage.FirebaseStorage.instance.ref(previewPicPathInFirebase)
@@ -268,7 +272,10 @@ class _CreateTripScreenState extends State<CreateTripScreen> {
       'location': tripLocation,
       'description':tripDescription,
       'preview_pic': previewPicPathInFirebase,
+      'author_uid': _auth.currentUser!.uid
     });
+
+    String timestampString = DateTime.now().millisecondsSinceEpoch.toString();  //makes sure that no two trips have the same path
 
     // Create the new "spots" subcollection. //anava a ferho com a l'altre metode (createTestTrip) pero aqui ho he fet millor.
 
@@ -279,7 +286,8 @@ class _CreateTripScreenState extends State<CreateTripScreen> {
       List<String> allPicPathsInFirebase = [];
       for (int i = 0; i < spotData.pictureFiles.length; ++i) {
         File picFile = spotData.pictureFiles[i];
-        String picPathInFirebase ="users/"+loggedUserEmail!+"/"+ tripTitle +"/"+ spotData.name +"/"+ i.toString();  //TODO hope I dont need a file extension lol
+        String picPathInFirebase ="users/"+loggedUserEmail!+"/"+ tripTitle + timestampString +"/"+ spotData.name +"/"+ i.toString();  //TODO hope I dont need a file extension lol
+        //print("picPathInFirebase = "+picPathInFirebase);
         allPicPathsInFirebase.add(picPathInFirebase);
         await firebase_storage.FirebaseStorage.instance.ref(picPathInFirebase).putFile(picFile);
       }
@@ -392,5 +400,9 @@ class _CreateTripScreenState extends State<CreateTripScreen> {
         return alert;
       },
     );
+  }
+
+  void showToastFormInvalid() {
+    Fluttertoast.showToast(msg: "Please fill all the required fields");
   }
 }

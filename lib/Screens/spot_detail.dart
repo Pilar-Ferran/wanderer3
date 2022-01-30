@@ -104,7 +104,7 @@ class _SpotDetailState extends State<SpotDetail> {
                             }
                             else {
                               //return ListView(children: snapshot.data as List<Image>,);
-                              return Column(children: addPaddingBetweenImages(snapshot.data as List<Image>),);
+                              return Column(children: addPaddingAndCenterImages(snapshot.data as List<Image>),);
                             }
                           }
                           else { //show loading
@@ -179,10 +179,13 @@ class _SpotDetailState extends State<SpotDetail> {
     return picturesListOfImages;
   }
 
-  List<Widget> addPaddingBetweenImages(List<Image> imageList) {
+  List<Widget> addPaddingAndCenterImages(List<Image> imageList) {
     List<Widget> widgets = [];
     for (var image in imageList) {
-      widgets.add(image);
+      widgets.add(
+        Center(child:
+          image,
+        ));
       widgets.add(const Padding(padding: EdgeInsets.fromLTRB(0, 10, 0, 0),));
     }
     return widgets;
