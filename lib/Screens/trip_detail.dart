@@ -9,7 +9,9 @@ import 'package:my_login/Component/spot_preview.dart';
 import 'package:my_login/Screens/search_yourself_screen.dart';
 import 'package:my_login/dataclasses/spot_data.dart';
 import 'package:my_login/dataclasses/trip_data.dart';
-import 'package:firebase_storage/firebase_storage.dart' as firebase_storage; //THIS
+import 'package:firebase_storage/firebase_storage.dart' as firebase_storage;
+
+import '../logged_user_info.dart'; //THIS
 
 
 class TripDetail extends StatefulWidget {
@@ -32,6 +34,8 @@ class _TripDetailState extends State<TripDetail> {
 
   late final TripData args;
   Map<String, dynamic>? userMap;
+
+  LoggedUserInfo loggedUserInfo = LoggedUserInfo();
 
   @override
   void didChangeDependencies() {

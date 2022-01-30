@@ -19,6 +19,8 @@ import 'package:firebase_storage/firebase_storage.dart' as firebase_storage;
 import 'package:image/image.dart' as img;
 import 'dart:math' as math;
 
+import '../logged_user_info.dart';
+
 class CreateTripScreen extends StatefulWidget {
   const CreateTripScreen({Key? key}) : super(key: key);
 
@@ -63,8 +65,9 @@ class _CreateTripScreenState extends State<CreateTripScreen> {
   }
 
   Future<void> getLoggedUsernameAndEmail () async {
-    loggedUsername = await UserSecureStorage.getUsername();
-    loggedUserEmail = await UserSecureStorage.getUserEmail();
+    LoggedUserInfo userInfo = LoggedUserInfo();
+    loggedUsername =  /*userInfo.loggedUsername;*/ await UserSecureStorage.getUsername();
+    loggedUserEmail = /*userInfo.loggedUserEmail;*/ await UserSecureStorage.getUserEmail();
     print("persistent username = " +loggedUsername!+", persistent email = "+loggedUserEmail!);
   }
 
@@ -73,13 +76,6 @@ class _CreateTripScreenState extends State<CreateTripScreen> {
     return Form(
       key: formKey,
       child:
-        /*AnnotatedRegion<SystemUiOverlayStyle>(
-            value: SystemUiOverlayStyle.light,
-            child: Stack(
-              children: [],
-            )
-        ),*/
-
       Container(
         padding: const EdgeInsets.fromLTRB(25, 0, 25, 0),
         child:
