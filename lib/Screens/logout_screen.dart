@@ -4,6 +4,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:my_login/Component/create_spot_dialog.dart';
 import 'package:my_login/Component/edit_profile_dialog.dart';
+import 'package:my_login/Component/logout_dialog.dart';
 import 'package:my_login/Component/picture_loading_indicator.dart';
 import 'package:my_login/Screens/trip_detail.dart';
 import 'package:my_login/dataclasses/trip_data.dart';
@@ -18,11 +19,6 @@ class LogoutScreen extends StatefulWidget {
   _LogoutScreenState createState() => _LogoutScreenState();
 }
 
-//final FirebaseAuth _firebaseAuth = FirebaseAuth.instance;
-
-//_signOut() async {
- // await _firebaseAuth.signOut();
-//}
 
 class _LogoutScreenState extends State<LogoutScreen> {
   List _allResults = [];
@@ -112,7 +108,7 @@ class _LogoutScreenState extends State<LogoutScreen> {
             ), child: Column(
             children: [
               Container(
-                padding: const EdgeInsets.only(left: 20, right: 10),
+                padding: const EdgeInsets.only(left: 20, top:10, right: 10),
                 decoration: const BoxDecoration(
                   image: DecorationImage(
                     image: AssetImage('images/white.jpg'),
@@ -128,10 +124,10 @@ class _LogoutScreenState extends State<LogoutScreen> {
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            SizedBox(
-                              height:size.height/5,
-                              width:size.width/5,
-                              child:
+                        ClipOval(
+                        child: SizedBox.fromSize(
+                        size: Size.fromRadius(size.height/18), // Image radius
+                      child:
                               FutureBuilder(
                                 future: getImage(userMapUid!['profile_picture']),
                                 builder: (context, snapshot){
@@ -141,13 +137,13 @@ class _LogoutScreenState extends State<LogoutScreen> {
                                       return const Text("error");
                                     }
                                     else {
-                                      return Image.network(snapshot.data as String);
+                                      return Image.network(snapshot.data as String, fit: BoxFit.fill);
                                     }
                                   }
                                   else { //show loading
                                     return const PictureLoadingIndicator();
                                   }
-                                },),),
+                                },),),),
                           ],
                         ),
                       ),
@@ -186,7 +182,7 @@ class _LogoutScreenState extends State<LogoutScreen> {
               ),
 
               Container(
-                padding: const EdgeInsets.only(left: 20, right: 10),
+                padding: const EdgeInsets.only(left: 20, top:10, right: 10),
                 decoration: const BoxDecoration(
                   image: DecorationImage(
                     image: AssetImage('images/white.jpg'),
@@ -226,8 +222,16 @@ class _LogoutScreenState extends State<LogoutScreen> {
                     children: [
                       Expanded(
                         flex: 8,
-                        child: customButton(size),
+                        child:
+                        customButton(size),
+                        ),
+                      const Padding(padding: EdgeInsets.fromLTRB(10, 0, 0, 0),),
+                      Expanded(
+                        flex: 1,
+                        child:
+                        customButton2(size),
                       ),
+
                     ],
                   ),
                 ),
@@ -313,6 +317,20 @@ class _LogoutScreenState extends State<LogoutScreen> {
         padding: const EdgeInsets.all(8),
         child:  Center(
           child:  Text('Edit profile', style: TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.bold),),
+        ),),);
+  }
+
+  Widget customButton2(Size size) {
+    return GestureDetector(
+      onTap:() {
+        showDialog(context: context, builder: (context)=>LogoutDialog());
+      },
+      child: Container(
+        height: 40,
+        decoration: BoxDecoration(color: Colors.blueGrey, border: Border.all(color: Colors.blue), borderRadius: BorderRadius.circular(5)),
+        padding: const EdgeInsets.all(8),
+        child:  Center(
+          child:  Icon(Icons.settings),
         ),),);
   }
 
