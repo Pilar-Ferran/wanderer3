@@ -2,7 +2,9 @@ import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:my_login/Component/picture_loading_indicator.dart';
+import 'package:my_login/Screens/home_screen.dart';
 import 'package:my_login/Screens/logout_screen.dart';
+import 'package:my_login/Screens/search_yourself_screen.dart';
 import 'package:my_login/Screens/trip_detail.dart';
 import 'package:my_login/Screens/user_detail.dart';
 import 'package:my_login/dataclasses/trip_data.dart';
@@ -300,7 +302,7 @@ class _ExploreScreenState extends State<ExploreScreen> {
                           color: Colors.white,
                           child:
                         ListTile(
-                          onTap:() {(userMap!['email']==loggedUserEmail) ? Navigator.pushNamed(context, LogoutScreen.routeName): Navigator.pushNamed(context, UserDetail.routeName, arguments: userMap);},
+                          onTap:() {(userMap!['email']==loggedUserEmail) ? Navigator.pushNamed(context, SearchYourselfScreen.routeName): Navigator.pushNamed(context, UserDetail.routeName, arguments: userMap);},
                           leading: FutureBuilder(
                             future:  getImage(userMap!['profile_picture']),
                             builder: (context, snapshot){

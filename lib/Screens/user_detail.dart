@@ -26,6 +26,7 @@ class _UserDetailState extends State<UserDetail> {
     String? loggedUsername;
     String? loggedUserEmail;
     Map<String, dynamic>? userMapUid;
+    late Color button_color;
 
     @override
     void initState() {
@@ -36,9 +37,7 @@ class _UserDetailState extends State<UserDetail> {
     @override
     void didChangeDependencies() {
       super.didChangeDependencies();
-      //getLoggedUsernameAndEmail();
       args = ModalRoute.of(context)!.settings.arguments as Map<String, dynamic>;
-      //doesFollow(args['list_followers']);
       getUsersPastTripsStreamSnapshots();
 
     }
@@ -53,7 +52,7 @@ class _UserDetailState extends State<UserDetail> {
     searchResultsList() {
       var showResults = [];
 
-      if(args['author_username'] != "") {
+      if(args['username'] != "") {
         for(var doc in _allResults){
 
           var docData = doc.data() as Map<String, dynamic>;
@@ -352,7 +351,7 @@ class _UserDetailState extends State<UserDetail> {
         },
         child: Container(
         height: 40,
-        decoration: BoxDecoration(color: Colors.cyan, border: Border.all(color: Colors.blue), borderRadius: BorderRadius.circular(5)),
+        decoration: BoxDecoration(color: button_color, border: Border.all(color: Colors.blue), borderRadius: BorderRadius.circular(5)),
       padding: const EdgeInsets.all(8),
       child:  Center(
       child:  Text(follow, style: TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.bold),),
@@ -385,6 +384,7 @@ class _UserDetailState extends State<UserDetail> {
         setState(() {
           follow="Follow";
           didFollow=false;
+          button_color=Colors.cyan;
         });
       }
       for (var follower in followers){
@@ -392,11 +392,13 @@ class _UserDetailState extends State<UserDetail> {
           setState(() {
             follow="Unfollow";
             didFollow=true;
+            button_color=Colors.cyan.shade900;
           });
       }else{
           setState(() {
             follow="Follow";
             didFollow=false;
+            button_color=Colors.cyan;
           });
 
         }
