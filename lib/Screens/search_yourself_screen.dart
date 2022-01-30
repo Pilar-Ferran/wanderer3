@@ -112,7 +112,7 @@ class _SearchYourselfScreenState extends State<SearchYourselfScreen> {
             ), child: Column(
             children: [
               Container(
-                padding: const EdgeInsets.only(left: 20, top :30, right: 10),
+                padding: const EdgeInsets.only(left: 20, top:70, right: 10),
                 decoration: const BoxDecoration(
                   image: DecorationImage(
                     image: AssetImage('images/white.jpg'),
@@ -128,26 +128,26 @@ class _SearchYourselfScreenState extends State<SearchYourselfScreen> {
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            SizedBox(
-                              height:size.height/5,
-                              width:size.width/5,
-                              child:
-                              FutureBuilder(
-                                future: getImage(userMapUid!['profile_picture']),
-                                builder: (context, snapshot){
-                                  if (snapshot.connectionState == ConnectionState.done) {
-                                    if (snapshot.hasError) {
-                                      print("error in snapshot: "+snapshot.error.toString());
-                                      return const Text("error");
+                            ClipOval(
+                              child: SizedBox.fromSize(
+                                size: Size.fromRadius(size.height/18), // Image radius
+                                child:
+                                FutureBuilder(
+                                  future: getImage(userMapUid!['profile_picture']),
+                                  builder: (context, snapshot){
+                                    if (snapshot.connectionState == ConnectionState.done) {
+                                      if (snapshot.hasError) {
+                                        print("error in snapshot: "+snapshot.error.toString());
+                                        return const Text("error");
+                                      }
+                                      else {
+                                        return Image.network(snapshot.data as String, fit: BoxFit.fill);
+                                      }
                                     }
-                                    else {
-                                      return Image.network(snapshot.data as String);
+                                    else { //show loading
+                                      return const PictureLoadingIndicator();
                                     }
-                                  }
-                                  else { //show loading
-                                    return const PictureLoadingIndicator();
-                                  }
-                                },),),
+                                  },),),),
                           ],
                         ),
                       ),
@@ -186,7 +186,7 @@ class _SearchYourselfScreenState extends State<SearchYourselfScreen> {
               ),
 
               Container(
-                padding: const EdgeInsets.only(left: 20, right: 10),
+                padding: const EdgeInsets.only(left: 20, top:10, right: 10),
                 decoration: const BoxDecoration(
                   image: DecorationImage(
                     image: AssetImage('images/white.jpg'),

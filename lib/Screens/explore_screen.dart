@@ -303,7 +303,10 @@ class _ExploreScreenState extends State<ExploreScreen> {
                           child:
                         ListTile(
                           onTap:() {(userMap!['email']==loggedUserEmail) ? Navigator.pushNamed(context, SearchYourselfScreen.routeName): Navigator.pushNamed(context, UserDetail.routeName, arguments: userMap);},
-                          leading: FutureBuilder(
+                          leading: ClipOval(
+                                  child: SizedBox.fromSize(
+                                  size: Size.fromRadius(size.height/25), // Image radius
+                              child:FutureBuilder(
                             future:  getImage(userMap!['profile_picture']),
                             builder: (context, snapshot){
                               if (snapshot.connectionState == ConnectionState.done) {
@@ -312,13 +315,13 @@ class _ExploreScreenState extends State<ExploreScreen> {
                                   return const Text("error");
                                 }
                                 else {
-                                  return Image.network(snapshot.data as String);
+                                  return Image.network(snapshot.data as String, fit: BoxFit.fill);
                                 }
                               }
                               else { //show loading
                                 return const PictureLoadingIndicator();
                               }
-                            },),
+                            },),),),
                           selectedTileColor: Colors.white,
                           title: Text(
                             userMap!['username'],
