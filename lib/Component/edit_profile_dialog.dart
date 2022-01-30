@@ -1,10 +1,14 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-
+import 'dart:io';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/widgets.dart';
 import 'package:fluttertoast/fluttertoast.dart';
-
+import 'package:flutter/services.dart';
+import 'package:image_picker/image_picker.dart';
+import 'package:my_login/Component/picture_loading_indicator.dart';
+import 'dart:io' as dart_io;
 
 import '../logged_user_info.dart';
 import '../user_secure_storage.dart';
@@ -29,6 +33,9 @@ class _EditProfileDialogState extends State<EditProfileDialog> {
   String? loggedUserEmail;
   Map<String, dynamic>? userMap;
   bool pass=false;
+    File? previewPicFile;
+  Image? previewPicImage;
+  final ImagePicker imagePicker = ImagePicker();
 
   //final ImagePicker imagePicker = ImagePicker();
 
@@ -91,6 +98,54 @@ class _EditProfileDialogState extends State<EditProfileDialog> {
                     ),
 
 
+                    const Padding(padding: EdgeInsets.fromLTRB(0, 30, 0, 0),),
+                    Container(
+                      alignment: Alignment.centerLeft,
+                      child: const Text("Profile Picture: ", style: TextStyle(fontSize: 18, fontWeight: FontWeight.w500),),
+                    ),
+                    const Padding(padding: EdgeInsets.fromLTRB(0, 15, 0, 0),),
+                    Column(
+                      children:[
+                        previewPicImage == null ? //addPaddingBetweenImages(imageImages),
+                       ClipOval(
+                          child: SizedBox.fromSize(
+                          size: Size.fromRadius(size.height/13), // Image radius
+                            child:
+                        FutureBuilder(
+                        future: getImage(widget.userMapInit!['profile_picture']),
+                        builder: (context, snapshot){
+                          if (snapshot.connectionState == ConnectionState.done) {
+                            if (snapshot.hasError) {
+                              print("error in snapshot: "+snapshot.error.toString());
+                              return const Text("error");
+                            }
+                            else {
+                              return Image.network(snapshot.data as String, fit: BoxFit.fill,);
+                            }
+                          }
+                          else { //show loading
+                            return const PictureLoadingIndicator();
+                          }
+                        },),),) : ClipOval(
+                          child: SizedBox.fromSize(
+                              size: Size.fromRadius(size.height/13), // Image radius
+                              child: previewPicImage,
+                          ),
+                        ),
+                      ],
+                    ),
+
+                    Container(  //add pic button
+                      alignment: Alignment.topLeft,
+                      child: ElevatedButton.icon(
+                        label: const Text("Add picture"),
+                        icon: const Icon(Icons.add),
+                        onPressed: () {
+                          pickImage();
+                        },
+                      ),
+                    ),
+                    
                     const Padding(padding: EdgeInsets.fromLTRB(0, 40, 0, 0),),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.end,
@@ -131,6 +186,10 @@ class _EditProfileDialogState extends State<EditProfileDialog> {
     );
   }
 
+  
+
+
+
   save() async{
     bool userExistence_aux = await doesUserExist(userMap!['username']);
     bool userExistence = userExistence_aux && (userMap!['username'] != loggedUsername);
@@ -150,6 +209,14 @@ class _EditProfileDialogState extends State<EditProfileDialog> {
       print(docData);
      FirebaseFirestore.instance.collection('trips').doc(docData['tid']).update({"author_username": userMap!['username'] });
     }
+      String? previewPicPathInFirebase;
+      if (previewPicFile != null) {
+        previewPicPathInFirebase = "users/"+loggedUserEmail!+ "/preview"; //TODO hope I dont need a file extension lol
+        await FirebaseStorage.instance.ref(previewPicPathInFirebase)
+            .putFile(previewPicFile!);
+        await FirebaseFirestore.instance.collection('users').doc(widget.userMapInit['uid']).update({"profile_picture": previewPicPathInFirebase});
+      }
+
     setState(() {
       pass=true;
     });
@@ -167,6 +234,45 @@ class _EditProfileDialogState extends State<EditProfileDialog> {
     }
 
   }
+
+
+  Future<void> setPreviewPic(File imageFile) async {
+    final size = MediaQuery.of(context).size;
+    previewPicImage = Image.file(imageFile, fit: BoxFit.fill);//TODO better fit?
+    previewPicFile = imageFile;
+  }
+
+  Future<void> pickImage() async {
+    try {
+      final imageThing = await imagePicker.pickImage(
+        source: ImageSource.gallery,
+      );
+      if (imageThing == null) {
+        return;
+      }
+
+      final File imageFile = File(/*[],*/ imageThing.path);
+      setState(() => {
+        setPreviewPic(imageFile)
+      }); //idk
+    }
+
+    on PlatformException catch (e) {
+      print("permission to gallery rejected. error = "+e.toString());
+      Fluttertoast.showToast(msg: "permission to gallery rejected.");
+    }
+  }
+
+
+  Future<String?> getImage(String? imagePath) async {
+    if (imagePath == null) {
+      return null;
+    }
+    final ref = FirebaseStorage.instance.ref().child(imagePath);
+    var url = await ref.getDownloadURL();
+    return url;
+  }
+
 
 
   Future<bool> doesUserExist(String currentUserName) async {
