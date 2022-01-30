@@ -41,10 +41,9 @@ class _EditProfileDialogState extends State<EditProfileDialog> {
 
 
   Future<void> getLoggedUsernameAndEmail () async {
-    LoggedUserInfo userInfo = LoggedUserInfo();
-    loggedUsername = userInfo.loggedUsername;
-    loggedUserEmail = userInfo.loggedUserEmail;
-    //print("edit profile. username = " +loggedUsername!+", persistent email = "+loggedUserEmail!);
+    loggedUsername = await UserSecureStorage.getUsername();
+    loggedUserEmail = await UserSecureStorage.getUserEmail();
+    print("persistent username = " +loggedUsername!+", persistent email = "+loggedUserEmail!);
   }
 
   @override
