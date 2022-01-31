@@ -93,6 +93,7 @@ class _UserDetailState extends State<UserDetail> {
 
     @override
     Widget build(BuildContext context) {
+      var isPortrait = MediaQuery.of(context).orientation;
       doesFollow(args['list_followers']);
       final size = MediaQuery.of(context).size;
       final Map<String,dynamic> userCharact=args;
@@ -112,7 +113,7 @@ class _UserDetailState extends State<UserDetail> {
       ), child: Column(
               children: [
                 Container(
-                  padding: const EdgeInsets.only(left: 20, right: 10, top: 30),
+                  padding: const EdgeInsets.only(left: 20, right: 10, top: 70),
                     decoration: const BoxDecoration(
                       image: DecorationImage(
                         image: AssetImage('images/white.jpg'),
@@ -128,10 +129,10 @@ class _UserDetailState extends State<UserDetail> {
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            SizedBox(
-                              height:size.height/5,
-                              width:size.width/5,
-                        child:
+                            ClipOval(
+                              child: SizedBox.fromSize(
+                                size: Size.fromRadius(isPortrait == Orientation.portrait ? size.height/18 : size.width/15), // Image radius
+                                child:
                             FutureBuilder(
                               future: getImage(userCharact['profile_picture']),
                               builder: (context, snapshot){
@@ -141,13 +142,13 @@ class _UserDetailState extends State<UserDetail> {
                                     return const Text("error");
                                   }
                                   else {
-                                    return Image.network(snapshot.data as String);
+                                    return Image.network(snapshot.data as String, fit:BoxFit.fill);
                                   }
                                 }
                                 else { //show loading
                                   return const PictureLoadingIndicator();
                                 }
-                              },),),
+                              },),),),
                             ],
                         ),
                       ),
@@ -201,6 +202,7 @@ class _UserDetailState extends State<UserDetail> {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             mainAxisAlignment: MainAxisAlignment.start,
                             children: [
+                              const Padding(padding: EdgeInsets.fromLTRB(0, 10, 00, 0),),
                               Text(userCharact['username'], style: const TextStyle(color: Colors.black, fontSize: 20, fontWeight: FontWeight.bold),),
                               SizedBox(
                                 height: size.height/60,
@@ -260,7 +262,8 @@ class _UserDetailState extends State<UserDetail> {
                               leading: SizedBox(
                                 height:size.height/5,
                                 width:size.width/5,
-                                child:FutureBuilder(
+                                  child:_resultsList[index].previewPic != null?
+                                FutureBuilder(
                                 future: getImage(_resultsList[index].previewPic),
                                 builder: (context, snapshot){
                                   if (snapshot.connectionState == ConnectionState.done) {
@@ -275,7 +278,7 @@ class _UserDetailState extends State<UserDetail> {
                                   else { //show loading
                                     return const PictureLoadingIndicator();
                                   }
-                                },),),
+                                },): SizedBox(),),
                               selectedTileColor: Colors.white,
                               title: Text(
                                 _resultsList[index].title,

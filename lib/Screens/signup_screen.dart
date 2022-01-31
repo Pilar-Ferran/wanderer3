@@ -124,7 +124,7 @@ class _SignUpScreenState extends State<SignupScreen> {
                     GestureDetector(
                       onTap: () =>
                           Navigator.pushReplacementNamed(
-                              context, HomeScreen.routeName),
+                              context, LoginScreen.routeName),
                       child: const Text(
                         "Login",
                         style: TextStyle(

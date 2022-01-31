@@ -85,6 +85,7 @@ class _LogoutScreenState extends State<LogoutScreen> {
   @override
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
+    var isPortrait = MediaQuery.of(context).orientation;
     return Scaffold(
       backgroundColor: Colors.white,
       body: loading ?
@@ -126,7 +127,7 @@ class _LogoutScreenState extends State<LogoutScreen> {
                           children: [
                         ClipOval(
                         child: SizedBox.fromSize(
-                        size: Size.fromRadius(size.height/18), // Image radius
+                        size: Size.fromRadius(isPortrait == Orientation.portrait ? size.height/18 : size.width/15), // Image radius
                       child:
                               FutureBuilder(
                                 future: getImage(userMapUid!['profile_picture']),
@@ -263,7 +264,8 @@ class _LogoutScreenState extends State<LogoutScreen> {
                             leading: SizedBox(
                               height:size.height/5,
                               width:size.width/5,
-                              child:FutureBuilder(
+                              child:_resultsList[index].previewPic != null?
+                              FutureBuilder(
                                 future: getImage(_resultsList[index].previewPic),
                                 builder: (context, snapshot){
                                   if (snapshot.connectionState == ConnectionState.done) {
@@ -278,7 +280,7 @@ class _LogoutScreenState extends State<LogoutScreen> {
                                   else { //show loading
                                     return const PictureLoadingIndicator();
                                   }
-                                },),),
+                                },): SizedBox(),),
                             selectedTileColor: Colors.white,
                             title: Text(
                               _resultsList[index].title,
