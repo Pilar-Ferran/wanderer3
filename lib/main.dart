@@ -7,6 +7,7 @@ import 'package:my_login/Screens/search_yourself_screen.dart';
 import 'package:my_login/Screens/signup_screen.dart';
 import 'package:my_login/Screens/home_screen.dart';
 import 'package:my_login/Screens/spot_detail.dart';
+import 'package:my_login/user_secure_storage.dart';
 
 import 'Screens/login_screen.dart';
 import 'Screens/trip_detail.dart';
@@ -32,12 +33,33 @@ class _MyAppState extends State<MyApp> {
 
   // This widget is the root of your application.
 
-  LoggedUserInfo userInfo = LoggedUserInfo();
+  String? loggedUsername;
+  String? loggedUserEmail;
 
   @override
-  Future<void> didChangeDependencies() async {
+  void didChangeDependencies() {
     super.didChangeDependencies();
-    await userInfo.iniLoggedUserInfo();
+    iniLoggedUserInfo();
+  }
+
+  Future<void> iniLoggedUserInfo() async {
+    loggedUsername = await UserSecureStorage.getUsername();
+    loggedUserEmail = await UserSecureStorage.getUserEmail();
+
+    if (loggedUsername == null) {
+      print("no username");
+    }
+    else {
+      print("persistent username = " +loggedUsername!);
+    }
+
+    if (loggedUserEmail == null) {
+      print("no email");
+    }
+    else {
+      print("persistent email = " +loggedUserEmail!);
+    }
+
     setState(() {});
   }
 
@@ -51,7 +73,7 @@ class _MyAppState extends State<MyApp> {
       ),
 
       //TODO: estaria guay un splash screen hasta que tengamos los datos (por lo tanto un bool nullable)
-      home: userInfo.loggedUserEmail == null?
+      home: /*userInfo.*/loggedUserEmail == null?
       LoginScreen():
       HomeScreen()
       ,

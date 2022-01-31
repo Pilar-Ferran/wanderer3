@@ -36,7 +36,7 @@ class _TripDetailState extends State<TripDetail> {
   late final TripData args;
   Map<String, dynamic>? userMap;
 
-  LoggedUserInfo loggedUserInfo = LoggedUserInfo();   //TODO, or not
+  //LoggedUserInfo loggedUserInfo = LoggedUserInfo();
   String? loggedUsername;
   String? loggedUserEmail;
 

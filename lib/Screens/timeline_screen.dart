@@ -35,10 +35,10 @@ class _TimelineScreenState extends State<TimelineScreen> {
   }
 
   Future<void> iniLoggedUserInfo() async {
-    print("iniLoggedUserInfo()");
+    print("timeline: iniLoggedUserInfo()");
     loggedUsername = await UserSecureStorage.getUsername();
     loggedUserEmail = await UserSecureStorage.getUserEmail();
-    print("loggedUsername = "+loggedUsername!);
+    print("timeline: loggedUsername = "+loggedUsername!);
   }
 
   //hace el get de trips para la timeline

@@ -62,7 +62,7 @@ class _CreateTripScreenState extends State<CreateTripScreen> {
   }
 
   Future<void> getLoggedUsernameAndEmail () async {
-    LoggedUserInfo userInfo = LoggedUserInfo();
+    //LoggedUserInfo userInfo = LoggedUserInfo();
     loggedUsername =  /*userInfo.loggedUsername;*/ await UserSecureStorage.getUsername();
     loggedUserEmail = /*userInfo.loggedUserEmail;*/ await UserSecureStorage.getUserEmail();
     //print("persistent username = " +loggedUsername!+", persistent email = "+loggedUserEmail!);

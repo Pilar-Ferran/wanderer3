@@ -39,8 +39,8 @@ final FirebaseAuth _firebaseAuth = FirebaseAuth.instance;
   }
 
 Future<void> setLoggedUsernameAndEmail () async {
-  await UserSecureStorage.setUsername('');
-  await UserSecureStorage.setUserEmail('');
+  await UserSecureStorage.setUsername(null);
+  await UserSecureStorage.setUserEmail(null);
   print("persistent username = " +loggedUsername!+", persistent email = "+loggedUserEmail!);
 }
 
