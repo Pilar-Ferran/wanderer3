@@ -56,8 +56,10 @@ Future<void> setLoggedUsernameAndEmail () async {
             padding: const EdgeInsets.fromLTRB(20, 10, 20, 10),
             child: Column( //this could be in a different class
               children: [
-                 Text('Wanderer', style: TextStyle(color: Colors.cyan.shade700, fontSize: 25, fontWeight: FontWeight.w800),),
-                const Padding(padding: EdgeInsets.fromLTRB(0, 8, 00, 0),),
+                 Text('Wanderer', style: TextStyle(color: Colors.cyan.shade700, fontSize: 28, fontWeight: FontWeight.w800),),
+                const Padding(padding: EdgeInsets.fromLTRB(0, 10, 00, 0),),
+                Text('Credits', style: TextStyle(color: Colors.cyan.shade500, fontSize: 20, fontWeight: FontWeight.w700),),
+                const Padding(padding: EdgeInsets.fromLTRB(0, 6, 00, 0),),
                 Text('Programmer: Ferran Iglesias', style: TextStyle(color: Colors.black, fontSize: 15, fontWeight: FontWeight.w500),),
                 Text('Programmer: Pilar Lopez', style: TextStyle(color: Colors.black, fontSize: 15, fontWeight: FontWeight.w500),),
                 const Padding(padding: EdgeInsets.fromLTRB(0, 15, 00, 0),),
