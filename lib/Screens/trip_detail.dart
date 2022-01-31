@@ -97,7 +97,7 @@ class _TripDetailState extends State<TripDetail> {
 
     return Scaffold(
       appBar: AppBar(title: Text(args.title),),
-      body: Container(  //TODO: center?
+      body: Container(
         padding: const EdgeInsets.fromLTRB(10, 10, 10, 10),
         child: ListView(  //main  // may need to be ListView in the future, bc Column isnt scrollable
           //crossAxisAlignment: CrossAxisAlignment.start,
@@ -119,19 +119,23 @@ class _TripDetailState extends State<TripDetail> {
               children: [
                 Row(children: [ //title place and padding left
                   const Padding(padding: EdgeInsets.fromLTRB(40, 0, 0, 0),),
+
                   Column(   //title and place
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children:[
                         SizedBox(
                             width: 200,
-                            child:
-                            Text(tripData.title, style: const TextStyle(fontSize: 25, fontWeight: FontWeight.normal),),
+                            child: Text(tripData.title, style: const TextStyle(fontSize: 25, fontWeight: FontWeight.normal),),
                         ),
+
                         Row(children:[  //place, with padding
                           const Padding(padding: EdgeInsets.fromLTRB(10, 0, 0, 0),),
-                          Text(tripData.place, style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),)])
-                        ,
-                      ]),
+                          SizedBox(
+                              width: 200,
+                              child: Text(tripData.place, style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),)
+                          ),
+                        ],),
+                      ],),
                 ],),
 
                 Row(  //pic and padding right
@@ -147,7 +151,7 @@ class _TripDetailState extends State<TripDetail> {
                             return const Text("error");
                           }
                           else {
-                            return Image.network(snapshot.data as String, width: 50, height: 50,);
+                            return Image.network(snapshot.data as String, width: 80, height: 80, fit: BoxFit.cover,);
                           }
                         }
                         else { //show loading

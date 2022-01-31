@@ -100,8 +100,9 @@ class _TimelineScreenState extends State<TimelineScreen> {
 
   @override
   Widget build(BuildContext context) {
-    //he quitado el center
-    return Column(
+    return Container(
+      child:
+      Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: <Widget>[
           Expanded(
@@ -124,18 +125,34 @@ class _TimelineScreenState extends State<TimelineScreen> {
                       }
                     }
                     return ListView(
-                            children: tripWidgets
+                            children: [
+                              ...tripWidgets,
+                              const Padding(padding: EdgeInsets.fromLTRB(0, 10, 0, 0),)
+                            ],
                         );
                   }
                 }
                 else { //show loading
-                  return const PictureLoadingIndicator();
+                  return Row( //hey, as long as it works
+                    children: [PictureLoadingIndicator()],
+                    mainAxisAlignment: MainAxisAlignment.center,
+                  );
                 }
               },
             ),
 
           )
+
         ],
-      );
+      ),
+
+
+      decoration: const BoxDecoration(
+        image: DecorationImage(
+          image: AssetImage('images/cyan.jpg'),
+          fit: BoxFit.cover,
+        ),
+      ),
+    );
   }
 }

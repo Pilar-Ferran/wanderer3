@@ -13,8 +13,8 @@ class TripPreview extends StatelessWidget{
 
   const TripPreview(this.tripData, {Key? key}) : super(key: key);
 
-  @override
-  Widget build(BuildContext context) {
+  //@override
+  Widget build2(BuildContext context) {
     return Container(
       padding: const EdgeInsets.fromLTRB(10, 10, 10, 10),
       child:
@@ -66,7 +66,7 @@ class TripPreview extends StatelessWidget{
                                 return const Text("error");
                               }
                               else {
-                                return Image.network(snapshot.data as String, width: 50, height: 50,);
+                                return Image.network(snapshot.data as String, width: 80, height: 80, fit: BoxFit.cover,);
                               }
                             }
                             else { //show loading
@@ -90,6 +90,80 @@ class TripPreview extends StatelessWidget{
         //borderRadius: BorderRadius.all(Radious.),
       ),
       //const Padding(padding: EdgeInsets.fromLTRB(0, 0, 0, 10),),
+    );
+  }
+
+
+  @override
+  Widget build(BuildContext context) {
+
+    final size = MediaQuery.of(context).size;
+
+    return Card(
+      shape: const ContinuousRectangleBorder(),
+      color: Colors.white,
+      margin: const EdgeInsets.fromLTRB(10, 10, 10, 0),  //OJO
+      child: InkWell(
+        splashColor: Theme.of(context).primaryColor,
+        onTap: () {
+          Navigator.pushNamed(context, TripDetail.routeName, arguments: tripData);
+          },
+        child: Container(
+            child: Column(  //main
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(tripData.authorUser, textAlign: TextAlign.left, style: const TextStyle(fontSize: 18),),
+                const Padding(padding: EdgeInsets.fromLTRB(0, 10, 0, 0),),
+                Row(  //pic, title, place
+                children: [
+                  //pic:
+                  tripData.previewPic != null?
+                  FutureBuilder( //if there is pic, draw pic
+                    future: tripData.previewPicFuture,
+                    builder: (context, snapshot) {
+                      if (snapshot.connectionState == ConnectionState.done) {
+                        if (snapshot.hasError) {
+                          print("error in snapshot: "+snapshot.error.toString());
+                          return const Text("error");
+                        }
+                        else {
+                          return Image.network(snapshot.data as String, width: 80, height: 80, fit: BoxFit.cover,);
+                        }
+                      }
+                      else { //show loading
+                        return const PictureLoadingIndicator();
+                      }
+                    },
+                  )
+                      :
+                  const Padding(padding: EdgeInsets.fromLTRB(40, 40, 40, 40),), //if there is no pic, put padding
+                  //end pic
+                  const Padding(padding: EdgeInsets.fromLTRB(10, 0, 0, 0),),
+                  //Container(child:
+                  SizedBox(
+                    width: (MediaQuery.of(context).orientation == Orientation.portrait)?200:400,
+                    child: Column(
+                      children: [
+                        Text(tripData.title, style: const TextStyle(
+                          color: Colors.black,
+                          fontSize: 17,
+                          fontWeight: FontWeight.w500,
+                        ),),
+                        Text(tripData.place, style: const TextStyle(color: Color.fromRGBO(120, 120, 120, 1)),),
+                    ],
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                  ),
+                  ),
+                    //color: Colors.pink,),
+                ],
+              ),
+                const Padding(padding: EdgeInsets.fromLTRB(0, 10, 0, 0),),
+              Text(tripData.description, style: const TextStyle(fontSize: 15),),
+
+            ],),
+            padding: const EdgeInsets.fromLTRB(10, 10, 10, 10),
+          ),
+      ),
     );
   }
 }

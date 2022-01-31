@@ -221,7 +221,7 @@ class _UserDetailState extends State<UserDetail> {
                   decoration: const BoxDecoration(
                     image: DecorationImage(
                       image: AssetImage('images/white.jpg'),
-                      fit: BoxFit.cover,
+                      fit: BoxFit.cover ,
                     ),
                   ),
                   child: SingleChildScrollView(
