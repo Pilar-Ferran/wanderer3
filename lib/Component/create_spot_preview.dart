@@ -31,6 +31,7 @@ class _CreateSpotPreviewState extends State<CreateSpotPreview> {
       child: Column(  //everything
         //mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
+          const Padding(padding: EdgeInsets.fromLTRB(0, 3, 0, 0),),
           Row(  //title and padding
             children: [
               const Padding(padding: EdgeInsets.fromLTRB(5, 0, 0, 0),),
