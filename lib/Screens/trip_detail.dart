@@ -164,19 +164,21 @@ class _TripDetailState extends State<TripDetail> {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
             ),
 
-            const Padding(padding: EdgeInsets.fromLTRB(0, 20, 0, 0),),
+            //description
+            const Padding(padding: EdgeInsets.fromLTRB(0, 25, 0, 0),),
             Text(tripData.description, style: const TextStyle(fontSize: 15),),
 
-            //map
-            const Padding(padding: EdgeInsets.fromLTRB(0, 5, 0, 0),),
-            Padding(  //black line
-              padding:const EdgeInsets.symmetric(horizontal:10.0),
-              child:Container(
-                height:1.0,
-                width:130.0,
-                color:Colors.black,),),
-            const Padding(padding: EdgeInsets.fromLTRB(0, 5, 0, 0),),
-            const Text("Spots: "),
+            const Padding(padding: EdgeInsets.fromLTRB(0, 25, 0, 0),),
+
+            //blue line
+            const Divider(
+                thickness: 15,
+                color: Colors.cyan
+            ),
+
+            //spots
+            const Padding(padding: EdgeInsets.fromLTRB(0, 10, 0, 0),),
+            const Text("Spots: ", style:TextStyle(fontSize: 15, color: Color.fromRGBO(100, 100, 100, 1), fontWeight: FontWeight.bold)),
             const Padding(padding: EdgeInsets.fromLTRB(0, 10, 0, 0),),
             FutureBuilder(
                 future: futureSpots,

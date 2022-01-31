@@ -38,6 +38,7 @@ class _MyAppState extends State<MyApp> {
   Future<void> didChangeDependencies() async {
     super.didChangeDependencies();
     await userInfo.iniLoggedUserInfo();
+    setState(() {});
   }
 
   @override
@@ -49,7 +50,7 @@ class _MyAppState extends State<MyApp> {
         cardColor: Colors.deepOrangeAccent, /*Color.fromRGBO(255, 170, 0, 0.5)*/ //the light orange
       ),
 
-      //TODO: es un poco chapuzero
+      //TODO: estaria guay un splash screen hasta que tengamos los datos (por lo tanto un bool nullable)
       home: userInfo.loggedUserEmail == null?
       LoginScreen():
       HomeScreen()

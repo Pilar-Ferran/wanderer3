@@ -1,7 +1,9 @@
 
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_html/flutter_html.dart';
 import 'package:my_login/Component/picture_loading_indicator.dart';
+import 'package:my_login/Screens/user_detail.dart';
 import 'package:my_login/dataclasses/spot_data.dart';
 import 'package:my_login/dataclasses/spot_trip_pair.dart';
 import 'package:my_login/dataclasses/trip_data.dart';
@@ -10,6 +12,8 @@ import 'package:html/parser.dart' as htmlparser;
 import 'package:html/dom.dart' as dom;
 import 'package:webview_flutter/webview_flutter.dart';
 import 'package:webview_flutter/webview_flutter.dart' as thing;
+
+import '../user_secure_storage.dart';
 
 class SpotDetail extends StatefulWidget {
   static const routeName = '/spot_detail';
@@ -21,6 +25,7 @@ class SpotDetail extends StatefulWidget {
 }
 
 class _SpotDetailState extends State<SpotDetail> {
+  FirebaseFirestore firestore = FirebaseFirestore.instance;
 
   late final SpotTripPair args;
   late final SpotData spotData;
@@ -28,6 +33,9 @@ class _SpotDetailState extends State<SpotDetail> {
 
   String? soundtrackHtmlData;
   //late dom.Document document;
+
+  String? loggedUsername;
+  String? loggedUserEmail;
 
   @override
   /*Future<*/void/*>*/ initState() /*async*/ {
@@ -45,6 +53,12 @@ class _SpotDetailState extends State<SpotDetail> {
     var authenticationToken = await SpotifySdk.getAuthenticationToken(clientId: "ad0826945176451cab98b38cbd2011ad", redirectUrl: "", scope: "app-remote-control,user-modify-playback-state,playlist-read-private");
   }*/
 
+
+  Future<void> iniLoggedUserInfo() async {  //TODO problems w async?
+    loggedUsername = await UserSecureStorage.getUsername();
+    loggedUserEmail = await UserSecureStorage.getUserEmail();
+  }
+
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
@@ -57,6 +71,8 @@ class _SpotDetailState extends State<SpotDetail> {
               spotData.soundtrack! +
               '?utm_source=generator" width="100%" height="80" frameBorder="0" allowfullscreen="" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"></iframe>';
     }
+
+    iniLoggedUserInfo();
   }
 
   @override
@@ -69,7 +85,20 @@ class _SpotDetailState extends State<SpotDetail> {
             //crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               const Padding(padding: EdgeInsets.fromLTRB(0, 10, 0, 0),),
-              Text(tripData.authorUser, textAlign: TextAlign.left, style: const TextStyle(fontSize: 18),),
+
+              GestureDetector(
+                child: Text(tripData.authorUser, textAlign: TextAlign.left, style: const TextStyle(fontSize: 18),),
+                onTap: () async {
+                  if (loggedUsername!=null && tripData.authorUser!=loggedUsername) { //si no soy yo
+                    QuerySnapshot<Object?> authorQuery = await firestore
+                        .collection('users').where(
+                        'username', isEqualTo: tripData.authorUser).get();
+                    var authorData = authorQuery.docs[0].data() as Map<String,dynamic>;
+                    Navigator.pushNamed(context, UserDetail.routeName, arguments: authorData);
+                  }
+                  },
+              ),
+
               const Padding(padding: EdgeInsets.fromLTRB(0, 10, 0, 0),),
 
               Column(   //trip title, place, spot name
@@ -82,7 +111,9 @@ class _SpotDetailState extends State<SpotDetail> {
                     ),
                     const Padding(padding: EdgeInsets.fromLTRB(0, 10, 0, 0),),
                     Center(child: //kinda ugly. maybe the trip texts should be smaller, maybe remove the center. idk.
-                      Text(spotData.name, style: const TextStyle(fontSize: 35, fontWeight: FontWeight.bold)),
+                        Text(spotData.name, style:
+                        const TextStyle(fontSize: 35, fontWeight: FontWeight.bold, color: Colors.red /*Color.fromRGBO(224, 52, 0, 1)*//*Theme.of(context).cardColor*/,
+                        )),
                     ),
 
                     const Padding(padding: EdgeInsets.fromLTRB(0, 10, 0, 0),),
@@ -127,7 +158,7 @@ class _SpotDetailState extends State<SpotDetail> {
       return Column(children: [
         Row(children: const [
           Padding(padding: EdgeInsets.fromLTRB(7, 0, 0, 0),),
-          Text("Soundtrack", style: TextStyle(fontSize: 15, fontWeight: FontWeight.normal)),
+          Text("Soundtrack", style: /*TextStyle(fontSize: 15, fontWeight: FontWeight.normal)*/TextStyle(fontSize: 15, color: Color.fromRGBO(100, 100, 100, 1), fontWeight: FontWeight.bold)),
         ],),
 
         //spotify:
@@ -163,6 +194,7 @@ class _SpotDetailState extends State<SpotDetail> {
                         "html": Style(height: 100),
                         }*/
         ),
+          const Padding(padding: EdgeInsets.fromLTRB(0, 10, 0, 0)),
       ],
       );
     }
