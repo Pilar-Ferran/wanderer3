@@ -26,8 +26,7 @@ class SpotPreview extends StatelessWidget {
           },
           //child: Ink(
           child: Container(
-          child:
-            Expanded(
+          //child: Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -43,7 +42,7 @@ class SpotPreview extends StatelessWidget {
               ),
               Text(spotData.description, style: const TextStyle(fontSize: 15),),
             ],),
-            ),
+            //),
             padding: const EdgeInsets.fromLTRB(5, 5, 5, 5),
           ),
         ),

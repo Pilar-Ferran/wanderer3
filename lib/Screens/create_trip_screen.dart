@@ -31,7 +31,7 @@ class CreateTripScreen extends StatefulWidget {
 }
 
 class _CreateTripScreenState extends State<CreateTripScreen> {
-  FirebaseFirestore firestore = FirebaseFirestore.instance;
+  //FirebaseFirestore firestore = FirebaseFirestore.instance;
   final formKey = GlobalKey<FormState>();
 
   late String tripTitle;
@@ -245,6 +245,7 @@ class _CreateTripScreenState extends State<CreateTripScreen> {
   }*/
 
   Future <void> createTrip() async {  //should catch exceptions?
+    FirebaseFirestore firestore = FirebaseFirestore.instance;
     var batch = firestore.batch();
 
     // Create the trip
