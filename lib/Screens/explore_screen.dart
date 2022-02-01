@@ -106,9 +106,11 @@ class _ExploreScreenState extends State<ExploreScreen> {
 
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
+    var isPortrait = MediaQuery.of(context).orientation;
     return DefaultTabController(
       length: 2,
       child: Scaffold(
+        resizeToAvoidBottomInset : false,
         appBar: PreferredSize(
           preferredSize: const Size.fromHeight(kToolbarHeight),
           child: SafeArea(
@@ -130,7 +132,7 @@ class _ExploreScreenState extends State<ExploreScreen> {
           ),
         ),
         body: TabBarView(
-          children: [
+              children: [
             loading2
                 ? Column(
               children: [
@@ -141,7 +143,7 @@ class _ExploreScreenState extends State<ExploreScreen> {
                   child: CircularProgressIndicator(),
                 ),],)
                 :
-            Container(
+              Container(
               constraints: const BoxConstraints.expand(),
               decoration: const BoxDecoration(
                 image: DecorationImage(
@@ -149,52 +151,58 @@ class _ExploreScreenState extends State<ExploreScreen> {
                   fit: BoxFit.cover,
                 ),
               ),
-              child:Column(
+              child: Column(
                 crossAxisAlignment: CrossAxisAlignment.center,
                 mainAxisSize: MainAxisSize.min,
 
                     children: [
-                      SizedBox(
-                        height: size.height / 20,
-                      ),
-                      Container(
-                        height: size.height / 14,
-                        width: size.width,
-                        alignment: Alignment.center,
-                        child: Container(
-                          height: size.height / 14,
-                          width: size.width / 1.15,
-                          child: TextField(
-                            controller: _searchtrip,
-                            decoration: InputDecoration(
-                              filled:true,
-                              fillColor: Colors.white,
-                              hintText: "Search Trip",
-                              border: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(10),
-                              ),
-                            ),
-                          ),
-                        ),
-                      ),
-                      SizedBox(
-                        height: size.height / 50,
-                      ),
-                      ElevatedButton(
-                        onPressed: getUsersPastTripsStreamSnapshots,
-                        child: const Text("Search", style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 18,
-                          fontWeight: FontWeight.w600,
-                        ),),
-                      ),
-                      SizedBox(
-                        height: size.height / 30,
-                      ),
-
                     Expanded(
-                      child: ListView.builder(
+                      child:ListView.builder(
+                          shrinkWrap: true,
+                          itemCount: 1,
+                          itemBuilder: (BuildContext context, int index) {
+                            return Column(
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+    SizedBox(
+    height: size.height / 20,
+    ),
+    Container(
+    height: (isPortrait==Orientation.portrait) ? size.height / 14 : size.height/5,
+    width: size.width / 1.15,
+    alignment: Alignment.center,
+    child: TextField(
+    controller: _searchtrip,
+    decoration: InputDecoration(
+    filled:true,
+    fillColor: Colors.white,
+    hintText: "Search Trip",
+    border: OutlineInputBorder(
+    borderRadius: BorderRadius.circular(10),
+    ),
+    ),
+    ),
+    ),
+    //),
+    SizedBox(
+    height: size.height / 50,
+    ),
+    ElevatedButton(
+    onPressed: getUsersPastTripsStreamSnapshots,
+    child: const Text("Search", style: TextStyle(
+    color: Colors.white,
+    fontSize: 18,
+    fontWeight: FontWeight.w600,
+    ),),
+    ),
+    SizedBox(
+    height: size.height / 30,
+    ),
+                     ListView.builder(
                         itemCount: _resultsList.length,
+                         physics: ClampingScrollPhysics(),
+                         shrinkWrap: true,
                         itemBuilder: (BuildContext context, int index) {
                           return Card(
                             child: Container(
@@ -229,14 +237,25 @@ class _ExploreScreenState extends State<ExploreScreen> {
                                 subtitle: Text(_resultsList[index].authorUser),
                                 trailing: Icon(Icons.account_balance, color: Colors.black),
                               ),),);}
-                ),
-                    ),
-    ],
-                  ),
+                ),],);},),),],),
+
+    //],
+                  //),
 
 
             ),
-        Container(
+                loading
+                    ? Column(
+                  children: [
+                    SizedBox(
+                      height: size.height / 3,
+                    ),
+                    const Center(
+                      child: CircularProgressIndicator(),
+                    ),],)
+                    :
+
+                Container(
           constraints: const BoxConstraints.expand(),
           decoration: const BoxDecoration(
             image: DecorationImage(
@@ -248,103 +267,114 @@ class _ExploreScreenState extends State<ExploreScreen> {
                 crossAxisAlignment: CrossAxisAlignment.center,
                 mainAxisSize: MainAxisSize.min,
 
-                children: [
-                  loading
-                    ? Column(
-                    children: [
-                      SizedBox(
-                        height: size.height / 3,
-                      ),
-                      const Center(
-                  child: CircularProgressIndicator(),
-                ),],)
-                    :   Column(
                   children: [
-                SizedBox(
-                height: size.height / 20,
-                ),
-              Container(
-                height: size.height / 14,
-                width: size.width,
-                alignment: Alignment.center,
-                child: Container(
-                  height: size.height / 14,
-                  width: size.width / 1.15,
-                  child: TextField(
-                    controller: _search,
-                    decoration: InputDecoration(
-                      filled:true,
-                      fillColor: Colors.white,
-                      hintText: "Search User",
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(10),
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-              SizedBox(
-                height: size.height / 50,
-              ),
-              ElevatedButton(
-                onPressed: onSearch,
-                child: const Text("Search", style: TextStyle(
-                  color: Colors.white,
-                  fontSize: 18,
-                  fontWeight: FontWeight.w600,
-                ),),
-              ),
-              SizedBox(
-                height: size.height / 30,
-              ),
-                    userMap!=null ?
-                     Container(
-                          color: Colors.white,
-                          child:
-                        ListTile(
-                          onTap:() {(userMap!['email']==loggedUserEmail) ? Navigator.pushNamed(context, SearchYourselfScreen.routeName): Navigator.pushNamed(context, UserDetail.routeName, arguments: userMap);},
-                          leading: ClipOval(
-                                  child: SizedBox.fromSize(
-                                  size: Size.fromRadius(size.height/25), // Image radius
-                              child:FutureBuilder(
-                            future:  getImage(userMap!['profile_picture']),
-                            builder: (context, snapshot){
-                              if (snapshot.connectionState == ConnectionState.done) {
-                                if (snapshot.hasError) {
-                                  print("error in snapshot: "+snapshot.error.toString());
-                                  return const Text("error");
-                                }
-                                else {
-                                  return Image.network(snapshot.data as String, fit: BoxFit.fill);
-                                }
-                              }
-                              else { //show loading
-                                return const PictureLoadingIndicator();
-                              }
-                            },),),),
-                          selectedTileColor: Colors.white,
-                          title: Text(
-                            userMap!['username'],
-                            style: const TextStyle(
-                              color: Colors.black,
-                              fontSize: 17,
-                              fontWeight: FontWeight.w500,
+                    Expanded(
+                  child: ListView.builder(
+                  shrinkWrap: true,
+                      physics: ClampingScrollPhysics(),
+                  itemCount: 1,
+                  itemBuilder: (BuildContext context, int index) {
+                    return Column(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    mainAxisSize: MainAxisSize.min,
+                      children: [
+                        SizedBox(
+                          height: size.height / 20,
+                        ),
+
+                        Container(
+                          alignment: Alignment.center,
+                          height: (isPortrait == Orientation.portrait) ? size
+                              .height / 14 : size.height / 5,
+                          width: size.width / 1.15,
+                          child: TextField(
+                            controller: _search,
+                            decoration: InputDecoration(
+                              filled: true,
+                              fillColor: Colors.white,
+                              hintText: "Search User",
+                              border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(10),
+                              ),
                             ),
                           ),
-                          subtitle: Text(userMap!['biography']),
-                          trailing: Icon(Icons.chat, color: Colors.black),
-                        ),)
+                        ),
+                        SizedBox(
+                          height: size.height / 50,
+                        ),
+                        ElevatedButton(
+                          onPressed: onSearch,
+                          child: const Text("Search", style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 18,
+                            fontWeight: FontWeight.w600,
+                          ),),
+                        ),
+                        SizedBox(
+                          height: size.height / 30,
+                        ),
+                        userMap != null ?
+                        Container(
+                          color: Colors.white,
+                          child:
+                          ListTile(
+                            onTap: () {
+                              (userMap!['email'] == loggedUserEmail)
+                                  ? Navigator.pushNamed(
+                                  context, SearchYourselfScreen.routeName)
+                                  : Navigator.pushNamed(
+                                  context, UserDetail.routeName,
+                                  arguments: userMap);
+                            },
+                            leading: ClipOval(
+                              child: SizedBox.fromSize(
+                                size: Size.fromRadius(size.height / 25),
+                                // Image radius
+                                child: FutureBuilder(
+                                  future: getImage(userMap!['profile_picture']),
+                                  builder: (context, snapshot) {
+                                    if (snapshot.connectionState ==
+                                        ConnectionState.done) {
+                                      if (snapshot.hasError) {
+                                        print("error in snapshot: " +
+                                            snapshot.error.toString());
+                                        return const Text("error");
+                                      }
+                                      else {
+                                        return Image.network(
+                                            snapshot.data as String,
+                                            fit: BoxFit.fill);
+                                      }
+                                    }
+                                    else { //show loading
+                                      return const PictureLoadingIndicator();
+                                    }
+                                  },),),),
+                            selectedTileColor: Colors.white,
+                            title: Text(
+                              userMap!['username'],
+                              style: const TextStyle(
+                                color: Colors.black,
+                                fontSize: 17,
+                                fontWeight: FontWeight.w500,
+                              ),
+                            ),
+                            subtitle: Text(userMap!['biography']),
+                            trailing: Icon(Icons.chat, color: Colors.black),
+                          ),)
 
-                        : Container(),
-    ],
-      ),
-          ],
-        ),
-                    ),
-        ],
-      ),
+                            : Container(),
+                      ],
+                    );
+                  }
+    ), ),
+    ],),
+
+
     ),
-    );
+    ],
+    ),
+      ),);
 
 
   }
