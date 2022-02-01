@@ -56,9 +56,9 @@ class _EditProfileDialogState extends State<EditProfileDialog> {
   @override
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
-
+    var isPortrait = MediaQuery.of(context).orientation;
     return Dialog(
-        child: /*ListView(children: [*/
+        child: ListView(children: [
           Container(
             padding: const EdgeInsets.fromLTRB(20, 10, 20, 10),
             child: Column(  //this could be in a different class
@@ -109,7 +109,7 @@ class _EditProfileDialogState extends State<EditProfileDialog> {
                         previewPicImage == null ? //addPaddingBetweenImages(imageImages),
                        ClipOval(
                           child: SizedBox.fromSize(
-                          size: Size.fromRadius(size.height/13), // Image radius
+                          size: Size.fromRadius((isPortrait==Orientation.portrait) ? size.height / 10 : size.height/5), // Image radius
                             child:
                         FutureBuilder(
                         future: getImage(widget.userMapInit!['profile_picture']),
@@ -128,7 +128,7 @@ class _EditProfileDialogState extends State<EditProfileDialog> {
                           }
                         },),),) : ClipOval(
                           child: SizedBox.fromSize(
-                              size: Size.fromRadius(size.height/13), // Image radius
+                              size: Size.fromRadius((isPortrait==Orientation.portrait) ? size.height / 10 : size.height/5), // Image radius
                               child: previewPicImage,
                           ),
                         ),
@@ -181,7 +181,8 @@ class _EditProfileDialogState extends State<EditProfileDialog> {
               ],
               mainAxisSize: MainAxisSize.min,
             ),
-          )
+          ),
+      ],),
         //],)
     );
   }
