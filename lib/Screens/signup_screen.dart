@@ -26,9 +26,10 @@ class _SignUpScreenState extends State<SignupScreen> {
     final size = MediaQuery
         .of(context)
         .size;
+    var isPortrait = MediaQuery.of(context).orientation;
 
     return Scaffold(
-      resizeToAvoidBottomInset: false,
+      //resizeToAvoidBottomInset: false,
       body: loading
           ? Center(
         child: SizedBox(
@@ -45,10 +46,10 @@ class _SignUpScreenState extends State<SignupScreen> {
             fit: BoxFit.cover,
           ),
         ),
-        child: Column(
+        child: ListView(
           children: [
             SizedBox(
-              height: size.height / 7,
+              height: size.height / 15,
             ),
             Container(
               decoration: const BoxDecoration(
@@ -98,28 +99,28 @@ class _SignUpScreenState extends State<SignupScreen> {
                         width: size.width,
                         alignment: Alignment.center,
                         child: field(
-                            size, "username", Icons.account_box, _username),
+                            size,isPortrait, "username", Icons.account_box, _username),
                       ),
                     ),
                     Container(
                       width: size.width,
                       alignment: Alignment.center,
-                      child: field(size, "email", Icons.account_box, _email),
+                      child: field(size,isPortrait, "email", Icons.account_box, _email),
                     ),
                     Padding(
                       padding: const EdgeInsets.symmetric(vertical: 18.0),
                       child: Container(
                         width: size.width,
                         alignment: Alignment.center,
-                        child: field(size, "password", Icons.lock, _password),
+                        child: field(size,isPortrait, "password", Icons.lock, _password),
                       ),
                     ),
                     SizedBox(
                       height: size.height / 40,
                     ),
-                    customButton(size),
+                    customButton(size, isPortrait),
                     SizedBox(
-                      height: size.height / 40,
+                      height: (isPortrait==Orientation.portrait) ? size.height / 35 : size.height/15,
                     ),
                     GestureDetector(
                       onTap: () =>
@@ -147,7 +148,7 @@ class _SignUpScreenState extends State<SignupScreen> {
     );
   }
 
-  Widget customButton(Size size) {
+  Widget customButton(Size size, Orientation orientation) {
     return GestureDetector(
       onTap: () {
         if (_username.text.isNotEmpty &&
@@ -211,7 +212,7 @@ class _SignUpScreenState extends State<SignupScreen> {
         }
       },
       child: Container(
-          height: size.height / 14,
+          height: (orientation==Orientation.portrait) ? size.height /14 : size.height/8,
           width: size.width / 1.2,
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(5),
@@ -229,10 +230,10 @@ class _SignUpScreenState extends State<SignupScreen> {
     );
   }
 
-  Widget field(Size size, String hintText, IconData icon,
+  Widget field(Size size, Orientation orientation, String hintText, IconData icon,
       TextEditingController cont) {
     return SizedBox(
-      height: size.height / 14,
+      height: (orientation==Orientation.portrait) ? size.height / 10 : size.height/5,
       width: size.width / 1.1,
       child: TextField(
         controller: cont,

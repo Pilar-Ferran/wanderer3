@@ -24,9 +24,10 @@ class _LoginScreenState extends State<LoginScreen> {
     final size = MediaQuery
         .of(context)
         .size;
+    var isPortrait = MediaQuery.of(context).orientation;
 
     return Scaffold(
-      resizeToAvoidBottomInset: false,
+      //resizeToAvoidBottomInset: false,
       body: loading
           ? Center(
         child: SizedBox(
@@ -44,10 +45,10 @@ class _LoginScreenState extends State<LoginScreen> {
             ),
           ),
           child:
-          Column(
+          ListView(
             children: [
               SizedBox(
-                height: size.height / 5,
+                height: (isPortrait==Orientation.portrait) ? size.height /7 : size.height/10,
               ),
               Container(
                 decoration: const BoxDecoration(
@@ -60,7 +61,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   child: Column(
                     children: [
                       SizedBox(
-                        height: size.height / 20,
+                        height: (isPortrait==Orientation.portrait) ? size.height / 20 : size.height/40,
                       ),
                       SizedBox(
                         width: size.width / 1.1,
@@ -77,24 +78,52 @@ class _LoginScreenState extends State<LoginScreen> {
                         height: size.height / 15,
                       ),
                       Container(
-                        width: size.width,
+                        width: size.width/1.1,
+                        height: (isPortrait==Orientation.portrait) ? size.height / 10 : size.height/5,
                         alignment: Alignment.center,
-                        child: field(size, "Email", Icons.account_box, _email),
+                        child: TextField(
+                          controller: _email,
+                          decoration: InputDecoration(
+                            prefixIcon: Icon(Icons.account_box),
+                            filled:true,
+                            fillColor: Colors.white,
+                            hintStyle: const TextStyle(color: Colors.grey),
+                            hintText: "Email",
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(10),
+                            ),
+                          ),
+                        ),//field(size, "Email", Icons.account_box, _email),
                       ),
                       Padding(
                         padding: const EdgeInsets.symmetric(vertical: 18.0),
-                        child: Container(
-                          width: size.width,
+                        child:
+                        Container(
+                          width: size.width/1.1,
+                          height: (isPortrait==Orientation.portrait) ? size.height / 10 : size.height/5,
                           alignment: Alignment.center,
-                          child: field(size, "Password", Icons.lock, _password),
+                          child: TextField(
+                            controller: _password,
+                            decoration: InputDecoration(
+                              prefixIcon: Icon(Icons.lock),
+                              hintStyle: const TextStyle(color: Colors.grey),
+                              filled:true,
+                              fillColor: Colors.white,
+                              hintText: "Password",
+                              border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(10),
+                              ),
+                            ),
+                          ),
+                          //child: field(size, "Password", Icons.lock, _password),
                         ),
-                      ),
+                     ),
                       SizedBox(
                         height: size.height / 40,
                       ),
-                      customButton(size),
+                      customButton(size, isPortrait),
                       SizedBox(
-                        height: size.height / 40,
+                        height: (isPortrait==Orientation.portrait) ? size.height / 35 : size.height/15,
                       ),
                       GestureDetector(
                         onTap: () =>
@@ -124,7 +153,7 @@ class _LoginScreenState extends State<LoginScreen> {
     );
   }
 
-  Widget customButton(Size size) {
+  Widget customButton(Size size, Orientation orientation) {
     return GestureDetector(
       onTap: () {
         usernameFromEmail(_email.text);
@@ -190,7 +219,7 @@ class _LoginScreenState extends State<LoginScreen> {
         }
       },
       child: Container(
-          height: size.height / 14,
+          height: (orientation==Orientation.portrait) ? size.height /14 : size.height/8,
           width: size.width / 1.2,
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(5),
