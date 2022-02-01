@@ -95,6 +95,16 @@ class _TripDetailState extends State<TripDetail> {
     final tripData = args;
     //print("in build(): firestorePath = "+args.firestorePath+"\n firestoreId = "+args.firestoreId);
 
+    final size = MediaQuery.of(context).size;
+
+    double imageSideSize;
+    if (MediaQuery.of(context).orientation == Orientation.portrait) {
+      imageSideSize = size.width*0.22;
+    }
+    else {
+      imageSideSize = size.width*0.15;
+    }
+
     return Scaffold(
       appBar: AppBar(title: Text(args.title),),
       body: Container(
@@ -123,17 +133,21 @@ class _TripDetailState extends State<TripDetail> {
                   Column(   //title and place
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children:[
+                        //Container(child:
                         SizedBox(
-                            width: 200,
+                            width: size.width*0.5,
                             child: Text(tripData.title, style: const TextStyle(fontSize: 25, fontWeight: FontWeight.normal),),
                         ),
+                        //color: Colors.pink),
 
                         Row(children:[  //place, with padding
                           const Padding(padding: EdgeInsets.fromLTRB(10, 0, 0, 0),),
+    //Container(child:
                           SizedBox(
-                              width: 200,
+                              width: (size.width*0.5)-10,
                               child: Text(tripData.place, style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),)
                           ),
+        //color: Colors.deepPurple),
                         ],),
                       ],),
                 ],),
@@ -151,7 +165,7 @@ class _TripDetailState extends State<TripDetail> {
                             return const Text("error");
                           }
                           else {
-                            return Image.network(snapshot.data as String, width: 80, height: 80, fit: BoxFit.cover,);
+                            return Image.network(snapshot.data as String, width: imageSideSize, height: imageSideSize, fit: BoxFit.cover,);
                           }
                         }
                         else { //show loading
@@ -160,7 +174,7 @@ class _TripDetailState extends State<TripDetail> {
                       },
                   )
                         :
-                    const Padding(padding: EdgeInsets.fromLTRB(25, 25, 25, 25),), //if there is no pic, put padding,
+                    Padding(padding: EdgeInsets.fromLTRB(imageSideSize/2, imageSideSize/2, imageSideSize/2, imageSideSize/2),), //if there is no pic, put padding,
                     const Padding(padding: EdgeInsets.fromLTRB(0, 0, 40, 0),),
                   ],
                 )],

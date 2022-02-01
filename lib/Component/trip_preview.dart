@@ -1,5 +1,7 @@
 //import 'dart:html';
 
+import 'dart:ffi';
+
 import 'package:flutter/material.dart';
 import 'package:my_login/Component/picture_loading_indicator.dart';
 import 'package:my_login/dataclasses/trip_data.dart';
@@ -13,8 +15,8 @@ class TripPreview extends StatelessWidget{
 
   const TripPreview(this.tripData, {Key? key}) : super(key: key);
 
-  //@override
-  Widget build2(BuildContext context) {
+  /*@override
+  Widget build(BuildContext context) {
     return Container(
       padding: const EdgeInsets.fromLTRB(10, 10, 10, 10),
       child:
@@ -91,13 +93,21 @@ class TripPreview extends StatelessWidget{
       ),
       //const Padding(padding: EdgeInsets.fromLTRB(0, 0, 0, 10),),
     );
-  }
+  }*/
 
 
   @override
   Widget build(BuildContext context) {
 
     final size = MediaQuery.of(context).size;
+
+    double imageSideSize;
+    if (MediaQuery.of(context).orientation == Orientation.portrait) {
+      imageSideSize = size.width*0.22;
+    }
+    else {
+      imageSideSize = size.width*0.15;
+    }
 
     return Card(
       shape: const ContinuousRectangleBorder(),
@@ -127,7 +137,9 @@ class TripPreview extends StatelessWidget{
                           return const Text("error");
                         }
                         else {
-                          return Image.network(snapshot.data as String, width: 80, height: 80, fit: BoxFit.cover,);
+                          print("imageSideSize = "+imageSideSize.toString());
+                          return Image.network(snapshot.data as String, width: imageSideSize, height: imageSideSize, fit: BoxFit.cover,);
+                          //return Image.network(snapshot.data as String, width: 80, height: 80, fit: BoxFit.cover,);
                         }
                       }
                       else { //show loading
@@ -136,12 +148,12 @@ class TripPreview extends StatelessWidget{
                     },
                   )
                       :
-                  const Padding(padding: EdgeInsets.fromLTRB(40, 40, 40, 40),), //if there is no pic, put padding
+                  Padding(padding: EdgeInsets.fromLTRB(imageSideSize/2, imageSideSize/2, imageSideSize/2, imageSideSize/2),), //if there is no pic, put padding
                   //end pic
                   const Padding(padding: EdgeInsets.fromLTRB(10, 0, 0, 0),),
                   //Container(child:
                   SizedBox(
-                    width: (MediaQuery.of(context).orientation == Orientation.portrait)?200:400,
+                    width: size.width*0.6 /*250*/ /*(MediaQuery.of(context).orientation == Orientation.portrait)?200:400*/,
                     child: Column(
                       children: [
                         Text(tripData.title, style: const TextStyle(

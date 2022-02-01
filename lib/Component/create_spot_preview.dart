@@ -26,6 +26,8 @@ class _CreateSpotPreviewState extends State<CreateSpotPreview> {
 
   @override
   Widget build(BuildContext context) {
+    final size = MediaQuery.of(context).size;
+
     return Card(
       //margin: const EdgeInsets.fromLTRB(10, 10, 10, 10),
       child: Column(  //everything
@@ -35,10 +37,12 @@ class _CreateSpotPreviewState extends State<CreateSpotPreview> {
           Row(  //title and padding
             children: [
               const Padding(padding: EdgeInsets.fromLTRB(5, 0, 0, 0),),
+              //Container(child:
               SizedBox(
-                width: 250, //could be done better, could be device dependent. but it works and looks good. makes sure the title doesnt overflow to the right
+                width: size.width*0.6,
                 child: Text(/*widget.spotName*/widget.parentSpotDatas[widget.spotIndex].name, maxLines: 100,),
               ),
+              //color: Colors.pink,),
             ],
           ),
 

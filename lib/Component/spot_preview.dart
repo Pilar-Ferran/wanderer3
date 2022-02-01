@@ -15,6 +15,8 @@ class SpotPreview extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final size = MediaQuery.of(context).size;
+
     //return Container(
     return Card(
         //margin: const EdgeInsets.fromLTRB(10, 10, 10, 10),
@@ -24,14 +26,24 @@ class SpotPreview extends StatelessWidget {
           },
           //child: Ink(
           child: Container(
-            child: Column(children: [
+          child:
+            Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
               Row(  //title and padding
                 children: [
+
+            SizedBox(
+            width: size.width*0.8,
+              child:
                 /*child:*/ Text(spotData.name, style: const TextStyle(fontSize: 22, /*fontWeight: FontWeight.bold*/),),
+            ),
                 ],
               ),
               Text(spotData.description, style: const TextStyle(fontSize: 15),),
             ],),
+            ),
             padding: const EdgeInsets.fromLTRB(5, 5, 5, 5),
           ),
         ),
