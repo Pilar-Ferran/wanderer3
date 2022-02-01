@@ -110,91 +110,113 @@ class _UserDetailState extends State<UserDetail> {
       image: AssetImage('images/cyan.jpg'),
       fit: BoxFit.cover,
       ),
-      ), child: Column(
+      ), child: isPortrait==Orientation.portrait ?
+            Column(
+              //mainAxisSize: MainAxisSize.min,
               children: [
                 Container(
                   padding: const EdgeInsets.only(left: 20, right: 10, top: 70),
-                    decoration: const BoxDecoration(
-                      image: DecorationImage(
-                        image: AssetImage('images/white.jpg'),
-                        fit: BoxFit.cover,
-                      ),
+                  decoration: const BoxDecoration(
+                    image: DecorationImage(
+                      image: AssetImage('images/white.jpg'),
+                      fit: BoxFit.cover,
                     ),
-                    child: SingleChildScrollView(
-                      child:
-                     Row(
-                    children: [
-                      Expanded(
-                        flex: 1,
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            ClipOval(
-                              child: SizedBox.fromSize(
-                                size: Size.fromRadius(isPortrait == Orientation.portrait ? size.height/18 : size.width/15), // Image radius
-                                child:
-                            FutureBuilder(
-                              future: getImage(userCharact['profile_picture']),
-                              builder: (context, snapshot){
-                                if (snapshot.connectionState == ConnectionState.done) {
-                                  if (snapshot.hasError) {
-                                    print("error in snapshot: "+snapshot.error.toString());
-                                    return const Text("error");
-                                  }
-                                  else {
-                                    return Image.network(snapshot.data as String, fit:BoxFit.fill);
-                                  }
-                                }
-                                else { //show loading
-                                  return const PictureLoadingIndicator();
-                                }
-                              },),),),
-                            ],
-                        ),
-                      ),
-                      Expanded(
-                        flex: 2,
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceAround,
-                          children: [
-                            Column(
-                              children: [
-                                Text(_resultsList.length.toString(), style: const TextStyle(color: Colors.black, fontSize: 20, fontWeight: FontWeight.bold),),
-                                const SizedBox(height: 5),
-                                const Text('Trips', style:  TextStyle(color: Colors.black, fontSize: 14),),
-                              ],
-                            ),
-                            Column(
-                              children: [
-                                Text(userCharact['followers'].toString(), style: const TextStyle(color: Colors.black, fontSize: 20, fontWeight: FontWeight.bold),),
-                                const SizedBox(height: 5),
-                                const Text('Followers', style: TextStyle(color: Colors.black, fontSize: 14),),
-                              ],
-                            ),
-                            Column(
-                              children: [
-                                Text(userCharact['following'].toString(), style: const TextStyle(color: Colors.black, fontSize: 20, fontWeight: FontWeight.bold),),
-                                const SizedBox(height: 5),
-                                const Text('Following', style: TextStyle(color: Colors.black, fontSize: 14),),
-                              ],
-                            )
-                          ],
-                        ),
-                      )
-                    ],
                   ),
+                  child: SingleChildScrollView(
+                    child:
+                    Row(
+                      children: [
+                        Expanded(
+                          flex: 1,
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              ClipOval(
+                                child: SizedBox.fromSize(
+                                  size: Size.fromRadius(
+                                      isPortrait == Orientation.portrait ? size
+                                          .height / 18 : size.width / 15),
+                                  // Image radius
+                                  child:
+                                  FutureBuilder(
+                                    future: getImage(
+                                        userCharact['profile_picture']),
+                                    builder: (context, snapshot) {
+                                      if (snapshot.connectionState ==
+                                          ConnectionState.done) {
+                                        if (snapshot.hasError) {
+                                          print("error in snapshot: " +
+                                              snapshot.error.toString());
+                                          return const Text("error");
+                                        }
+                                        else {
+                                          return Image.network(
+                                              snapshot.data as String,
+                                              fit: BoxFit.fill);
+                                        }
+                                      }
+                                      else { //show loading
+                                        return const PictureLoadingIndicator();
+                                      }
+                                    },),),),
+                            ],
+                          ),
+                        ),
+                        Expanded(
+                          flex: 2,
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceAround,
+                            children: [
+                              Column(
+                                children: [
+                                  Text(_resultsList.length.toString(),
+                                    style: const TextStyle(color: Colors.black,
+                                        fontSize: 20,
+                                        fontWeight: FontWeight.bold),),
+                                  const SizedBox(height: 5),
+                                  const Text('Trips', style: TextStyle(
+                                      color: Colors.black, fontSize: 14),),
+                                ],
+                              ),
+                              Column(
+                                children: [
+                                  Text(userCharact['followers'].toString(),
+                                    style: const TextStyle(color: Colors.black,
+                                        fontSize: 20,
+                                        fontWeight: FontWeight.bold),),
+                                  const SizedBox(height: 5),
+                                  const Text('Followers', style: TextStyle(
+                                      color: Colors.black, fontSize: 14),),
+                                ],
+                              ),
+                              Column(
+                                children: [
+                                  Text(userCharact['following'].toString(),
+                                    style: const TextStyle(color: Colors.black,
+                                        fontSize: 20,
+                                        fontWeight: FontWeight.bold),),
+                                  const SizedBox(height: 5),
+                                  const Text('Following', style: TextStyle(
+                                      color: Colors.black, fontSize: 14),),
+                                ],
+                              )
+                            ],
+                          ),
+                        )
+                      ],
                     ),
+                  ),
                 ),
 
-            Container(
-                    padding: const EdgeInsets.only(left: 20, right: 10, top: 0),
-              decoration: const BoxDecoration(
-                image: DecorationImage(
-                  image: AssetImage('images/white.jpg'),
-                  fit: BoxFit.cover,
-                ),
-              ),
-              child: SingleChildScrollView(
+                Container(
+                  padding: const EdgeInsets.only(left: 20, right: 10, top: 0),
+                  decoration: const BoxDecoration(
+                    image: DecorationImage(
+                      image: AssetImage('images/white.jpg'),
+                      fit: BoxFit.cover,
+                    ),
+                  ),
+                  child: SingleChildScrollView(
                     child: Row(
                       children: [
                         Expanded(
@@ -202,12 +224,18 @@ class _UserDetailState extends State<UserDetail> {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             mainAxisAlignment: MainAxisAlignment.start,
                             children: [
-                              const Padding(padding: EdgeInsets.fromLTRB(0, 10, 00, 0),),
-                              Text(userCharact['username'], style: const TextStyle(color: Colors.black, fontSize: 20, fontWeight: FontWeight.bold),),
+                              const Padding(
+                                padding: EdgeInsets.fromLTRB(0, 10, 00, 0),),
+                              Text(userCharact['username'],
+                                style: const TextStyle(color: Colors.black,
+                                    fontSize: 20,
+                                    fontWeight: FontWeight.bold),),
                               SizedBox(
-                                height: size.height/60,
+                                height: size.height / 60,
                               ),
-                              Text(userCharact['biography'], style: const TextStyle(color: Colors.black, fontSize: 15),),
+                              Text(userCharact['biography'],
+                                style: const TextStyle(
+                                    color: Colors.black, fontSize: 15),),
 
                             ],
                           ),
@@ -217,83 +245,321 @@ class _UserDetailState extends State<UserDetail> {
                     ),),),
 
                 Container(
-                  padding: const EdgeInsets.only(left: 10, right: 10, top: 30, bottom: 25),
+                  padding: const EdgeInsets.only(
+                      left: 10, right: 10, top: 30, bottom: 25),
                   decoration: const BoxDecoration(
                     image: DecorationImage(
                       image: AssetImage('images/white.jpg'),
-                      fit: BoxFit.cover ,
+                      fit: BoxFit.cover,
                     ),
                   ),
                   child: SingleChildScrollView(
-                  child: Row(
-                    children: [
-                      Expanded(
-                        flex: 8,
-                        child: customButton(size),
-                          ),
-                    ],
+                    child: Row(
+                      children: [
+                        Expanded(
+                          flex: 8,
+                          child: customButton(size),
                         ),
-                      ),
+                      ],
+                    ),
+                  ),
                 ),
 
-            Container(
-              decoration: const BoxDecoration(
-                image: DecorationImage(
-                  image: AssetImage('images/white.jpg'),
-                  fit: BoxFit.cover,
-                ),
-              ),
-              child: const SingleChildScrollView(
-                child: Divider(
-                    thickness: 15,
-                    color: Colors.cyan
-                ),),),
-
-
+                Container(
+                  decoration: const BoxDecoration(
+                    image: DecorationImage(
+                      image: AssetImage('images/white.jpg'),
+                      fit: BoxFit.cover,
+                    ),
+                  ),
+                  child: const SingleChildScrollView(
+                    child: Divider(
+                        thickness: 15,
+                        color: Colors.cyan
+                    ),),),
                 Expanded(
-                  child: ListView.builder(
-                      itemCount: _resultsList.length,
-                      itemBuilder: (BuildContext context, int index) {
-                        return Card(
-                          child: Container(
-                            color: Colors.white,
-                            child: ListTile(
-                              onTap:() {Navigator.pushNamed(context, TripDetail.routeName, arguments: _resultsList[index]);},
-                              leading: SizedBox(
-                                height:size.height/5,
-                                width:size.width/5,
-                                  child:_resultsList[index].previewPic != null?
-                                FutureBuilder(
+                  child:
+                ListView.builder(
+                    itemCount: _resultsList.length,
+                    itemBuilder: (BuildContext context, int index) {
+                      return Card(
+                        child: Container(
+                          color: Colors.white,
+                          child: ListTile(
+                            onTap: () {
+                              Navigator.pushNamed(context, TripDetail.routeName,
+                                  arguments: _resultsList[index]);
+                            },
+                            leading: SizedBox(
+                              height: size.height / 5,
+                              width: size.width / 5,
+                              child: _resultsList[index].previewPic != null ?
+                              FutureBuilder(
                                 future: getImage(_resultsList[index].previewPic),
-                                builder: (context, snapshot){
-                                  if (snapshot.connectionState == ConnectionState.done) {
+                                builder: (context, snapshot) {
+                                  if (snapshot.connectionState ==
+                                      ConnectionState.done) {
                                     if (snapshot.hasError) {
-                                      print("error in snapshot: "+snapshot.error.toString());
+                                      print("error in snapshot: " +
+                                          snapshot.error.toString());
                                       return const Text("error");
                                     }
                                     else {
-                                      return Image.network(snapshot.data as String);
+                                      return Image.network(
+                                          snapshot.data as String);
                                     }
                                   }
                                   else { //show loading
                                     return const PictureLoadingIndicator();
                                   }
-                                },): SizedBox(),),
-                              selectedTileColor: Colors.white,
-                              title: Text(
-                                _resultsList[index].title,
-                                style: const TextStyle(
-                                  color: Colors.black,
-                                  fontSize: 17,
-                                  fontWeight: FontWeight.w500,
-                                ),
+                                },) : SizedBox(),),
+                            selectedTileColor: Colors.white,
+                            title: Text(
+                              _resultsList[index].title,
+                              style: const TextStyle(
+                                color: Colors.black,
+                                fontSize: 17,
+                                fontWeight: FontWeight.w500,
                               ),
-                              subtitle: Text(_resultsList[index].place),
-                              trailing: Icon(Icons.account_balance, color: Colors.black),
-                            ),),);}
+                            ),
+                            subtitle: Text(_resultsList[index].place),
+                            trailing: Icon(
+                                Icons.account_balance, color: Colors.black),
+                          ),),);
+                    }
+                ),),
+              ],
+            )
+
+                : Column(
+      //mainAxisSize: MainAxisSize.min,
+      children: [
+      Expanded(
+      child:ListView.builder(
+      shrinkWrap: true,
+      itemCount: 1,
+      itemBuilder: (BuildContext context, int index) {
+        return
+          Column(
+            //mainAxisSize: MainAxisSize.min,
+            children: [
+              Container(
+                padding: const EdgeInsets.only(left: 20, right: 10, top: 10),
+                decoration: const BoxDecoration(
+                  image: DecorationImage(
+                    image: AssetImage('images/white.jpg'),
+                    fit: BoxFit.cover,
                   ),
                 ),
-      ],),),),),);
+                child: SingleChildScrollView(
+                  child:
+                  Row(
+                    children: [
+                      Expanded(
+                        flex: 1,
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            ClipOval(
+                              child: SizedBox.fromSize(
+                                size: Size.fromRadius(
+                                    isPortrait == Orientation.portrait ? size
+                                        .height / 18 : size.width / 15),
+                                // Image radius
+                                child:
+                                FutureBuilder(
+                                  future: getImage(
+                                      userCharact['profile_picture']),
+                                  builder: (context, snapshot) {
+                                    if (snapshot.connectionState ==
+                                        ConnectionState.done) {
+                                      if (snapshot.hasError) {
+                                        print("error in snapshot: " +
+                                            snapshot.error.toString());
+                                        return const Text("error");
+                                      }
+                                      else {
+                                        return Image.network(
+                                            snapshot.data as String,
+                                            fit: BoxFit.fill);
+                                      }
+                                    }
+                                    else { //show loading
+                                      return const PictureLoadingIndicator();
+                                    }
+                                  },),),),
+                          ],
+                        ),
+                      ),
+                      Expanded(
+                        flex: 2,
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceAround,
+                          children: [
+                            Column(
+                              children: [
+                                Text(_resultsList.length.toString(),
+                                  style: const TextStyle(color: Colors.black,
+                                      fontSize: 20,
+                                      fontWeight: FontWeight.bold),),
+                                const SizedBox(height: 5),
+                                const Text('Trips', style: TextStyle(
+                                    color: Colors.black, fontSize: 14),),
+                              ],
+                            ),
+                            Column(
+                              children: [
+                                Text(userCharact['followers'].toString(),
+                                  style: const TextStyle(color: Colors.black,
+                                      fontSize: 20,
+                                      fontWeight: FontWeight.bold),),
+                                const SizedBox(height: 5),
+                                const Text('Followers', style: TextStyle(
+                                    color: Colors.black, fontSize: 14),),
+                              ],
+                            ),
+                            Column(
+                              children: [
+                                Text(userCharact['following'].toString(),
+                                  style: const TextStyle(color: Colors.black,
+                                      fontSize: 20,
+                                      fontWeight: FontWeight.bold),),
+                                const SizedBox(height: 5),
+                                const Text('Following', style: TextStyle(
+                                    color: Colors.black, fontSize: 14),),
+                              ],
+                            )
+                          ],
+                        ),
+                      )
+                    ],
+                  ),
+                ),
+              ),
+
+              Container(
+                padding: const EdgeInsets.only(left: 20, right: 10, top: 0),
+                decoration: const BoxDecoration(
+                  image: DecorationImage(
+                    image: AssetImage('images/white.jpg'),
+                    fit: BoxFit.cover,
+                  ),
+                ),
+                child: SingleChildScrollView(
+                  child: Row(
+                    children: [
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          children: [
+                            const Padding(
+                              padding: EdgeInsets.fromLTRB(0, 10, 00, 0),),
+                            Text(userCharact['username'],
+                              style: const TextStyle(color: Colors.black,
+                                  fontSize: 20,
+                                  fontWeight: FontWeight.bold),),
+                            SizedBox(
+                              height: size.height / 60,
+                            ),
+                            Text(userCharact['biography'],
+                              style: const TextStyle(
+                                  color: Colors.black, fontSize: 15),),
+
+                          ],
+                        ),
+                        flex: 9,
+                      )
+                    ],
+                  ),),),
+
+              Container(
+                padding: const EdgeInsets.only(
+                    left: 10, right: 10, top: 30, bottom: 25),
+                decoration: const BoxDecoration(
+                  image: DecorationImage(
+                    image: AssetImage('images/white.jpg'),
+                    fit: BoxFit.cover,
+                  ),
+                ),
+                child: SingleChildScrollView(
+                  child: Row(
+                    children: [
+                      Expanded(
+                        flex: 8,
+                        child: customButton(size),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+
+              Container(
+                decoration: const BoxDecoration(
+                  image: DecorationImage(
+                    image: AssetImage('images/white.jpg'),
+                    fit: BoxFit.cover,
+                  ),
+                ),
+                child: const SingleChildScrollView(
+                  child: Divider(
+                      thickness: 15,
+                      color: Colors.cyan
+                  ),),),
+              ListView.builder(
+                  itemCount: _resultsList.length,
+                  physics: ClampingScrollPhysics(),
+                  shrinkWrap: true,
+                  itemBuilder: (BuildContext context, int index) {
+                    return Card(
+                      child: Container(
+                        color: Colors.white,
+                        child: ListTile(
+                          onTap: () {
+                            Navigator.pushNamed(context, TripDetail.routeName,
+                                arguments: _resultsList[index]);
+                          },
+                          leading: SizedBox(
+                            height: size.height / 5,
+                            width: size.width / 5,
+                            child: _resultsList[index].previewPic != null ?
+                            FutureBuilder(
+                              future: getImage(_resultsList[index].previewPic),
+                              builder: (context, snapshot) {
+                                if (snapshot.connectionState ==
+                                    ConnectionState.done) {
+                                  if (snapshot.hasError) {
+                                    print("error in snapshot: " +
+                                        snapshot.error.toString());
+                                    return const Text("error");
+                                  }
+                                  else {
+                                    return Image.network(
+                                        snapshot.data as String);
+                                  }
+                                }
+                                else { //show loading
+                                  return const PictureLoadingIndicator();
+                                }
+                              },) : SizedBox(),),
+                          selectedTileColor: Colors.white,
+                          title: Text(
+                            _resultsList[index].title,
+                            style: const TextStyle(
+                              color: Colors.black,
+                              fontSize: 17,
+                              fontWeight: FontWeight.w500,
+                            ),
+                          ),
+                          subtitle: Text(_resultsList[index].place),
+                          trailing: Icon(
+                              Icons.account_balance, color: Colors.black),
+                        ),),);
+                  }
+              ),
+            ],
+          );
+      },),),],),),),),);
 
     }
 
