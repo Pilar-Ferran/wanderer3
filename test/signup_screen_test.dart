@@ -14,7 +14,7 @@ void main() {
     ),
   );
 
-  testWidgets('Test of explore_screen', (WidgetTester tester) async {
+  testWidgets('Test of signup_screen', (WidgetTester tester) async {
     await tester.pumpWidget(app);
 
     expect(find.byType(TextField), findsNWidgets(3));
